@@ -9,12 +9,15 @@
   "bugs": {
     "url": "https://github.com/nsh-core/cryptowallet-js/issues"
   },
-  "dependencies": {},
+  "dependencies": {
+    "bitcoinjs-lib": "^4.0.2"
+  },
   "devDependencies": {
     "@babel/core": "^7.1.0",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/plugin-proposal-decorators": "^7.1.0",
     "@babel/preset-typescript": "^7.1.0",
+    "@types/bitcoinjs-lib": "^4.0.0",
     "@types/lodash": "^4.14.117",
     "@types/lodash-es": "^4.17.1",
     "@types/mocha": "^5.2.0",
