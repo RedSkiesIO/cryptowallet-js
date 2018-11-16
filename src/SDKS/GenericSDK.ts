@@ -10,17 +10,9 @@ export namespace CryptyoWallet.SDKS {
 
     abstract gernerateP2SHMultiSig(key1 : string, key2 : string, key3 : string) : Object;
 
-    abstract generateSegWitAddress() : Object;
-
-    abstract generateSegWitP2SH() : Object;
-
-    abstract generateSegWit3of4MultiSigaddress(key1 : string, key2 : string, key3 : string) : Object;
-
     abstract generateTestNetAddress() : Object;
 
-    abstract create1t1tx() : Object;
-
-    abstract create2t2tx() : Object;
+    abstract createTX() : Object;
 
     abstract verifyTxSignature(signature : string) : boolean;
   }
