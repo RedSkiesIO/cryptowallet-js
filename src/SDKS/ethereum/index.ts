@@ -5,7 +5,7 @@ import * as bip44hdkey from 'ethereumjs-wallet/hdkey'
 import * as EthereumLib from 'ethereumjs-wallet';
 import * as EthereumTx from 'ethereumjs-tx';
 
-namespace CryptoWallet.SDKS.Ethereum {
+export namespace CryptoWallet.SDKS.Ethereum {
   export class EthereumSDK extends GenericSDK implements IEthereumSDK.CryptyoWallet.SDKS.Ethereum.IEthereumSDK {
 
     private ethereumlib = EthereumLib;
@@ -24,7 +24,6 @@ namespace CryptoWallet.SDKS.Ethereum {
 
     generateKeyPair(wallet: any, index: number): Object {
       const addrNode = bip44hdkey.fromExtendedKey(wallet.externalNode.publicExtendedKey).deriveChild(index);
-
       return [
         {
           publicKey: addrNode.getWallet().getPublicKeyString(),
@@ -47,12 +46,13 @@ namespace CryptoWallet.SDKS.Ethereum {
     }
 
     createTX(options: any): Object {
-      const tx = new EthereumTx(options);
+      const tx: any = new EthereumTx.EthereumTx(options);
       tx.sign(options.privateKey);
       return tx.serialize();
     }
 
-    verifyTxSignature(tx: EthereumTx): boolean {
+    verifyTxSignature(tx: EthereumTx.EthereumTx): boolean {
+
       if (tx.verifySignature()) {
         return true
       }

@@ -7,7 +7,12 @@ namespace CryptoWallet.SDKS.Bitcoin {
 
     private bitcoinlib = BitcoinLib;
 
-
+    /**
+    * 
+    * @param entropy 
+    * @param cointype 
+    * @param testnet 
+    */
     generateHDWallet(entropy: any, cointype: number, testnet?: boolean): Object {
       let type: number = 0;
       if (testnet) {
@@ -24,6 +29,12 @@ namespace CryptoWallet.SDKS.Bitcoin {
       };
     }
 
+    /**
+     * 
+     * @param wallet 
+     * @param index 
+     * @param external 
+     */
     generateKeyPair(wallet: any, index: number, external?: boolean): Object {
       let node = wallet.externalNode;
       if (!external) { node = wallet.internalNode }
@@ -43,31 +54,63 @@ namespace CryptoWallet.SDKS.Bitcoin {
       ]
     }
 
+    /**
+     * 
+     * @param keyPair 
+     */
     generateSegWitAddress(keyPair: any): Object {
       return this.bitcoinlib.payments.p2wpkh({ pubkey: keyPair.publicKey });
     }
+
+    /**
+     * 
+     * @param keyPair 
+     */
     generateSegWitP2SH(keyPair: any): Object {
       return this.bitcoinlib.payments.p2sh({
         redeem: this.bitcoinlib.payments.p2wpkh({ pubkey: keyPair.publicKey })
       });
     }
+
+    /**
+     * 
+     * @param key1 
+     * @param key2 
+     * @param key3 
+     * @param key4 
+     */
     generateSegWit3of4MultiSigAddress(key1: string, key2: string, key3: string, key4: string): Object {
       const pubkeys: Array<any> = [key1, key2, key3, key4].map((hex) => Buffer.from(hex, 'hex'));
       return this.bitcoinlib.payments.p2wsh({
         redeem: this.bitcoinlib.payments.p2ms({ m: 3, pubkeys })
       });
     }
+
+    /**
+     * 
+     * @param wif 
+     */
     importWIF(wif: string): Object {
       const keyPair = this.bitcoinlib.ECPair.fromWIF(wif)
       const { address } = this.bitcoinlib.payments.p2pkh({ pubkey: keyPair.publicKey })
       return address;
     }
+
+    /**
+     * 
+     * @param keys 
+     */
     gernerateP2SHMultiSig(keys: Array<string>): Object {
       const pubkeys: Array<any> = keys.map((hex) => Buffer.from(hex, 'hex'))
       return this.bitcoinlib.payments.p2sh({
         redeem: this.bitcoinlib.payments.p2ms({ m: pubkeys.length, pubkeys })
       });
     }
+
+    /**
+     * 
+     * @param options 
+     */
     createTX(options: any): Object {
       const txb = new this.bitcoinlib.TransactionBuilder();
       txb.setVersion(1);
@@ -77,8 +120,12 @@ namespace CryptoWallet.SDKS.Bitcoin {
       return txb.build().toHex();
     }
 
+    /**
+     * 
+     * @param transaction 
+     */
     verifyTxSignature(transaction: any): boolean {
-      const keyPairs = transaction.pubKeys.map((q) => {
+      const keyPairs = transaction.pubKeys.map((q: any) => {
         return this.bitcoinlib.ECPair.fromPublicKey(Buffer.from(q, 'hex'));
       });
 
@@ -98,9 +145,16 @@ namespace CryptoWallet.SDKS.Bitcoin {
       return valid.every(item => item === true);
     }
 
+    /**
+     * 
+     */
     create1t1tx(): Object {
       throw new Error("Method not implemented.");
     }
+
+    /**
+     * 
+     */
     create2t2tx(): Object {
       throw new Error("Method not implemented.");
     }
