@@ -1,7 +1,7 @@
-declare namespace CryptyoWallet {
+declare namespace CryptoWallet {
   class CryptoWalletJS {
 
   }
 }
 
-export default CryptyoWallet.CryptoWalletJS;
+export default CryptoWallet.CryptoWalletJS;

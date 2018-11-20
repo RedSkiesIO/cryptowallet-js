@@ -3,16 +3,21 @@ import * as IWIF from './IWIF';
 import * as bip39 from 'bip39';
 import * as bip44hdkey from 'hdkey';
 
-export namespace CryptyoWallet.SDKS {
-  export abstract class GenericSDK implements ISDK.CryptyoWallet.SDKS.ISDK {
-
-    abstract generateKeyPair(entropy: string, cointype: number): Object;
+export namespace CryptoWallet.SDKS {
+  export abstract class GenericSDK implements ISDK.CryptoWallet.SDKS.ISDK {
 
 
     generateHDWallet(entropy: string, cointype: number): Object {
       const root = bip44hdkey.fromMasterSeed(bip39.mnemonicToSeed(entropy));//root of node tree
-      const externalNode = root.derive(`m/44'/${cointype}'/0'/0`);
-      const internalNode = root.derive(`m/44'/${cointype}'/0'/1`);//needed for bitcoin
+      let externalNode, internalNode;
+      if (cointype == 0 || 1) {
+        externalNode = root.derive(`m/49'/${cointype}'/0'/0`);
+        internalNode = root.derive(`m/49'/${cointype}'/0'/1`);//needed for bitcoin
+      }
+      else {
+        externalNode = root.derive(`m/44'/${cointype}'/0'/0`);
+        internalNode = root.derive(`m/44'/${cointype}'/0'/1`);//needed for bitcoin
+      }
       return {
         root,
         externalNode,
@@ -20,15 +25,15 @@ export namespace CryptyoWallet.SDKS {
       }
     };
 
-    abstract importWIF(wif: IWIF.CryptyoWallet.SDKS.IWIF): Object;
+    abstract generateKeyPair(wallet: any, index: number): Object;
 
-    abstract gernerateP2SHMultiSig(key1: string, key2: string, key3: string): Object;
+    abstract importWIF(wif: string): Object;
 
-    abstract generateTestNetAddress(): Object;
+    abstract gernerateP2SHMultiSig(keys: Array<string>): Object;
 
     abstract createTX(options: Object): Object;
 
-    abstract verifyTxSignature(signature: string): boolean;
+    abstract verifyTxSignature(transaction: object): boolean;
 
     abstract create1t1tx(): Object;
 
@@ -37,4 +42,4 @@ export namespace CryptyoWallet.SDKS {
 
 }
 
-export default CryptyoWallet.SDKS.GenericSDK;
+export default CryptoWallet.SDKS.GenericSDK;
