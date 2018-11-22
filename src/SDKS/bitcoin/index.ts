@@ -6,6 +6,11 @@ namespace CryptoWallet.SDKS.Bitcoin {
   export class BitcoinSDK extends GenericSDK implements IBitcoinSDK.CryptyoWallet.SDKS.Bitcoin.IBitcoinSDK {
 
 
+    createRawTx(options: any): Object {
+      throw new Error("Method not implemented.");
+    }
+
+
     /**
     *
     * @param entropy
@@ -34,23 +39,25 @@ namespace CryptoWallet.SDKS.Bitcoin {
      * @param index
      * @param external
      */
-    generateKeyPair(wallet: any, index: number, external?: boolean): Object {
+    generateKeyPair(wallet: any, index: number, internal?: boolean): Object {
       let node = wallet.externalNode
-      if (!external) { node = wallet.internalNode }
+      if (internal) { node = wallet.internalNode }
       const addrNode = node.deriveChild(index)
       const { address } = this.bitcoinlib.payments.p2sh({
         redeem: this.bitcoinlib.payments.p2wpkh({ pubkey: addrNode.publicKey })
       })
 
-      return [
-        {
-          publicKey: addrNode.publicKey,
-          address: address,
-          privateKey: addrNode.privateKey,
-          derivationPath: `m/49'/0'/0'/0/${index}`,
-          type: 'STANDARD'
-        }
-      ]
+      const keypair =
+      {
+        publicKey: addrNode.publicKey.toString('hex'),
+        address: address,
+        privateKey: this.wif.encode(128, addrNode.privateKey, true),
+        derivationPath: `m/49'/${wallet.type}'/0'/0/${index}`,
+        type: wallet.network.name
+      }
+
+      return keypair
+
     }
 
 

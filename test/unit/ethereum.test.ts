@@ -13,6 +13,7 @@ const network = 'ETHEREUM'
 const rootKey: string = 'xprv9s21ZrQH143K468LbsXz8YqCZjiP1ZCLXy4nV352PWToQYEi1WxeEDKzWRd3vWbSfUjQuFAPwPMPG1KRVtsLDc3YvD7X1MktbTzcmsEqjPw'
 
 
+
 const bip = 44;
 const address1 = '0x1ceBf494c8d33948e4Ec8E9d026cb46cd152B3bc'
 const privKey1 = '0xd701f769f4878f79369d5fa87cfa661b978d284121019d41d654b2ccbb40fc2c'
@@ -46,6 +47,23 @@ describe('ethereumSDK (wallet)', () => {
 
     assert.strictEqual(keypair.address, '0x8f97Bb9335747E4fCdDA8680F66ed96DcBe27F49')
     assert.strictEqual(keypair.privateKey, '0x42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73')
+
+  })
+
+  it('can createTX', () => {
+    const txParams = {
+      nonce: '0x00',
+      gasPrice: '100',
+      gasLimit: '1000',
+      to: '0x156AE1c2797494353C143070D01D5E4903bE2EB3',
+      value: '0',
+      data: '0x41746c617320436974792074657374207472616e73616374696f6e',
+      chainId: 3,
+    }
+
+    const rawTx = eth.createRawTx(txParams)
+    const verify = eth.verifyTxSignature(rawTx)
+    assert.strictEqual(verify, true)
 
   })
 });

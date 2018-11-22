@@ -65,17 +65,21 @@ export namespace CryptoWallet.SDKS.Ethereum {
      *
      * @param options
      */
-    createTX(options: any): Object {
-      const tx: any = new EthereumTx.EthereumTx(options)
-      tx.sign(options.privateKey)
-      return tx.serialize()
+    createRawTx(options: any): Object {
+      const privateKey = new Buffer('42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73', 'hex')
+      const tx: any = new EthereumTx(options)
+      tx.sign(privateKey)
+
+      const feeCost = tx.getUpfrontCost()
+      tx.gas = feeCost
+      return tx
     }
 
     /**
      *
      * @param tx
      */
-    verifyTxSignature(tx: EthereumTx.EthereumTx): boolean {
+    verifyTxSignature(tx: any): boolean {
       if (tx.verifySignature()) {
         return true
       } else {

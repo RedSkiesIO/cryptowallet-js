@@ -5,18 +5,21 @@ import * as IWIF from './IWIF'
 import * as Bip39 from 'bip39'
 import * as Bip44hdkey from 'hdkey'
 import * as Bitcoinlib from 'bitcoinjs-lib'
+import * as Wif from 'wif'
 
 export namespace CryptoWallet.SDKS {
   export abstract class GenericSDK implements ISDK.CryptoWallet.SDKS.ISDK {
+
     bitcoinlib = Bitcoinlib
     networks: any = Networks
     bip39: any = Bip39
+    wif: any = Wif
 
     generateHDWallet(entropy: string, network: string): Object {
       const cointype = this.networks[network].bip
       const root = Bip44hdkey.fromMasterSeed(this.bip39.mnemonicToSeed(entropy))// root of node tree
       let externalNode, internalNode, bip
-      if (cointype === 0) {
+      if (cointype === 0 || cointype === 1) {
         externalNode = root.derive(`m/49'/${cointype}'/0'/0`)
         internalNode = root.derive(`m/49'/${cointype}'/0'/1`)// needed for bitcoin
         bip = 49
@@ -61,7 +64,7 @@ export namespace CryptoWallet.SDKS {
 
     abstract gernerateP2SHMultiSig(keys: Array<string>): Object;
 
-    abstract createTX(options: Object): Object;
+    abstract createRawTx(options: any): Object;
 
     abstract verifyTxSignature(transaction: object): boolean;
 
