@@ -1,4 +1,4 @@
-import _Vue, { PluginObject } from 'vue';
+import _Vue, { PluginObject } from 'vue'
 
 const version = '__VERSION__'
 

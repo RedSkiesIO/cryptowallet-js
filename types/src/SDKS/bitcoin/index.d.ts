@@ -57,7 +57,7 @@ declare namespace CryptoWallet.SDKS.Bitcoin {
         /**
          *
          */
-        create1t1tx(): String;
+        create1t1tx(keypair: any, txHash: string, txNumber: number, address: string, amount: number): String;
         /**
          *
          */

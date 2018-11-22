@@ -1,3 +1,3 @@
-import CryptoWallet from './cryptoWallet';
-export default CryptoWallet;
+import CryptoWallet from './cryptoWallet'
+export default CryptoWallet
 

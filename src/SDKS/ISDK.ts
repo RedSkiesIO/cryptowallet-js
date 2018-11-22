@@ -1,17 +1,19 @@
-import * as IWIF from './IWIF';
+import * as IWIF from './IWIF'
 
 export namespace CryptoWallet.SDKS {
   export interface ISDK {
 
-    generateKeyPair(entropy: string, cointype: number): Object;
+    generateHDWallet(entropy: string, network: string): Object;
+
+    generateKeyPair(wallet: object, index: number): Object;
 
     importWIF(wif: string): Object;
 
     gernerateP2SHMultiSig(keys: Array<string>): Object;
 
-    create1t1tx(): Object;
+    create1t1tx(keypair: any, txHash: string, txNumber: number, address: string, amount: number): Object;
 
-    create2t2tx(): Object;
+    create2t2tx(txparams: any): Object;
 
     verifyTxSignature(transaction: object): boolean;
 
