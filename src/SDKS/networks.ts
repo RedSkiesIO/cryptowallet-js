@@ -14,14 +14,15 @@ export const BITCOIN = {
 export const BITCOIN_TESTNET = {
     name: 'Bitcoin Testnet',
     messagePrefix: '\x18Bitcoin Signed Message:\n',
+    bech32: 'tb',
     bip32: {
-        private: 0x04358394,
-        public: 0x043587cf
+        public: 0x043587cf,
+        private: 0x04358394
     },
     bip: 1,
-    wif: 0xef,
     pubKeyHash: 0x6f,
-    scripthash: 0xc4
+    scriptHash: 0xc4,
+    wif: 0xef
 }
 
 export const LITECOIN = {

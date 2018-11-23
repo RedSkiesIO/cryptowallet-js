@@ -1,3 +1,4 @@
+///<reference path="../../types/module.d.ts" />
 import GenericSDK from '../GenericSDK'
 import * as IWIF from '../IWIF'
 import * as IEthereumSDK from './IEthereumSDK'

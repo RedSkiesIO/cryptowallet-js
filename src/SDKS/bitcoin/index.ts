@@ -6,54 +6,31 @@ namespace CryptoWallet.SDKS.Bitcoin {
   export class BitcoinSDK extends GenericSDK implements IBitcoinSDK.CryptyoWallet.SDKS.Bitcoin.IBitcoinSDK {
 
 
-    createRawTx(options: any): Object {
-      throw new Error("Method not implemented.");
-    }
 
 
     /**
     *
-    * @param entropy
-    * @param cointype
-    * @param testnet
+    * @param wallet
+    * @param index
+    * @param external
     */
-    // generateHDWallet(entropy: any, cointype: number, testnet?: boolean): Object {
-    //   let type: number = 0;
-    //   if (testnet) {
-    //     type = 1;
-    //   };
-    //   let wallet: any = super.generateHDWallet(entropy, type);
-    //   wallet.privateKey = wallet.root.privateKey.toString('hex');
-    //   return {
-    //     privateKey: wallet.root.privateKey.toString('hex'),
-    //     mnemonic: wallet.mnemonic,
-    //     wallet,
-    //     externalAddresses: this.generateKeyPair(wallet, 0),
-    //     internalAddresses: this.generateKeyPair(wallet, 0, false)
-    //   };
-    // }
-
-    /**
-     *
-     * @param wallet
-     * @param index
-     * @param external
-     */
     generateKeyPair(wallet: any, index: number, internal?: boolean): Object {
       let node = wallet.externalNode
       if (internal) { node = wallet.internalNode }
       const addrNode = node.deriveChild(index)
       const { address } = this.bitcoinlib.payments.p2sh({
-        redeem: this.bitcoinlib.payments.p2wpkh({ pubkey: addrNode.publicKey })
+        redeem: this.bitcoinlib.payments.p2wpkh({ pubkey: addrNode.publicKey, network: wallet.network }),
+        network: wallet.network
       })
 
       const keypair =
       {
         publicKey: addrNode.publicKey.toString('hex'),
         address: address,
-        privateKey: this.wif.encode(128, addrNode.privateKey, true),
+        privateKey: this.wif.encode(wallet.network.wif, addrNode.privateKey, true),
         derivationPath: `m/49'/${wallet.type}'/0'/0/${index}`,
-        type: wallet.network.name
+        type: wallet.network.name,
+        network: wallet.network
       }
 
       return keypair
@@ -99,8 +76,10 @@ namespace CryptoWallet.SDKS.Bitcoin {
      */
     importWIF(wif: string): Object {
       const keyPair = this.bitcoinlib.ECPair.fromWIF(wif)
-      const { address } = this.bitcoinlib.payments.p2pkh({ pubkey: keyPair.publicKey })
-      return address
+      const { address } = this.bitcoinlib.payments.p2sh({
+        redeem: this.bitcoinlib.payments.p2wpkh({ pubkey: keyPair.publicKey })
+      })
+      return address;
     }
 
     /**
@@ -114,15 +93,13 @@ namespace CryptoWallet.SDKS.Bitcoin {
       })
     }
 
-    /**
-     *
-     * @param options
-     */
-    createTX(options: any): Object {
-      const txb = new this.bitcoinlib.TransactionBuilder()
+
+    createRawTx(options: any): Object {
+      const txb = new this.bitcoinlib.TransactionBuilder(this.bitcoinlib.networks.testnet)
       txb.setVersion(1)
-      txb.addInput(options.input, 0)
-      txb.addOutput(options.output, options.outputValue)
+      txb.addInput(options.txid, options.vout)
+      txb.addOutput(options.sendTo, options.amountToSend)
+      txb.addOutput(options.changeAddress, options.change)
       txb.sign(0, options.keyPair)
       return txb.build().toHex()
     }
