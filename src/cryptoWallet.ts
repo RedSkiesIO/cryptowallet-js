@@ -1,8 +1,8 @@
+import * as SDKFactory from './SDKFactory';
 
-declare namespace CryptoWallet {
-  class CryptoWalletJS {
 
-  }
+class CryptoWalletJS {
+	SDKFactory = SDKFactory;
 }
 
-export default CryptoWallet.CryptoWalletJS
+export default CryptoWalletJS
