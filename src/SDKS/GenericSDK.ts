@@ -64,7 +64,7 @@ export namespace CryptoWallet.SDKS {
 
     abstract gernerateP2SHMultiSig(keys: Array<string>): Object;
 
-    abstract createRawTx(options: any): Object;
+    abstract createRawTx(keypair: any, toAmount: String, amount: number): Object;
 
     abstract verifyTxSignature(transaction: object): boolean;
 

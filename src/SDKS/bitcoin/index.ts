@@ -1,11 +1,15 @@
 import GenericSDK from '../GenericSDK'
 import * as IBitcoinSDK from './IBitcoinSDK'
-import BitcoinLib from 'bitcoinjs-lib'
+import * as  BitcoinLib from 'bitcoinjs-lib'
+import * as Bitcore from 'bitcore-lib';
+//import * as Explorers from 'bitcore-explorers';
+import * as Bitcoinaddress from 'bitcoin-address';
+import * as Coinselect from 'coinselect'
+import * as Request from 'request';
+Bitcore.Networks['defaultNetwork'] = Bitcore.Networks['testnet']
 
 namespace CryptoWallet.SDKS.Bitcoin {
   export class BitcoinSDK extends GenericSDK implements IBitcoinSDK.CryptyoWallet.SDKS.Bitcoin.IBitcoinSDK {
-
-
 
 
     /**
@@ -94,15 +98,177 @@ namespace CryptoWallet.SDKS.Bitcoin {
     }
 
 
-    createRawTx(options: any): Object {
-      const txb = new this.bitcoinlib.TransactionBuilder(this.bitcoinlib.networks.testnet)
-      txb.setVersion(1)
-      txb.addInput(options.txid, options.vout)
-      txb.addOutput(options.sendTo, options.amountToSend)
-      txb.addOutput(options.changeAddress, options.change)
-      txb.sign(0, options.keyPair)
-      return txb.build().toHex()
+    createRawTx(keypair: any, toAddress: string, amount: number): Object {
+
+      const unit = Bitcore.Unit;
+      const feeRate = 55
+      const transactionAmount = unit.fromMilis(amount).toSatoshis()
+      const minerFee = unit.fromMilis(0.128).toSatoshis();
+      const apiUrl = 'https://testnet.blockexplorer.com/api/addr/'
+      let rawTx;
+
+      return new Promise((resolve, reject) => {
+
+        Request.get(apiUrl + keypair.address + '/utxo', (error: any, req: any, body: any) => {
+
+          if (error) {
+            //any other error
+            console.log(error);
+            return reject('1:' + error);
+
+          }
+          else {
+            const utxos = JSON.parse(body)
+            console.log(utxos)
+            if (utxos.length == 0) {
+              //if no transactions have happened, there is no balance on the address.
+              return reject("You don't have enough Satoshis to cover the miner fee.");
+            }
+
+            //get balance
+            let balance = unit.fromSatoshis(0).toSatoshis();
+
+            for (var i = 0; i < utxos.length; i++) {
+              balance += unit.fromSatoshis(parseInt(utxos[i]['satoshis'])).toSatoshis();
+            }
+
+            //check whether the balance of the address covers the miner fee
+            if ((balance - transactionAmount - minerFee) > 0) {
+
+              let targets = [{
+                address: toAddress,
+                value: amount
+              }]
+
+
+              let { inputs, outputs, fee } = Coinselect(utxos, targets, feeRate)
+              console.log(fee)
+              console.log(inputs)
+              console.log(outputs)
+
+              let txb = new BitcoinLib.TransactionBuilder(BitcoinLib.networks.testnet)
+              txb.setVersion(1)
+
+              inputs.forEach((input: any) => txb.addInput(input.txId, input.vout))
+
+              outputs.forEach((output: any) => {
+
+                if (!output.address) {
+                  output.address = keypair.address
+                }
+                txb.addOutput(output.address, output.value)
+              })
+
+              inputs.forEach((input: any) => {
+                let i = 0;
+                txb.sign(i, keypair)
+                i++
+              }
+              )
+
+              rawTx = txb.build().toHex()
+              console.log(rawTx)
+            }
+            else {
+              return reject("You don't have enough Satoshis to cover the miner fee.");
+            }
+          }
+        });
+
+      });
     }
+
+    // createRawTx(keypair: any, toAddress: string, amount: number): Object {
+
+    //   return new Promise((resolve, reject) => {
+    //     const fromAddress = keypair.address;
+    //     console.log(fromAddress)
+    //     const unit = Bitcore.Unit;
+    //     const insight = new Explorers.Insight('https://test-insight.bitpay.com', 'testnet');
+    //     const minerFee = unit.fromMilis(0.128).toSatoshis(); //cost of transaction in satoshis (minerfee)
+    //     const transactionAmount = unit.fromMilis(amount).toSatoshis(); //convert mBTC to Satoshis using bitcore unit
+
+    //     // if (!Bitcoinaddress.validate(fromAddress)) {
+    //     //   return reject('Origin address checksum failed');
+    //     // }
+    //     // if (!Bitcoinaddress.validate(toAddress)) {
+    //     //   return reject('Recipient address checksum failed');
+    //     // }
+
+
+    //     insight.getUnspentUtxos(fromAddress, function (error: string, utxos: any) {
+    //       if (error) {
+    //         //any other error
+    //         console.log(error);
+    //         return reject('1:' + error);
+
+    //       } else {
+
+    //         console.log(utxos)
+    //         if (utxos.length == 0) {
+    //           //if no transactions have happened, there is no balance on the address.
+    //           return reject("You don't have enough Satoshis to cover the miner fee.");
+    //         }
+
+    //         //get balance
+    //         let balance = unit.fromSatoshis(0).toSatoshis();
+    //         for (var i = 0; i < utxos.length; i++) {
+    //           balance += unit.fromSatoshis(parseInt(utxos[i]['satoshis'])).toSatoshis();
+    //         }
+
+    //         //check whether the balance of the address covers the miner fee
+    //         if ((balance - transactionAmount - minerFee) > 0) {
+
+
+
+    //           //create a new transaction
+    //           try {
+    //             let bitcore_transaction: any = new Bitcore.Transaction()
+    //               .from(utxos)
+    //               .to(toAddress, transactionAmount)
+    //               .fee(minerFee)
+    //               .change(fromAddress)
+    //               .sign(keypair.privateKey);
+
+    //             return bitcore_transaction.serialize()
+    //             //handle serialization errors
+    //             // if (bitcore_transaction.getSerializationError()) {
+    //             //   let error = bitcore_transaction.getSerializationError().message;
+    //             //   switch (error) {
+    //             //     case 'Some inputs have not been fully signed':
+    //             //       return reject('Please check your private key');
+    //             //       break;
+    //             //     default:
+
+    //             //     //return reject('2:' + error);
+    //             //   }
+    //             // }
+
+    //             // broadcast the transaction to the blockchain
+    //             // insight.broadcast(bitcore_transaction, function (error: string, body: any) {
+    //             //   if (error) {
+    //             //     reject('Error in broadcast: ' + error);
+    //             //   } else {
+    //             //     resolve({
+    //             //       transactionId: body
+    //             //     });
+    //             //   }
+    //             // });
+    //             resolve({
+    //               bitcore_transaction
+    //             })
+
+    //           } catch (error) {
+    //             return reject('3:' + error);
+    //           }
+    //         } else {
+    //           return reject("You don't have enough Satoshis to cover the miner fee.");
+    //         }
+    //       }
+    //     });
+    //   });
+
+    // }
 
     /**
      *

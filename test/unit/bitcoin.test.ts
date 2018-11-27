@@ -2,9 +2,8 @@ import * as Mocha from 'mocha';
 import * as Chai from 'chai';
 import * as Bitcoin from 'bitcoinjs-lib';
 import { CryptoWallet } from '../../src/SDKFactory';
-import { generateKeyPair } from 'crypto';
-import { AssertionError } from 'assert';
-import { address } from 'bitcoinjs-lib';
+import * as Bitcore from 'bitcore-lib';
+
 const request = require('request')
 var assert = Chai.assert;
 //const regtestUtils = require('../_regtest')
@@ -53,35 +52,49 @@ describe('bitcoinSDK (wallet)', () => {
 
 
   })
+  // it('can create a raw transaction', () => {
+  //   const wallet: any = btc.generateHDWallet(entropy, 'BITCOIN_TESTNET')
+  //   const keypair1: any = btc.generateKeyPair(wallet, 0)
+  //   const keypair2: any = btc.generateKeyPair(wallet, 0)
+  //   const testnet = Bitcoin.networks.testnet
+  //   const keyPair = Bitcoin.ECPair.fromWIF(keypair1.privateKey, testnet)
+
+
+  //   let addr = keypair1.address
+  //   let apiUrl = 'https://testnet.blockexplorer.com/api/addr/'
+
+  //   let utxo: any, balance: any, options: object;
+  //   // log unspent transactions
+  //   request.get(apiUrl + addr + '/utxo', (err: any, req: any, body: any) => {
+  //     utxo = JSON.parse(body)
+  //     const amountToKeep = utxo[0].satoshis - 100000
+  //     options = {
+  //       keyPair: keyPair,
+  //       vout: 1,
+  //       txid: utxo[0].txid,
+  //       sendTo: keypair2.address,
+  //       amountToSend: 100000,
+  //       changeAddress: keypair1.address,
+  //       change: amountToKeep
+  //     }
+  //     const rawTx = btc.createRawTx(options)
+  //     console.log(rawTx)
+  //   }
+  //   );
+
+
+  // })
+
   it('can create a raw transaction', () => {
-    const wallet: any = btc.generateHDWallet(entropy, 'BITCOIN_TESTNET')
-    const keypair1: any = btc.generateKeyPair(wallet, 0)
-    const keypair2: any = btc.generateKeyPair(wallet, 0)
-    const testnet = Bitcoin.networks.testnet
-    const keyPair = Bitcoin.ECPair.fromWIF(keypair1.privateKey, testnet)
+    //Test address: 2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf
+    const wallet: any = btc.generateHDWallet(entropy, 'BITCOIN_TESTNET');
+    const fromAccount: any = btc.generateKeyPair(wallet, 0);
+    const toAccount: any = btc.generateKeyPair(wallet, 1);
+    const amount: number = 0.001;
 
 
-    let addr = keypair1.address
-    let apiUrl = 'https://testnet.blockexplorer.com/api/addr/'
-
-    let utxo: any, balance: any, options: object;
-    // log unspent transactions
-    request.get(apiUrl + addr + '/utxo', (err: any, req: any, body: any) => {
-      utxo = JSON.parse(body)
-      const amountToKeep = utxo[0].satoshis - 100000
-      options = {
-        keyPair: keyPair,
-        vout: 1,
-        txid: utxo[0].txid,
-        sendTo: keypair2.address,
-        amountToSend: 100000,
-        changeAddress: keypair1.address,
-        change: amountToKeep
-      }
-      const rawTx = btc.createRawTx(options)
-      console.log(rawTx)
-    }
-    );
+    const rawTx = btc.createRawTx(fromAccount, toAccount.address, amount);
+    console.log(rawTx);
 
 
   })
