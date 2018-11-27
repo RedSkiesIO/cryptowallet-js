@@ -2,20 +2,13 @@ import GenericSDK from '../GenericSDK';
 import * as IBitcoinSDK from './IBitcoinSDK';
 declare namespace CryptoWallet.SDKS.Bitcoin {
     class BitcoinSDK extends GenericSDK implements IBitcoinSDK.CryptyoWallet.SDKS.Bitcoin.IBitcoinSDK {
-        private bitcoinlib;
         /**
         *
-        * @param entropy
-        * @param cointype
-        * @param testnet
+        * @param wallet
+        * @param index
+        * @param external
         */
-        /**
-         *
-         * @param wallet
-         * @param index
-         * @param external
-         */
-        generateKeyPair(wallet: any, index: number, external?: boolean): Object;
+        generateKeyPair(wallet: any, index: number, internal?: boolean): Object;
         /**
          *
          * @param keyPair
@@ -44,11 +37,7 @@ declare namespace CryptoWallet.SDKS.Bitcoin {
          * @param keys
          */
         gernerateP2SHMultiSig(keys: Array<string>): Object;
-        /**
-         *
-         * @param options
-         */
-        createTX(options: any): Object;
+        createRawTx(keypair: any, toAddress: string, amount: number): Object;
         /**
          *
          * @param transaction

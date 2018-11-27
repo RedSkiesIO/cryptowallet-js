@@ -11,19 +11,7 @@ export const BITCOIN = {
     wif: 0x80
 }
 
-export const BITCOIN_TESTNET = {
-    name: 'Bitcoin Testnet',
-    messagePrefix: '\x18Bitcoin Signed Message:\n',
-    bech32: 'tb',
-    bip32: {
-        public: 0x043587cf,
-        private: 0x04358394
-    },
-    bip: 1,
-    pubKeyHash: 0x6f,
-    scriptHash: 0xc4,
-    wif: 0xef
-}
+
 
 export const LITECOIN = {
     name: 'Litecoin',
@@ -64,7 +52,7 @@ export const DOGECOIN = {
 }
 
 export const DOGECOIN_TESTNET = {
-    name: 'Dogecoin',
+    name: 'Dogecoin Testnet',
     bip32: {
         private: 0x0432a243,
         public: 0x0432a9a8
@@ -72,10 +60,59 @@ export const DOGECOIN_TESTNET = {
     bip: 1,
     wif: 0xf1,
     public: 0x71,
-    scripthash: 0xc4
+    scripthash: 0xc4,
+    connect: {
+        bip32: {
+            private: 0x0432a243,
+            public: 0x0432a9a8
+        },
+        bip: 1,
+        wif: 0xf1,
+        public: 0x71,
+        scripthash: 0xc4
+    }
 }
 
 export const ETHEREUM = {
     name: 'Ethereum',
     bip: 60
+}
+
+export const testnet = {
+    messagePrefix: '\x18Bitcoin Signed Message:\n',
+    bech32: 'tb',
+    bip32: {
+        public: 0x043587cf,
+        private: 0x04358394
+    },
+    pubKeyHash: 0x6f,
+    scriptHash: 0xc4,
+    wif: 0xef
+}
+
+export const BITCOIN_TESTNET = {
+    name: 'Bitcoin Testnet',
+    bip: 1,
+    apiUrl: 'https://chain.so/api/v2/get_tx_unspent/BTCTEST/',
+    messagePrefix: '\x18Bitcoin Signed Message:\n',
+    bech32: 'tb',
+    bip32: {
+        public: 0x043587cf,
+        private: 0x04358394
+    },
+    pubKeyHash: 0x6f,
+    scriptHash: 0xc4,
+    wif: 0xef,
+    connect: {
+
+        messagePrefix: '\x18Bitcoin Signed Message:\n',
+        bech32: 'tb',
+        bip32: {
+            public: 0x043587cf,
+            private: 0x04358394
+        },
+        pubKeyHash: 0x6f,
+        scriptHash: 0xc4,
+        wif: 0xef
+    }
 }
