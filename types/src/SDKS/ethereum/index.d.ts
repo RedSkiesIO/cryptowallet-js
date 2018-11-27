@@ -1,7 +1,6 @@
+/// <reference path="../../../../src/types/module.d.ts" />
 import GenericSDK from '../GenericSDK';
-import * as IWIF from '../IWIF';
 import * as IEthereumSDK from './IEthereumSDK';
-import * as EthereumTx from 'ethereumjs-tx';
 export declare namespace CryptoWallet.SDKS.Ethereum {
     class EthereumSDK extends GenericSDK implements IEthereumSDK.CryptyoWallet.SDKS.Ethereum.IEthereumSDK {
         private ethereumlib;
@@ -10,6 +9,7 @@ export declare namespace CryptoWallet.SDKS.Ethereum {
          * @param entropy
          * @param cointype
          */
+        generateHDWallet(entropy: string): Object;
         /**
          *
          * @param wallet
@@ -20,7 +20,7 @@ export declare namespace CryptoWallet.SDKS.Ethereum {
          *
          * @param wif
          */
-        importWIF(wif: IWIF.CryptoWallet.SDKS.IWIF): Object;
+        importWIF(wif: string): Object;
         /**
          *
          * @param keys
@@ -30,12 +30,12 @@ export declare namespace CryptoWallet.SDKS.Ethereum {
          *
          * @param options
          */
-        createTX(options: any): Object;
+        createRawTx(options: any): Object;
         /**
          *
          * @param tx
          */
-        verifyTxSignature(tx: EthereumTx.EthereumTx): boolean;
+        verifyTxSignature(tx: any): boolean;
         /**
          *
          */
