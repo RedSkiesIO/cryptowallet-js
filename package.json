@@ -82,11 +82,12 @@
     "dist/cryptowallet-js.common.js",
     "dist/cryptowallet-js.esm.js",
     "types",
-    "src"
+    "src",
+    "lib"
   ],
   "homepage": "https://github.com/nsh-core/cryptowallet-js#readme",
-  "main": "dist/cryptowallet-js.common.js",
-  "module": "dist/cryptowallet-js.esm.js",
+  "main": "lib/src",
+  "module": "lib/src",
   "unpkg": "dist/cryptowallet-js.js",
   "types": "types/index.d.ts",
   "keywords": [
