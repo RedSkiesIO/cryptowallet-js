@@ -17,6 +17,8 @@ const rootKey: string = 'xprv9s21ZrQH143K468LbsXz8YqCZjiP1ZCLXy4nV352PWToQYEi1Wx
 const bip = 49;
 const derPath = `m/49'/0'/0'/0/0`
 
+
+
 describe('bitcoinSDK (wallet)', () => {
 
   it('can generate a BTC HD wallet', () => {
@@ -98,6 +100,24 @@ describe('bitcoinSDK (wallet)', () => {
 
 
   })
+
+  // it('server test', () => {
+  //   const ElectrumCli = require('electrum-client')
+  //   const main = async () => {
+  //     const ecl = new ElectrumCli(8000, '192.168.1.216', 'tcp') // tcp or tls
+  //     await ecl.connect() // connect(promise)
+  //     ecl.subscribe.on('blockchain.headers.subscribe', (v: any) => console.log('1' + v)) // subscribe message(EventEmitter)
+  //     try {
+  //       const ver = await ecl.server_version("test", "1.8.12") // json-rpc(promise)
+  //       console.log('success ' + ver)
+  //     } catch (e) {
+  //       console.log('2' + e)
+  //     }
+  //     await ecl.close() // disconnect(promise)
+  //   }
+  //   main()
+
+  // })
 
 });
 
