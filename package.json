@@ -85,7 +85,7 @@
   ],
   "homepage": "https://github.com/nsh-core/cryptowallet-js#readme",
   "main": "lib/src/SDKFactory.js",
-  "module": "dist/cryptowallet-js.esm.js",
+  "module": "lib/src/SDKFactory.js",
   "unpkg": "dist/cryptowallet-js.js",
   "types": "types/index.d.ts",
   "keywords": [
