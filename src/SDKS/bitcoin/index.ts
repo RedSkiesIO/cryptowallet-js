@@ -174,7 +174,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
                 i++
               })
               rawTx = txb.build().toHex()
-
+              console.log(rawTx)
               return rawTx
             }
             else {
@@ -184,6 +184,22 @@ namespace CryptoWallet.SDKS.Bitcoin {
         });
 
       });
+    }
+
+    broadcastTx(rawTx: object): String {
+      const tx = JSON.stringify(rawTx);
+      Request.post({ url: 'https://chain.so/api/v2/send_tx/BTCTEST', form: { tx_hex: tx } }, function (err: any, http: any, body: any) {
+        if (err) {
+          console.log(err)
+          return err
+        }
+        console.log(http)
+        console.log(body)
+        return body
+      })
+
+      return 'error'
+
     }
 
     // createRawTx(keypair: any, toAddress: string, amount: number): Object {

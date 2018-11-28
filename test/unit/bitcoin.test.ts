@@ -2,6 +2,7 @@ import * as Mocha from 'mocha';
 import * as Chai from 'chai';
 import * as Bitcoin from 'bitcoinjs-lib';
 import { CryptoWallet } from '../../src/SDKFactory';
+//import CryptoWallet from '../../src/CryptoWallet';
 import * as Bitcore from 'bitcore-lib';
 
 const request = require('request')
@@ -9,7 +10,9 @@ var assert = Chai.assert;
 //const regtestUtils = require('../_regtest')
 //const regtest = regtestUtils.network
 const expect = Chai.expect;
+console.log(CryptoWallet)
 const btc = CryptoWallet.createSDK('Bitcoin');
+
 const entropy = 'nut mixture license bean page mimic iron spice rail uncover then warfare'
 const network = 'BITCOIN'
 const rootKey: string = 'xprv9s21ZrQH143K468LbsXz8YqCZjiP1ZCLXy4nV352PWToQYEi1WxeEDKzWRd3vWbSfUjQuFAPwPMPG1KRVtsLDc3YvD7X1MktbTzcmsEqjPw'
@@ -47,47 +50,15 @@ describe('bitcoinSDK (wallet)', () => {
 
   })
 
-  it('can generate a segwit address', () => {
-    const wallet: any = btc.generateHDWallet(entropy, network)
-    const keypair: any = btc.generateKeyPair(wallet, 0)
-    //const segwitAddress: any = btc.generateSegWitAddress(keypair)
-
-
-  })
-  // it('can create a raw transaction', () => {
-  //   const wallet: any = btc.generateHDWallet(entropy, 'BITCOIN_TESTNET')
-  //   const keypair1: any = btc.generateKeyPair(wallet, 0)
-  //   const keypair2: any = btc.generateKeyPair(wallet, 0)
-  //   const testnet = Bitcoin.networks.testnet
-  //   const keyPair = Bitcoin.ECPair.fromWIF(keypair1.privateKey, testnet)
-
-
-  //   let addr = keypair1.address
-  //   let apiUrl = 'https://testnet.blockexplorer.com/api/addr/'
-
-  //   let utxo: any, balance: any, options: object;
-  //   // log unspent transactions
-  //   request.get(apiUrl + addr + '/utxo', (err: any, req: any, body: any) => {
-  //     utxo = JSON.parse(body)
-  //     const amountToKeep = utxo[0].satoshis - 100000
-  //     options = {
-  //       keyPair: keyPair,
-  //       vout: 1,
-  //       txid: utxo[0].txid,
-  //       sendTo: keypair2.address,
-  //       amountToSend: 100000,
-  //       changeAddress: keypair1.address,
-  //       change: amountToKeep
-  //     }
-  //     const rawTx = btc.createRawTx(options)
-  //     console.log(rawTx)
-  //   }
-  //   );
-
+  // it('can generate a segwit address', () => {
+  //   const wallet: any = btc.generateHDWallet(entropy, network)
+  //   const keypair: any = btc.generateKeyPair(wallet, 0)
+  //   const segwitAddress: any = btc.generateSegWitAddress(keypair)
 
   // })
 
-  it('can create a raw transaction', () => {
+
+  it('can create a raw transaction', async () => {
     //Test address: 2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf
     const wallet: any = btc.generateHDWallet(entropy, 'BITCOIN_TESTNET');
     const fromAccount: any = btc.generateKeyPair(wallet, 0);
@@ -96,7 +67,13 @@ describe('bitcoinSDK (wallet)', () => {
 
 
     const rawTx = btc.createRawTx(fromAccount, toAccount.address, amount);
-    console.log(rawTx);
+    const output = JSON.stringify(rawTx)
+    console.log('Tx: ' + output);
+
+    //const sendTx = await btc.broadcastTx(rawTx);
+    //console.log(sendTx);
+
+
 
 
   })
@@ -106,12 +83,12 @@ describe('bitcoinSDK (wallet)', () => {
   //   const main = async () => {
   //     const ecl = new ElectrumCli(8000, '192.168.1.216', 'tcp') // tcp or tls
   //     await ecl.connect() // connect(promise)
-  //     ecl.subscribe.on('blockchain.headers.subscribe', (v: any) => console.log('1' + v)) // subscribe message(EventEmitter)
+  //     ecl.subscribe.on('blockchain.headers.subscribe', (v) => console.log(v)) // subscribe message(EventEmitter)
   //     try {
   //       const ver = await ecl.server_version("test", "1.8.12") // json-rpc(promise)
   //       console.log('success ' + ver)
   //     } catch (e) {
-  //       console.log('2' + e)
+  //       console.log(e)
   //     }
   //     await ecl.close() // disconnect(promise)
   //   }

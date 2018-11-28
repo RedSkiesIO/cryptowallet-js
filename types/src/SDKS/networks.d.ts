@@ -55,6 +55,16 @@ export declare const DOGECOIN_TESTNET: {
     wif: number;
     public: number;
     scripthash: number;
+    connect: {
+        bip32: {
+            private: number;
+            public: number;
+        };
+        bip: number;
+        wif: number;
+        public: number;
+        scripthash: number;
+    };
 };
 export declare const ETHEREUM: {
     name: string;
@@ -84,7 +94,7 @@ export declare const BITCOIN_TESTNET: {
     pubKeyHash: number;
     scriptHash: number;
     wif: number;
-    testnet: {
+    connect: {
         messagePrefix: string;
         bech32: string;
         bip32: {

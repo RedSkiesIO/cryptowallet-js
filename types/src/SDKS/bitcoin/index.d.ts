@@ -38,6 +38,7 @@ declare namespace CryptoWallet.SDKS.Bitcoin {
          */
         gernerateP2SHMultiSig(keys: Array<string>): Object;
         createRawTx(keypair: any, toAddress: string, amount: number): Object;
+        broadcastTx(rawTx: object): String;
         /**
          *
          * @param transaction

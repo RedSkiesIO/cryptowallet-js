@@ -60,6 +60,8 @@ export namespace CryptoWallet.SDKS {
       ]
     };
 
+    abstract broadcastTx(rawTx: object): String;
+
     abstract importWIF(wif: string): Object;
 
     abstract gernerateP2SHMultiSig(keys: Array<string>): Object;

@@ -13,6 +13,8 @@ export namespace CryptoWallet.SDKS {
 
     createRawTx(keypair: any, toAmount: String, amount: number): Object;
 
+    broadcastTx(rawTx: object): String;
+
     create1t1tx(keypair: any, txHash: string, txNumber: number, address: string, amount: number): Object;
 
     create2t2tx(txparams: any): Object;

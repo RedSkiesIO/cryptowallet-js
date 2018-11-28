@@ -1,5 +1,8 @@
 import * as SDKFactory from './SDKFactory';
-declare class CryptoWalletJS {
-    SDKFactory: typeof SDKFactory;
+declare namespace CryptoWallet {
+    class CryptoWalletJS {
+        SDKFactory: typeof SDKFactory;
+    }
 }
-export default CryptoWalletJS;
+declare const _default: typeof CryptoWallet.CryptoWalletJS;
+export default _default;

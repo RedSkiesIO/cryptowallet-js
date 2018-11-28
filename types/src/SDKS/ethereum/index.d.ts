@@ -31,6 +31,7 @@ export declare namespace CryptoWallet.SDKS.Ethereum {
          * @param options
          */
         createRawTx(options: any): Object;
+        broadcastTx(rawTx: object): String;
         /**
          *
          * @param tx

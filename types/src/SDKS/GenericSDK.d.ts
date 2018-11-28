@@ -9,6 +9,7 @@ export declare namespace CryptoWallet.SDKS {
         wif: any;
         generateHDWallet(entropy: string, network: string): Object;
         generateKeyPair(wallet: any, index: number): Object;
+        abstract broadcastTx(rawTx: object): String;
         abstract importWIF(wif: string): Object;
         abstract gernerateP2SHMultiSig(keys: Array<string>): Object;
         abstract createRawTx(keypair: any, toAmount: String, amount: number): Object;

@@ -76,6 +76,10 @@ export namespace CryptoWallet.SDKS.Ethereum {
       return tx
     }
 
+    broadcastTx(rawTx: object): String {
+      throw new Error('Method not yet implemented')
+    }
+
     /**
      *
      * @param tx
