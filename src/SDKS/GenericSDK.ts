@@ -1,4 +1,4 @@
-///<reference path="../../types/module.d.ts" />
+// /<reference path="../../types/module.d.ts" />
 import * as ISDK from './ISDK'
 import * as Networks from './networks'
 import * as IWIF from './IWIF'
@@ -9,7 +9,6 @@ import * as Wif from 'wif'
 
 export namespace CryptoWallet.SDKS {
   export abstract class GenericSDK implements ISDK.CryptoWallet.SDKS.ISDK {
-
     bitcoinlib = Bitcoinlib
     networks: any = Networks
     bip39: any = Bip39
@@ -60,7 +59,7 @@ export namespace CryptoWallet.SDKS {
       ]
     };
 
-    abstract broadcastTx(rawTx: object): String;
+    abstract broadcastTx(rawTx: object, network: string): Object;
 
     abstract importWIF(wif: string): Object;
 

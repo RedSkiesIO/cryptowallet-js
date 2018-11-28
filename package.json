@@ -10,6 +10,8 @@
     "url": "https://github.com/nsh-core/cryptowallet-js/issues"
   },
   "dependencies": {
+    "@types/bitcore-lib": "^0.15.1",
+    "bip39": "^2.5.0",
     "bitcoin-address": "^0.3.0",
     "bitcoinjs-lib": "^4.0.2",
     "bitcore-explorers": "^1.0.1",
