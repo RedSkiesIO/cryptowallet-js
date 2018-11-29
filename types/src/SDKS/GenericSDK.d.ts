@@ -7,15 +7,18 @@ export declare namespace CryptoWallet.SDKS {
         networks: any;
         bip39: any;
         wif: any;
+        request: any;
+        axios: any;
         generateHDWallet(entropy: string, network: string): Object;
         generateKeyPair(wallet: any, index: number): Object;
-        abstract broadcastTx(rawTx: object): String;
+        abstract broadcastTx(rawTx: object, network: string): Object;
         abstract importWIF(wif: string): Object;
         abstract gernerateP2SHMultiSig(keys: Array<string>): Object;
-        abstract createRawTx(keypair: any, toAmount: String, amount: number): Object;
+        abstract createRawTx(keypair: any, toAddress: String, amount: number): Object;
         abstract verifyTxSignature(transaction: object): boolean;
         abstract create1t1tx(keypair: any, txHash: string, txNumber: number, address: string, amount: number): String;
         abstract create2t2tx(txparams: any): String;
+        getTransactionHistory(address: string, network: string, lastBlock: number, beforeBlock?: number, limit?: number): Object;
     }
 }
 declare const _default: typeof CryptoWallet.SDKS.GenericSDK;

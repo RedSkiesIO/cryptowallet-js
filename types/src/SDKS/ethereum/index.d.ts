@@ -1,4 +1,3 @@
-/// <reference path="../../../../src/types/module.d.ts" />
 import GenericSDK from '../GenericSDK';
 import * as IEthereumSDK from './IEthereumSDK';
 export declare namespace CryptoWallet.SDKS.Ethereum {
@@ -30,8 +29,8 @@ export declare namespace CryptoWallet.SDKS.Ethereum {
          *
          * @param options
          */
-        createRawTx(options: any): Object;
-        broadcastTx(rawTx: object): String;
+        createRawTx(keypair: any, toAddress: String, amount: number): Object;
+        broadcastTx(rawTx: object, network: string): Object;
         /**
          *
          * @param tx

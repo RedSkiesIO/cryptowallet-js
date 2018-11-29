@@ -1,3 +1,4 @@
+/// <reference path="../../../../src/types/module.d.ts" />
 import GenericSDK from '../GenericSDK';
 import * as IBitcoinSDK from './IBitcoinSDK';
 declare namespace CryptoWallet.SDKS.Bitcoin {
@@ -38,7 +39,7 @@ declare namespace CryptoWallet.SDKS.Bitcoin {
          */
         gernerateP2SHMultiSig(keys: Array<string>): Object;
         createRawTx(keypair: any, toAddress: string, amount: number): Object;
-        broadcastTx(rawTx: object): String;
+        broadcastTx(rawTx: object, network: string): Object;
         /**
          *
          * @param transaction
