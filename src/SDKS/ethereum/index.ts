@@ -15,7 +15,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
      * @param entropy
      * @param cointype
      */
-    generateHDWallet (entropy: string): Object {
+    generateHDWallet(entropy: string): Object {
       return super.generateHDWallet(entropy, 'ETHEREUM')
     }
 
@@ -24,7 +24,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
      * @param wallet
      * @param index
      */
-    generateKeyPair (wallet: any, index: number): Object {
+    generateKeyPair(wallet: any, index: number): Object {
       const addrNode = bip44hdkey.fromExtendedKey(wallet.externalNode.privateExtendedKey).deriveChild(index)
       const keypair =
       {
@@ -32,7 +32,8 @@ export namespace CryptoWallet.SDKS.Ethereum {
         address: addrNode.getWallet().getChecksumAddressString(),
         derivationPath: `m/44'/60'/0'/0/${index}`,
         privateKey: addrNode.getWallet().getPrivateKeyString(),
-        type: 'Ethereum'
+        type: 'Ethereum',
+        network: wallet.network
       }
       return keypair
     }
@@ -41,7 +42,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
      *
      * @param wif
      */
-    importWIF (wif: string): Object {
+    importWIF(wif: string): Object {
       const rawKey = Buffer.from(wif, 'hex')
       const keypair = this.ethereumlib.fromPrivateKey(rawKey)
       const result =
@@ -58,17 +59,25 @@ export namespace CryptoWallet.SDKS.Ethereum {
      *
      * @param keys
      */
-    gernerateP2SHMultiSig (keys: string[]): Object {
-      throw new Error('Method not use for Ethereum')
+    gernerateP2SHMultiSig(keys: string[]): Object {
+      throw new Error('Method not used for Ethereum')
     }
 
     /**
      *
      * @param options
      */
-    createRawTx (options: any): Object {
-      const privateKey = new Buffer('42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73', 'hex')
-      const tx: any = new EthereumTx(options)
+    createRawTx(keypair: any, toAddress: String, amount: number): Object {
+      const privateKey = new Buffer(keypair.privateKey, 'hex')
+      const txParams = {
+        nonce: '0x00',
+        gasPrice: '100',
+        gasLimit: '1000',
+        to: toAddress,
+        value: amount,
+        chainId: 3
+      }
+      const tx: any = new EthereumTx(txParams)
       tx.sign(privateKey)
 
       const feeCost = tx.getUpfrontCost()
@@ -76,15 +85,28 @@ export namespace CryptoWallet.SDKS.Ethereum {
       return tx
     }
 
-    broadcastTx (rawTx: object): String {
-      throw new Error('Method not yet implemented')
+    broadcastTx(rawTx: object, network: string): Object {
+      const tx = {
+        tx: rawTx
+      }
+      return new Promise((resolve, reject) => {
+        this.request.post({ url: this.networks[network].sendTxApi, form: JSON.stringify(tx) }, function (error: any, body: any, result: any) {
+          if (error) {
+            return reject("Transaction failed: " + error)
+          }
+          const output = JSON.parse(result)
+          result = output.tx.hash
+          return resolve(result)
+        })
+      })
+
     }
 
     /**
      *
      * @param tx
      */
-    verifyTxSignature (tx: any): boolean {
+    verifyTxSignature(tx: any): boolean {
       if (tx.verifySignature()) {
         return true
       } else {
@@ -94,14 +116,14 @@ export namespace CryptoWallet.SDKS.Ethereum {
     /**
      *
      */
-    create1t1tx (): String {
+    create1t1tx(): String {
       throw new Error('Method not used for ethereum.')
     }
 
     /**
      *
      */
-    create2t2tx (txparams: any): String {
+    create2t2tx(txparams: any): String {
       throw new Error('Method not used for ethereum.')
     }
   }

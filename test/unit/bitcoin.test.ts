@@ -2,6 +2,7 @@ import * as Mocha from 'mocha'
 import * as Chai from 'chai'
 import * as Bitcoin from 'bitcoinjs-lib'
 import { CryptoWallet } from '../../src/SDKFactory'
+import { doesNotReject } from 'assert';
 // import CryptoWallet from '../../src/CryptoWallet';
 
 const request = require('request')
@@ -52,21 +53,48 @@ describe('bitcoinSDK (wallet)', () => {
   // })
 
 
-  it('can create a raw transaction', async () => {
-    // Test address: 2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf
+  // it('can create a raw transaction and broadcast it', async () => {
+  //   // Test address: 2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf
+  //   const wallet: any = btc.generateHDWallet(entropy, 'BITCOIN_TESTNET')
+  //   const fromAccount: any = btc.generateKeyPair(wallet, 0)
+  //   const toAccount: any = btc.generateKeyPair(wallet, 1)
+  //   const amount: number = 0.001
+
+
+  //   const rawTx = await btc.createRawTx(fromAccount, toAccount.address, amount)
+
+
+  //   const sendTx = await btc.broadcastTx(rawTx, 'BITCOIN_TESTNET');
+  //   console.log(sendTx);
+
+  // })
+
+  it('can get the transaction history of an address', async () => {
     const wallet: any = btc.generateHDWallet(entropy, 'BITCOIN_TESTNET')
-    const fromAccount: any = btc.generateKeyPair(wallet, 0)
-    const toAccount: any = btc.generateKeyPair(wallet, 1)
-    const amount: number = 0.001
+    const keypair: any = btc.generateKeyPair(wallet, 0)
+    const tData: any = await btc.getTransactionHistory(keypair.address, 'BITCOIN_TESTNET', 0, undefined, 50)
+
+    // if (tData.hasMore) {
+    //   let more = true
+    //   let lBlock = tData.lastBlock
+    //   while (more) {
+    //     const nextData: any = await btc.getTransactionHistory(keypair.address, 'BITCOIN_TESTNET', 0, lBlock)
+    //     nextData.txs.forEach((tx: any) => {
+    //       tData.txs.push(tx)
+    //     });
+    //     if (nextData.hasMore == undefined) { more = false }
+    //     lBlock = nextData.lastBlock
+    //   }
+    // }
 
 
-    const rawTx = await btc.createRawTx(fromAccount, toAccount.address, amount)
+    console.log(tData)
 
 
-    const sendTx = await btc.broadcastTx(rawTx, 'BITCOIN_TESTNET');
-    console.log(sendTx);
+  }
+  )
 
-  })
+  // })
 
   // it('server test', () => {
   //   const ElectrumCli = require('electrum-client')

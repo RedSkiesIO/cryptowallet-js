@@ -1,3 +1,5 @@
+export const token = 'token=f4d997113b76452393a65216e046ab77'
+
 export const BITCOIN = {
     name: 'Bitcoin',
     bip: 0,
@@ -76,7 +78,8 @@ export const DOGECOIN_TESTNET = {
 
 export const ETHEREUM = {
     name: 'Ethereum',
-    bip: 60
+    bip: 60,
+    sendTxApi: 'https://api.blockcypher.com/v1/eth/main/txs/push'
 }
 
 export const BITCOIN_TESTNET = {
@@ -84,6 +87,7 @@ export const BITCOIN_TESTNET = {
     bip: 1,
     apiUrl: 'https://chain.so/api/v2/get_tx_unspent/BTCTEST/',
     sendTxApi: 'https://api.blockcypher.com/v1/btc/test3/txs/push',
+    getTranApi: 'https://api.blockcypher.com/v1/btc/test3/addrs/',
     connect: {
 
         messagePrefix: '\x18Bitcoin Signed Message:\n',

@@ -21,5 +21,7 @@ export namespace CryptoWallet.SDKS {
 
     verifyTxSignature(transaction: object): boolean;
 
+    getTransactionHistory(address: string, network: string, lastBlock: number, beforeBlock?: number, limit?: number): Object;
+
   }
 }
