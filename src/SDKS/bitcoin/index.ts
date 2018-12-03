@@ -7,6 +7,10 @@ import * as Bitcoinaddress from 'bitcoin-address'
 import * as Coinselect from 'coinselect'
 import * as Request from 'request'
 import * as Networks from '../networks'
+import * as Explorers from 'bitcore-explorers'
+import { resolve } from 'path';
+
+
 
 namespace CryptoWallet.SDKS.Bitcoin {
   export class BitcoinSDK extends GenericSDK implements IBitcoinSDK.CryptyoWallet.SDKS.Bitcoin.IBitcoinSDK {
@@ -32,7 +36,8 @@ namespace CryptoWallet.SDKS.Bitcoin {
         privateKey: this.wif.encode(wallet.network.connect.wif, addrNode.privateKey, true),
         derivationPath: `m/49'/${wallet.type}'/0'/0/${index}`,
         type: wallet.network.name,
-        network: wallet.network
+        network: wallet.network,
+        change: internal
       }
 
       return keypair
@@ -94,7 +99,12 @@ namespace CryptoWallet.SDKS.Bitcoin {
       })
     }
 
-
+    /**
+     *
+     * @param keypair
+     * @param toAddress
+     * @param amount
+     */
     createRawTx(keypair: any, toAddress: string, amount: number): Object {
       const unit = Bitcore.Unit
       const feeRate = 128
@@ -171,7 +181,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
             }
           }
         })
-      });
+      })
     }
 
     broadcastTx(rawTx: object, network: string): Object {
@@ -181,14 +191,13 @@ namespace CryptoWallet.SDKS.Bitcoin {
       return new Promise((resolve, reject) => {
         Request.post({ url: this.networks[network].sendTxApi, form: JSON.stringify(tx) }, function (error: any, body: any, result: any) {
           if (error) {
-            return reject("Transaction failed: " + error)
+            return reject('Transaction failed: ' + error)
           }
           const output = JSON.parse(result)
           result = output.tx.hash
           return resolve(result)
         })
       })
-
     }
 
     // createRawTx(keypair: any, toAddress: string, amount: number): Object {
@@ -287,12 +296,14 @@ namespace CryptoWallet.SDKS.Bitcoin {
      * @param transaction
      */
     verifyTxSignature(transaction: any): boolean {
+
       const keyPairs = transaction.pubKeys.map((q: any) => {
         return this.bitcoinlib.ECPair.fromPublicKey(Buffer.from(q, 'hex'))
       })
 
       const tx = this.bitcoinlib.Transaction.fromHex(transaction.txHex)
       const valid: Array<boolean> = []
+
       tx.ins.forEach((input: any, i: number) => {
         const keyPair = keyPairs[i]
         const p2pkh = this.bitcoinlib.payments.p2pkh({
@@ -338,6 +349,90 @@ namespace CryptoWallet.SDKS.Bitcoin {
 
       return txb.build().toHex()
     }
+
+    accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
+      const wallet = this.generateHDWallet(entropy, network)
+      const BITCORE_URL = 'https://testnet.blockexplorer.com/';
+      const insight: any = new Explorers.Insight('https://testnet.blockexplorer.com', 'testnet')
+      let usedAddresses: any = []
+      let emptyAddresses: any = []
+      let change = false
+      if (internal) {
+        change = true
+      }
+
+
+      function checkAddress(address: string, i: number): Promise<object> {
+
+        return new Promise(async (resolve, reject) => {
+          await insight.address(address, function (err: any, address: any) {
+            if (err) {
+              console.log(err)
+            } else {
+
+
+              const result = {
+                address: address.address,
+                received: address.totalReceived,
+                index: i
+              }
+              if (result.received > 0) {
+                usedAddresses.push(result)
+              }
+              else {
+                emptyAddresses.push(result.index)
+              }
+              return resolve(result)
+            }
+          });
+
+        })
+      }
+
+      return new Promise(async (resolve, reject) => {
+        let discover = true
+        let startIndex = 0
+
+        while (discover) {
+          let promises = []
+
+          for (let i: any = startIndex; i < startIndex + 20; i++) {
+            const keypair: any = this.generateKeyPair(wallet, i, internal)
+
+            promises.push(new Promise(async (resolve, reject) => {
+
+              return resolve(checkAddress(keypair.address, i))
+            })
+            )
+          }
+
+          await Promise.all(promises)
+          if (emptyAddresses.length > 0) {
+            const min = Math.min(...emptyAddresses)
+            startIndex = min
+          }
+          if (emptyAddresses.length > 20) {
+            discover = false
+          }
+        }
+
+        const result = {
+          used: usedAddresses,
+          nextAddress: startIndex,
+          change: change
+        }
+
+
+        return resolve(result)
+
+
+      })
+
+
+
+
+    }
+
   }
 }
 export default CryptoWallet.SDKS.Bitcoin.BitcoinSDK

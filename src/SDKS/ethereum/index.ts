@@ -5,11 +5,12 @@ import * as IEthereumSDK from './IEthereumSDK'
 import * as bip44hdkey from 'ethereumjs-wallet/hdkey'
 import * as EthereumLib from 'ethereumjs-wallet'
 import * as EthereumTx from 'ethereumjs-tx'
+import * as Web3 from 'web3'
 
 export namespace CryptoWallet.SDKS.Ethereum {
   export class EthereumSDK extends GenericSDK implements IEthereumSDK.CryptyoWallet.SDKS.Ethereum.IEthereumSDK {
     private ethereumlib = EthereumLib;
-
+    private web3: any = Web3;
     /**
      *
      * @param entropy
@@ -64,27 +65,41 @@ export namespace CryptoWallet.SDKS.Ethereum {
     }
 
     /**
-     *
-     * @param options
+     * 
+     * @param keypair 
+     * @param toAddress 
+     * @param amount 
      */
     createRawTx(keypair: any, toAddress: String, amount: number): Object {
-      const privateKey = new Buffer(keypair.privateKey, 'hex')
-      const txParams = {
-        nonce: '0x00',
-        gasPrice: '100',
-        gasLimit: '1000',
-        to: toAddress,
-        value: amount,
-        chainId: 3
-      }
-      const tx: any = new EthereumTx(txParams)
-      tx.sign(privateKey)
+      const privateKey = new Buffer(keypair.privateKey.substr(2), 'hex')
+      const web3 = new Web3(new Web3.providers.httpProvider('https://ropsten.infura.io/v61hsMvKfFW08T9q4Msu'))
 
-      const feeCost = tx.getUpfrontCost()
-      tx.gas = feeCost
-      return tx
+      return new Promise((resolve, reject) => {
+        web3.eth.getTransactionCount(keypair, function (err: any, nonce: any) {
+          if (err) {
+            return reject(err)
+          }
+
+          const tx = new EthereumTx({
+            nonce: nonce,
+            gasPrice: web3.toHex(web3.toWei('20', 'gwei')),
+            gasLimit: web3.toHex(100000),
+            to: toAddress,
+            value: web3.toHex(web3.toWei(amount)),
+            chainId: 3
+          })
+          tx.sign(privateKey)
+          const raw = '0x' + tx.serialize().toString('hex')
+          return resolve(raw)
+        })
+      })
     }
 
+    /**
+     * 
+     * @param rawTx 
+     * @param network 
+     */
     broadcastTx(rawTx: object, network: string): Object {
       const tx = {
         tx: rawTx
@@ -92,14 +107,13 @@ export namespace CryptoWallet.SDKS.Ethereum {
       return new Promise((resolve, reject) => {
         this.request.post({ url: this.networks[network].sendTxApi, form: JSON.stringify(tx) }, function (error: any, body: any, result: any) {
           if (error) {
-            return reject("Transaction failed: " + error)
+            return reject('Transaction failed: ' + error)
           }
           const output = JSON.parse(result)
           result = output.tx.hash
           return resolve(result)
         })
       })
-
     }
 
     /**
@@ -126,6 +140,11 @@ export namespace CryptoWallet.SDKS.Ethereum {
     create2t2tx(txparams: any): String {
       throw new Error('Method not used for ethereum.')
     }
+
+    accountDiscovery(entropy: string, netork: string): Object {
+      throw new Error('Method not used for ethereum.')
+    }
+
   }
 }
 

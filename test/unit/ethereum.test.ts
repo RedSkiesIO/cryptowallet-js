@@ -40,27 +40,21 @@ describe('ethereumSDK (wallet)', () => {
 
   it('can import key from WIF', () => {
     const keypair: any = eth.importWIF('42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73')
-    console.log(keypair.privateKey)
 
     assert.strictEqual(keypair.address, '0x8f97Bb9335747E4fCdDA8680F66ed96DcBe27F49')
     assert.strictEqual(keypair.privateKey, '0x42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73')
   })
 
-  it('can createTX', () => {
-    const txParams = {
-      nonce: '0x00',
-      gasPrice: '100',
-      gasLimit: '1000',
-      to: '0x156AE1c2797494353C143070D01D5E4903bE2EB3',
-      value: '0',
-      data: '0x41746c617320436974792074657374207472616e73616374696f6e',
-      chainId: 3
-    }
+  // it('can createTX', () => {
+  //   const wallet: any = eth.generateHDWallet(entropy, network)
+  //   const keypair: any = eth.generateKeyPair(wallet, 0)
+  //   const keypair2: any = eth.generateKeyPair(wallet, 1)
 
-    // const rawTx = eth.createRawTx(txParams)
-    // const verify = eth.verifyTxSignature(rawTx)
-    // assert.strictEqual(verify, true)
-  })
+  //   const rawTx = eth.createRawTx(keypair, keypair2.address, 0.01)
+  //   console.log(rawTx)
+  //   // const verify = eth.verifyTxSignature(rawTx)
+  //   // assert.strictEqual(verify, true)
+  // })
 })
 
 
