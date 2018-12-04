@@ -18,6 +18,8 @@ export declare namespace CryptoWallet.SDKS {
         abstract verifyTxSignature(transaction: object): boolean;
         abstract create1t1tx(keypair: any, txHash: string, txNumber: number, address: string, amount: number): String;
         abstract create2t2tx(txparams: any): String;
+        abstract accountDiscovery(entropy: string, netork: string): Object;
+        getWalletHistory(addresses: Array<String>, network: string, lastBlock: number, full?: boolean): Object;
         getTransactionHistory(address: string, network: string, lastBlock: number, beforeBlock?: number, limit?: number): Object;
     }
 }

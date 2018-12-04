@@ -9,6 +9,7 @@ export declare namespace CryptoWallet.SDKS {
         create1t1tx(keypair: any, txHash: string, txNumber: number, address: string, amount: number): Object;
         create2t2tx(txparams: any): Object;
         verifyTxSignature(transaction: object): boolean;
-        getTransactionHistory(address: string, network: string, lastBlock: number, beforeBlock?: number, limit?: number): Object;
+        accountDiscovery(entropy: string, netork: string, internal?: boolean): Object;
+        getWalletHistory(addresses: Array<String>, network: string, lastBlock: number, full?: boolean): Object;
     }
 }

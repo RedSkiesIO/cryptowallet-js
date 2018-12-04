@@ -3,6 +3,7 @@ import * as IEthereumSDK from './IEthereumSDK';
 export declare namespace CryptoWallet.SDKS.Ethereum {
     class EthereumSDK extends GenericSDK implements IEthereumSDK.CryptyoWallet.SDKS.Ethereum.IEthereumSDK {
         private ethereumlib;
+        private web3;
         /**
          *
          * @param entropy
@@ -27,9 +28,16 @@ export declare namespace CryptoWallet.SDKS.Ethereum {
         gernerateP2SHMultiSig(keys: string[]): Object;
         /**
          *
-         * @param options
+         * @param keypair
+         * @param toAddress
+         * @param amount
          */
         createRawTx(keypair: any, toAddress: String, amount: number): Object;
+        /**
+         *
+         * @param rawTx
+         * @param network
+         */
         broadcastTx(rawTx: object, network: string): Object;
         /**
          *
@@ -44,6 +52,8 @@ export declare namespace CryptoWallet.SDKS.Ethereum {
          *
          */
         create2t2tx(txparams: any): String;
+        accountDiscovery(entropy: string, netork: string): Object;
+        getWalletHistory(addresses: Array<String>, network: string, lastBlock: number, full?: boolean): Object;
     }
 }
 declare const _default: typeof CryptoWallet.SDKS.Ethereum.EthereumSDK;

@@ -38,6 +38,12 @@ declare namespace CryptoWallet.SDKS.Bitcoin {
          * @param keys
          */
         gernerateP2SHMultiSig(keys: Array<string>): Object;
+        /**
+         *
+         * @param keypair
+         * @param toAddress
+         * @param amount
+         */
         createRawTx(keypair: any, toAddress: string, amount: number): Object;
         broadcastTx(rawTx: object, network: string): Object;
         /**
@@ -53,6 +59,7 @@ declare namespace CryptoWallet.SDKS.Bitcoin {
          *
          */
         create2t2tx(txparams: any): String;
+        accountDiscovery(entropy: string, network: string, internal?: boolean): Object;
     }
 }
 declare const _default: typeof CryptoWallet.SDKS.Bitcoin.BitcoinSDK;
