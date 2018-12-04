@@ -1,4 +1,5 @@
 export declare const token = "token=f4d997113b76452393a65216e046ab77";
+export declare const ethToken = "2JAADVNZG512YIZSCF7S6JDXS8QI7PSUFY";
 export declare const BITCOIN: {
     name: string;
     bip: number;
@@ -76,6 +77,7 @@ export declare const ETHEREUM: {
 };
 export declare const ETHEREUM_ROPSTEN: {
     name: string;
+    testName: string;
     bip: number;
     sendTxApi: string;
     getTranApi: string;

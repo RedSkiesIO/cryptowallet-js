@@ -185,7 +185,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
       const wallet = this.generateHDWallet(entropy)
 
 
-      var api = require('etherscan-api').init('YourApiKey', 'ropsten', '3000');
+      var api = require('etherscan-api').init(this.networks.ethToken, 'ropsten', '3000');
 
       let usedAddresses: any = []
       let emptyAddresses: any = []

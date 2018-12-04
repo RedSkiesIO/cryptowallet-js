@@ -1,4 +1,5 @@
 export const token = 'token=f4d997113b76452393a65216e046ab77'
+export const ethToken = '2JAADVNZG512YIZSCF7S6JDXS8QI7PSUFY'
 
 export const BITCOIN = {
   name: 'Bitcoin',
