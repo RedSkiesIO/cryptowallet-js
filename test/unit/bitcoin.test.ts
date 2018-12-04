@@ -65,30 +65,13 @@ describe('bitcoinSDK (wallet)', () => {
 
   // })
 
-  // it('can get the transaction history of an address', async () => {
-  //   const wallet: any = btc.generateHDWallet(entropy, 'BITCOIN_TESTNET')
-  //   const keypair: any = btc.generateKeyPair(wallet, 0)
-  //   const tData: any = await btc.getTransactionHistory(keypair.address, 'BITCOIN_TESTNET', 0, undefined, 50)
+  it('can get the transaction history of a wallet', async () => {
+    const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf', '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM']
+    const tData: any = await btc.getWalletHistory(addresses, 'BITCOIN_TESTNET', 0, true)
+    console.log(tData)
 
-  //   // if (tData.hasMore) {
-  //   //   let more = true
-  //   //   let lBlock = tData.lastBlock
-  //   //   while (more) {
-  //   //     const nextData: any = await btc.getTransactionHistory(keypair.address, 'BITCOIN_TESTNET', 0, lBlock)
-  //   //     nextData.txs.forEach((tx: any) => {
-  //   //       tData.txs.push(tx)
-  //   //     });
-  //   //     if (nextData.hasMore == undefined) { more = false }
-  //   //     lBlock = nextData.lastBlock
-  //   //   }
-  //   // }
+  })
 
-
-  //   console.log(tData)
-  // }
-  // )
-
-  // })
 
   it('can discover an account', async (done) => {
 

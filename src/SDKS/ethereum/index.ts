@@ -145,6 +145,10 @@ export namespace CryptoWallet.SDKS.Ethereum {
       throw new Error('Method not used for ethereum.')
     }
 
+    getWalletHistory(addresses: Array<String>, network: string, lastBlock: number, full?: boolean): Object {
+      throw new Error('Method not used for ethereum.')
+    }
+
   }
 }
 

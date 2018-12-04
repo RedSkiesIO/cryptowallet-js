@@ -112,6 +112,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
       const minerFee = unit.fromMilis(0.128).toSatoshis()
       const apiUrl = keypair.network.apiUrl
       let rawTx
+
       const keyPair = BitcoinLib.ECPair.fromWIF(keypair.privateKey, keypair.network.connect)
 
       return new Promise((resolve, reject) => {
@@ -372,10 +373,12 @@ namespace CryptoWallet.SDKS.Bitcoin {
 
 
               const result = {
-                address: address.address,
+                address: address.address.toString(),
                 received: address.totalReceived,
+                balance: address.balance,
                 index: i
               }
+
               if (result.received > 0) {
                 usedAddresses.push(result)
               }
@@ -416,6 +419,14 @@ namespace CryptoWallet.SDKS.Bitcoin {
           }
         }
 
+        if (internal) {
+          usedAddresses.forEach((address: any) => {
+            if (address.balance === 0) {
+              usedAddresses.pull(address)
+            }
+          })
+        }
+
         const result = {
           used: usedAddresses,
           nextAddress: startIndex,
@@ -428,10 +439,9 @@ namespace CryptoWallet.SDKS.Bitcoin {
 
       })
 
-
-
-
     }
+
+
 
   }
 }
