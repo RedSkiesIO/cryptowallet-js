@@ -9,6 +9,9 @@ import * as Web3 from 'web3'
 
 export namespace CryptoWallet.SDKS.Ethereum {
   export class EthereumSDK extends GenericSDK implements IEthereumSDK.CryptyoWallet.SDKS.Ethereum.IEthereumSDK {
+    accountDiscovery(entropy: string, netork: string): Object {
+      throw new Error("Method not implemented.");
+    }
     private ethereumlib = EthereumLib;
     private web3: any = Web3;
     /**

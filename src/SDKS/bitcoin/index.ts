@@ -2,7 +2,6 @@
 import GenericSDK from '../GenericSDK'
 import * as IBitcoinSDK from './IBitcoinSDK'
 import * as BitcoinLib from 'bitcoinjs-lib'
-import * as Bitcore from 'bitcore-lib'
 import * as Bitcoinaddress from 'bitcoin-address'
 import * as Coinselect from 'coinselect'
 import * as Request from 'request'
@@ -106,7 +105,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
      * @param amount
      */
     createRawTx(keypair: any, toAddress: string, amount: number): Object {
-      const unit = Bitcore.Unit
+      const unit = Explorers.Unit
       const feeRate = 128
       const transactionAmount = unit.fromBTC(amount).toSatoshis()
       const minerFee = unit.fromMilis(0.128).toSatoshis()

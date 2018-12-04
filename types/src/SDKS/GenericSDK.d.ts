@@ -20,7 +20,7 @@ export declare namespace CryptoWallet.SDKS {
         abstract create2t2tx(txparams: any): String;
         abstract accountDiscovery(entropy: string, netork: string): Object;
         getWalletHistory(addresses: Array<String>, network: string, lastBlock: number, full?: boolean): Object;
-        getTransactionHistory(address: string, network: string, lastBlock: number, beforeBlock?: number, limit?: number): Object;
+        getTransactionHistory(address: string, addresses: Array<String>, network: string, lastBlock: number, beforeBlock?: number, limit?: number): Object;
     }
 }
 declare const _default: typeof CryptoWallet.SDKS.GenericSDK;

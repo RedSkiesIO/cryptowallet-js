@@ -16,7 +16,6 @@
     "bitcoin-address": "^0.3.0",
     "bitcoinjs-lib": "^4.0.2",
     "bitcore-explorers": "^1.0.1",
-    "bitcore-lib": "0.13.19",
     "coinselect": "^3.1.11",
     "electrum-client": "0.0.6",
     "ethereumjs-tx": "^1.3.7",

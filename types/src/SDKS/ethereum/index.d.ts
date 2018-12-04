@@ -2,6 +2,7 @@ import GenericSDK from '../GenericSDK';
 import * as IEthereumSDK from './IEthereumSDK';
 export declare namespace CryptoWallet.SDKS.Ethereum {
     class EthereumSDK extends GenericSDK implements IEthereumSDK.CryptyoWallet.SDKS.Ethereum.IEthereumSDK {
+        accountDiscovery(entropy: string, netork: string): Object;
         private ethereumlib;
         private web3;
         /**
@@ -52,7 +53,6 @@ export declare namespace CryptoWallet.SDKS.Ethereum {
          *
          */
         create2t2tx(txparams: any): String;
-        accountDiscovery(entropy: string, netork: string): Object;
         getWalletHistory(addresses: Array<String>, network: string, lastBlock: number, full?: boolean): Object;
     }
 }
