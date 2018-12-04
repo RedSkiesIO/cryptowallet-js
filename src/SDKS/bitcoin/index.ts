@@ -353,7 +353,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
 
     accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
       const wallet = this.generateHDWallet(entropy, network)
-      const BITCORE_URL = 'https://testnet.blockexplorer.com/';
+
       const insight: any = new Explorers.Insight('https://testnet.blockexplorer.com', 'testnet')
       let usedAddresses: any = []
       let emptyAddresses: any = []

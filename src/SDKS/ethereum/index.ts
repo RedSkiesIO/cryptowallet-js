@@ -175,13 +175,104 @@ export namespace CryptoWallet.SDKS.Ethereum {
       throw new Error('Method not used for ethereum.')
     }
 
-    accountDiscovery(entropy: string, netork: string): Object {
-      throw new Error('Method not used for ethereum.')
-    }
 
     getWalletHistory(addresses: Array<String>, network: string, lastBlock: number, full?: boolean): Object {
       throw new Error('Method not used for ethereum.')
     }
+
+    // accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
+    //   const wallet = this.generateHDWallet(entropy)
+
+
+    //   var api = require('etherscan-api').init('YourApiKey','ropsten', '3000');
+
+    //   let usedAddresses: any = []
+    //   let emptyAddresses: any = []
+
+
+
+    //   function checkAddress(address: string, i: number): Promise<object> {
+
+    //     return new Promise(async (resolve, reject) => {
+    //       const txlist = api.account.txlist(address)
+    //       txlist.then(function (address:any){
+
+    //         if (err) {
+    //           console.log(err)
+    //         } else {
+
+
+    //           const result = {
+    //             address: address,
+    //             received: address.totalReceived,
+    //             balance: address.balance,
+    //             index: i
+    //           }
+
+    //           if (result.received > 0) {
+
+    //             usedAddresses.push(result)
+    //           }
+    //           else {
+    //             emptyAddresses.push(result.index)
+    //           }
+    //           return resolve(result)
+    //         }
+
+
+    //       })
+
+    //       });
+
+
+    //   }
+    //   return new Promise(async (resolve, reject) => {
+    //     let discover = true
+    //     let startIndex = 0
+
+    //     while (discover) {
+    //       let promises = []
+
+    //       for (let i: any = startIndex; i < startIndex + 20; i++) {
+    //         const keypair: any = this.generateKeyPair(wallet, i)
+
+    //         promises.push(new Promise(async (resolve, reject) => {
+
+    //           return resolve(checkAddress(keypair.address, i))
+    //         })
+    //         )
+    //       }
+
+    //       await Promise.all(promises)
+    //       if (emptyAddresses.length > 0) {
+    //         const min = Math.min(...emptyAddresses)
+    //         startIndex = min
+    //       }
+    //       if (emptyAddresses.length > 20) {
+    //         discover = false
+    //       }
+    //     }
+
+    //     if (internal) {
+    //       usedAddresses.forEach((address: any) => {
+    //         if (address.balance === 0) {
+    //           usedAddresses.pull(address)
+    //         }
+    //       })
+    //     }
+
+    //     const result = {
+    //       used: usedAddresses,
+    //       nextAddress: startIndex,
+    //     }
+
+
+    //     return resolve(result)
+
+
+    //   })
+
+    // }
 
   }
 }
