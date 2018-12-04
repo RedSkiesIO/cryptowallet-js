@@ -85,12 +85,12 @@ export namespace CryptoWallet.SDKS {
         addresses.forEach(async (address: any) => {
 
           if (full) {
-            const history: any = this.getTransactionHistory(address, network, lastBlock, undefined, 50)
+            const history: any = this.getTransactionHistory(address, addresses, network, lastBlock, undefined, 50)
             if (history.hasMore) {
               let more = true
               let lBlock = history.lastBlock
               while (more) {
-                const nextData: any = await this.getTransactionHistory(address, 'BITCOIN_TESTNET', 0, lBlock)
+                const nextData: any = await this.getTransactionHistory(address, addresses, network, 0, lBlock)
                 nextData.txs.forEach((tx: any) => {
                   history.txs.push(tx)
                 });
@@ -102,7 +102,7 @@ export namespace CryptoWallet.SDKS {
 
           }
           else {
-            const history = await this.getTransactionHistory(address, network, lastBlock)
+            const history = await this.getTransactionHistory(address, addresses, network, lastBlock)
             result.push(history)
           }
         })
@@ -112,7 +112,7 @@ export namespace CryptoWallet.SDKS {
 
     }
 
-    getTransactionHistory(address: string, network: string, lastBlock: number, beforeBlock?: number, limit?: number): Object {
+    getTransactionHistory(address: string, addresses: Array<String>, network: string, lastBlock: number, beforeBlock?: number, limit?: number): Object {
       const output: any = 'Error: Failed to fetch data'
       const apiUrl = this.networks[network].getTranApi
       let returnAmount = 10
@@ -146,10 +146,12 @@ export namespace CryptoWallet.SDKS {
               result.outputs.forEach((output: any) => {
                 const outputAddr = output.addresses
                 outputAddr.forEach((addr: any) => {
-                  if (sent && addr !== address) {
+
+
+                  if (sent && !addresses.includes(addr)) {
                     receivers.push(addr)
                     value += output.value
-                  } else if (!sent && addr === address) {
+                  } else if (!sent && addresses.includes(addr)) {
                     value = output.value
                     receivers.push(addr)
                   } else {

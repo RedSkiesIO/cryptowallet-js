@@ -127,6 +127,40 @@ export namespace CryptoWallet.SDKS.Ethereum {
         return false
       }
     }
+
+    // getTransactionHistory(address: string, network: string, lastBlock: number, beforeBlock?: number, limit?: number): Object {
+
+    //   var api = require('etherscan-api').init('YourApiKey','ropsten', '3000');
+    //   var txlist = api.account.txlist('0x3FAcfa472e86E3EDaEaa837f6BA038ac01F7F539');
+    //   txlist.then(function (res: any) {
+    //     res.result.forEach((r:any)=>{
+    //       let sent, confirmed = false
+    //       if(r.from === address){
+    //         sent = true
+    //       }
+    //       if(r.confirmations > 11){
+    //         confirmed = true
+
+    //       }
+
+    //       const transaction = {
+    //         hash: r.hash,
+    //         blockHeight: r.blockNumber,
+    //         fee: r.cumulativeGasUsed,
+    //         sent: sent,
+    //         value: r.value,
+    //         sender: r.from,
+    //         receiver: r.to,
+    //         confirmed: confirmed,
+    //         confirmedTime: r.timeStamp
+
+    //       }
+    //     })
+
+    //   })
+
+
+    // }
     /**
      *
      */

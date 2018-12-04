@@ -82,6 +82,13 @@ export const ETHEREUM = {
   sendTxApi: 'https://api.blockcypher.com/v1/eth/main/txs/push'
 }
 
+export const ETHEREUM_ROPSTEN = {
+  name: 'Ethereum Ropsten',
+  bip: 60,
+  sendTxApi: 'https://api.blockcypher.com/v1/eth/main/txs/push',
+  getTranApi: 'http://api-ropsten.etherscan.io/api?module=account&action=txlist&address='
+}
+
 export const BITCOIN_TESTNET = {
   name: 'Bitcoin Testnet',
   bip: 1,
