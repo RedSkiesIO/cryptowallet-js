@@ -81,34 +81,44 @@ export namespace CryptoWallet.SDKS {
 
     getWalletHistory(addresses: Array<String>, network: string, lastBlock: number, full?: boolean): Object {
       const result: any = []
-      return new Promise(async (resolve, reject) => {
-        addresses.forEach(async (address: any) => {
+      return new Promise((resolve, reject) => {
 
-          if (full) {
-            const history: any = this.getTransactionHistory(address, addresses, network, lastBlock, undefined, 50)
-            if (history.hasMore) {
-              let more = true
-              let lBlock = history.lastBlock
-              while (more) {
-                const nextData: any = await this.getTransactionHistory(address, addresses, network, 0, lBlock)
-                nextData.txs.forEach((tx: any) => {
-                  history.txs.push(tx)
-                });
-                if (nextData.hasMore == undefined) { more = false }
-                lBlock = nextData.lastBlock
+        const promises: any = [];
+
+        addresses.forEach((address: any) => {
+
+          promises.push(
+            new Promise(async (resolve, reject) => {
+
+
+              if (full) {
+                const history: any = await this.getTransactionHistory(address, addresses, network, lastBlock, undefined, 50)
+                if (history.hasMore) {
+                  let more = true
+                  let lBlock = history.lastBlock
+                  while (more) {
+                    const nextData: any = await this.getTransactionHistory(address, addresses, network, 0, lBlock)
+                    nextData.txs.forEach((tx: any) => {
+                      history.txs.push(tx)
+                    });
+                    if (nextData.hasMore == undefined) { more = false }
+                    lBlock = nextData.lastBlock
+                  }
+                }
+                result.push(history)
               }
-            }
-            result.push(history)
-
-          }
-          else {
-            const history = await this.getTransactionHistory(address, addresses, network, lastBlock)
-            result.push(history)
-          }
+              else {
+                const history = await this.getTransactionHistory(address, addresses, network, lastBlock)
+                result.push(history)
+              }
+              resolve()
+            })
+          )
         })
-        return resolve(result)
+        Promise.all(promises).then(() => {
+          resolve(result)
+        });
       })
-
 
     }
 
@@ -185,7 +195,7 @@ export namespace CryptoWallet.SDKS {
               lastBlock: beforeBlock,
               txs: transactions
             }
-            console.log(history)
+
             return resolve(history)
           })
           .catch(function (error: any) {

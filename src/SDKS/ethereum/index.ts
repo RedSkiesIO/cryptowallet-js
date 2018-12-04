@@ -9,9 +9,7 @@ import * as Web3 from 'web3'
 
 export namespace CryptoWallet.SDKS.Ethereum {
   export class EthereumSDK extends GenericSDK implements IEthereumSDK.CryptyoWallet.SDKS.Ethereum.IEthereumSDK {
-    accountDiscovery(entropy: string, netork: string): Object {
-      throw new Error("Method not implemented.");
-    }
+
     private ethereumlib = EthereumLib;
     private web3: any = Web3;
     /**
@@ -183,99 +181,129 @@ export namespace CryptoWallet.SDKS.Ethereum {
       throw new Error('Method not used for ethereum.')
     }
 
-    // accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
-    //   const wallet = this.generateHDWallet(entropy)
+    accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
+      const wallet = this.generateHDWallet(entropy)
 
 
-    //   var api = require('etherscan-api').init('YourApiKey','ropsten', '3000');
+      var api = require('etherscan-api').init('YourApiKey', 'ropsten', '3000');
 
-    //   let usedAddresses: any = []
-    //   let emptyAddresses: any = []
-
-
-
-    //   function checkAddress(address: string, i: number): Promise<object> {
-
-    //     return new Promise(async (resolve, reject) => {
-    //       const txlist = api.account.txlist(address)
-    //       txlist.then(function (address:any){
-
-    //         if (err) {
-    //           console.log(err)
-    //         } else {
+      let usedAddresses: any = []
+      let emptyAddresses: any = []
+      let transactions: any = []
+      let balance: number = 0
+      let txs: any = []
 
 
-    //           const result = {
-    //             address: address,
-    //             received: address.totalReceived,
-    //             balance: address.balance,
-    //             index: i
-    //           }
 
-    //           if (result.received > 0) {
+      function checkAddress(address: string, i: number): Promise<object> {
 
-    //             usedAddresses.push(result)
-    //           }
-    //           else {
-    //             emptyAddresses.push(result.index)
-    //           }
-    //           return resolve(result)
-    //         }
+        return new Promise(async (resolve, reject) => {
+          let addrBalance = 0;
+          let result: object;
+
+          const txlist = api.account.txlist(address)
+          txlist.then(function (data: any) {
+            if (data.result.status === 1) {
+
+              const getBalance = api.account.balance(address)
+              getBalance.then(function (value: any) {
+                addrBalance = value.result
+                balance += value.result
+              });
+
+              result = {
+                address: address,
+                balance: addrBalance,
+                index: i
+              }
+              usedAddresses.push(result)
+
+              data.result.forEach((tx: any) => {
+                let sent = false
+                let receiver = tx.to
+                let contractCall = false
+                let confirmed = false
+                if (tx.from === address) {
+                  sent = true
+
+                }
+                if (!tx.to) {
+                  receiver = tx.contractAddress
+                  contractCall = true
+                }
+                if (tx.confirmations > 11) {
+                  confirmed = true
+                }
+
+                const transaction = {
+                  hash: tx.hash,
+                  blockHeight: tx.blockNumber,
+                  fee: tx.cumulativeGasUsed,
+                  sent: sent,
+                  value: tx.value,
+                  senders: tx.from,
+                  receiver: receiver,
+                  contractCall: contractCall,
+                  confirmed: confirmed,
+                  confirmedTime: tx.timeStamp
+                }
+                transactions.push(transaction)
+
+              })
+            }
+            else {
+              emptyAddresses.push(i)
+            }
+
+            return resolve(result)
+
+          })
+
+        });
 
 
-    //       })
+      }
+      return new Promise(async (resolve, reject) => {
+        let discover = true
+        let startIndex = 0
 
-    //       });
+        while (discover) {
+          let promises = []
 
+          for (let i: any = startIndex; i < startIndex + 20; i++) {
+            const keypair: any = this.generateKeyPair(wallet, i)
 
-    //   }
-    //   return new Promise(async (resolve, reject) => {
-    //     let discover = true
-    //     let startIndex = 0
+            promises.push(new Promise(async (resolve, reject) => {
 
-    //     while (discover) {
-    //       let promises = []
+              return resolve(checkAddress(keypair.address, i))
+            })
+            )
+          }
 
-    //       for (let i: any = startIndex; i < startIndex + 20; i++) {
-    //         const keypair: any = this.generateKeyPair(wallet, i)
-
-    //         promises.push(new Promise(async (resolve, reject) => {
-
-    //           return resolve(checkAddress(keypair.address, i))
-    //         })
-    //         )
-    //       }
-
-    //       await Promise.all(promises)
-    //       if (emptyAddresses.length > 0) {
-    //         const min = Math.min(...emptyAddresses)
-    //         startIndex = min
-    //       }
-    //       if (emptyAddresses.length > 20) {
-    //         discover = false
-    //       }
-    //     }
-
-    //     if (internal) {
-    //       usedAddresses.forEach((address: any) => {
-    //         if (address.balance === 0) {
-    //           usedAddresses.pull(address)
-    //         }
-    //       })
-    //     }
-
-    //     const result = {
-    //       used: usedAddresses,
-    //       nextAddress: startIndex,
-    //     }
+          await Promise.all(promises)
+          if (emptyAddresses.length > 0) {
+            const min = Math.min(...emptyAddresses)
+            startIndex = min
+          }
+          if (emptyAddresses.length > 20) {
+            discover = false
+          }
+        }
 
 
-    //     return resolve(result)
+        const result = {
+          used: usedAddresses,
+          nextAddress: startIndex,
+          txs: txs
+        }
 
 
-    //   })
+        return resolve(result)
 
-    // }
+
+      })
+
+    }
 
   }
 }

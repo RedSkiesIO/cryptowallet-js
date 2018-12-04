@@ -73,17 +73,17 @@ describe('bitcoinSDK (wallet)', () => {
   })
 
 
-  it('can discover an account', async (done) => {
+  // it('can discover an account', async (done) => {
 
-    const externalAccountDiscovery: any = await btc.accountDiscovery(entropy, 'BITCOIN_TESTNET')
-    const internalAccountDiscovery: any = await btc.accountDiscovery(entropy, 'BITCOIN_TESTNET', true)
-    console.log(externalAccountDiscovery)
-    console.log(internalAccountDiscovery)
+  //   const externalAccountDiscovery: any = await btc.accountDiscovery(entropy, 'BITCOIN_TESTNET')
+  //   const internalAccountDiscovery: any = await btc.accountDiscovery(entropy, 'BITCOIN_TESTNET', true)
+  //   console.log(externalAccountDiscovery)
+  //   console.log(internalAccountDiscovery)
 
-    expect(1).to.equal(1)
-    done()
+  //   expect(1).to.equal(1)
+  //   done()
 
-  })
+  // })
 
 })
 
