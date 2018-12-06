@@ -11,6 +11,7 @@ import * as Axios from 'axios'
 
 export namespace CryptoWallet.SDKS {
   export abstract class GenericSDK implements ISDK.CryptoWallet.SDKS.ISDK {
+
     bitcoinlib = Bitcoinlib
     networks: any = Networks
     bip39: any = Bip39
@@ -69,7 +70,7 @@ export namespace CryptoWallet.SDKS {
 
     abstract gernerateP2SHMultiSig(keys: Array<string>): Object;
 
-    abstract createRawTx(keypair: any, toAddress: String, amount: number): Object;
+    abstract createRawTx(accounts: object[], change: string, utxos: any, entropy: string, network: string, toAddress: string, amount: number): Object;
 
     abstract verifyTxSignature(transaction: object): boolean;
 
@@ -78,6 +79,8 @@ export namespace CryptoWallet.SDKS {
     abstract create2t2tx(txparams: any): String;
 
     abstract accountDiscovery(entropy: string, netork: string): Object;
+
+    abstract getUTXOs(addresses: String[], network: string): Object;
 
     getWalletHistory(addresses: Array<String>, network: string, lastBlock: number, full?: boolean): Object {
       const result: any = []
@@ -164,7 +167,8 @@ export namespace CryptoWallet.SDKS {
                   } else if (!sent && addresses.includes(addr)) {
                     value = output.value
                     receivers.push(addr)
-                  } else {
+                  }
+                  else {
                     change = output.value
                   }
                 })

@@ -38,13 +38,14 @@ declare namespace CryptoWallet.SDKS.Bitcoin {
          * @param keys
          */
         gernerateP2SHMultiSig(keys: Array<string>): Object;
+        getUTXOs(addresses: Array<String>, network: string): Object;
         /**
          *
          * @param keypair
          * @param toAddress
          * @param amount
          */
-        createRawTx(keypair: any, toAddress: string, amount: number): Object;
+        createRawTx(accounts: object[], change: string, utxos: any, entropy: string, network: string, toAddress: string, amount: number): Object;
         broadcastTx(rawTx: object, network: string): Object;
         /**
          *

@@ -5,13 +5,13 @@ export namespace CryptoWallet.SDKS {
 
     generateHDWallet(entropy: string, network: string): Object;
 
-    generateKeyPair(wallet: object, index: number): Object;
+    generateKeyPair(wallet: object, index: number, internal?: boolean): Object;
 
     importWIF(wif: string): Object;
 
     gernerateP2SHMultiSig(keys: Array<string>): Object;
 
-    createRawTx(keypair: any, toAmount: String, amount: number): Object;
+    createRawTx(accounts: object[], change: string, utxos: any, entropy: string, network: string, toAddress: string, amount: number): Object;
 
     broadcastTx(rawTx: object, network: string): Object;
 
@@ -27,5 +27,6 @@ export namespace CryptoWallet.SDKS {
 
     //getTransactionHistory(address: string, network: string, lastBlock: number, beforeBlock?: number, limit?: number): Object;
 
+    getUTXOs(addresses: Array<String>, network: string): Object;
   }
 }

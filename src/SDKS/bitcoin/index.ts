@@ -98,89 +98,136 @@ namespace CryptoWallet.SDKS.Bitcoin {
       })
     }
 
+    getUTXOs(addresses: Array<String>, network: string): Object {
+
+      return new Promise((resolve, reject) => {
+        const unit = Explorers.Unit
+        const insight = new Explorers.Insight('https://test-insight.bitpay.com', 'testnet');
+        insight.getUnspentUtxos(addresses, function (error: string, utxos: any) {
+          if (error) {
+            //any other error
+            console.log(error);
+            return reject('1:' + error);
+          }
+          else {
+            const result: any = []
+
+            utxos.forEach((utxo: any) => {
+              const u = utxo.toJSON()
+              u.value = utxo.satoshis
+              result.push(u)
+            })
+
+
+            if (utxos.length == 0) {
+              //if no transactions have happened, there is no balance on the address.
+              return reject("You have no funds");
+            }
+
+            return resolve(result)
+          }
+
+        })
+      })
+    }
+
     /**
      *
      * @param keypair
      * @param toAddress
      * @param amount
      */
-    createRawTx(keypair: any, toAddress: string, amount: number): Object {
+    createRawTx(accounts: object[], change: string, utxos: any, entropy: string, network: string, toAddress: string, amount: number): Object {
       const unit = Explorers.Unit
       const feeRate = 128
-      const transactionAmount = unit.fromBTC(amount).toSatoshis()
-      const minerFee = unit.fromMilis(0.128).toSatoshis()
-      const apiUrl = keypair.network.apiUrl
+      const transactionAmount = amount * 100000000
+      const minerFee = 0.0001 * 100000000
+      const net = this.networks[network]
+      const apiUrl = net.apiUrl
       let rawTx
+      console.log(utxos)
 
-      const keyPair = BitcoinLib.ECPair.fromWIF(keypair.privateKey, keypair.network.connect)
+      const wallet = this.generateHDWallet(entropy, network)
+
+
+      //const keyPair = BitcoinLib.ECPair.fromWIF(keypair.privateKey, keypair.network.connect)
 
       return new Promise((resolve, reject) => {
-        Request.get(apiUrl + keypair.address, (error: any, req: any, body: any) => {
-          if (error) {
-            // any other error
-            return reject(error)
-          } else {
-            const result = JSON.parse(body)
-            const utxos = result.data.txs
 
-            if (utxos.length === 0) {
-              // if no transactions have happened, there is no balance on the address.
-              return reject("You don't have enough Satoshis to cover the miner fee.")
-            }
+        if (utxos.length === 0) {
+          // if no transactions have happened, there is no balance on the address.
+          return reject("1: You don't have enough Satoshis to cover the miner fee.")
+        }
 
-            // get balance
-            let balance = unit.fromBTC(0).toSatoshis()
+        // get balance
+        let balance = 0
 
-            for (var i = 0; i < utxos.length; i++) {
-              balance += unit.fromBTC(utxos[i]['value']).toSatoshis()
-            }
 
-            // check whether the balance of the address covers the miner fee
-            if ((balance - transactionAmount - minerFee) > 0) {
-              const jsonUtxos: any = []
-              utxos.forEach((utxo: any) => {
-                const jsonUtxo = utxo
-                jsonUtxo.value = unit.fromBTC(utxo.value).toSatoshis()
-                jsonUtxo.vout = utxo.output_no
-                jsonUtxos.push(jsonUtxo)
-              })
+        for (var i = 0; i < utxos.length; i++) {
+          balance += utxos[i]['value']
+        }
 
-              const targets = [{
-                address: toAddress,
-                value: transactionAmount
-              }]
 
-              const { inputs, outputs, fee } = Coinselect(jsonUtxos, targets, feeRate)
+        // check whether the balance of the address covers the miner fee
+        if ((balance - transactionAmount - minerFee) > 0) {
 
-              const txb = new BitcoinLib.TransactionBuilder(keypair.network.connect)
-              const p2wpkh = this.bitcoinlib.payments.p2wpkh({ pubkey: keyPair.publicKey, network: keypair.network.connect })
-              const p2sh = this.bitcoinlib.payments.p2sh({ redeem: p2wpkh, network: keypair.network.connect })
-              txb.setVersion(1)
 
-              inputs.forEach((input: any) => {
-                txb.addInput(input.txid, input.vout)
-              })
+          let targets = [{
+            address: toAddress,
+            value: transactionAmount
+          }]
 
-              outputs.forEach((output: any) => {
-                if (!output.address) {
-                  output.address = keypair.address
+
+          let { inputs, outputs, fee } = Coinselect(utxos, targets, feeRate)
+          let accountsUsed: any = []
+          let p2shUsed: any = []
+          inputs.forEach((input: any) => {
+
+            accounts.forEach((account: any) => {
+              if (input.address === account.address) {
+                const key: any = this.generateKeyPair(wallet, account.index)
+
+                if (account.change) {
+                  const key: any = this.generateKeyPair(wallet, account.index, true)
                 }
-                txb.addOutput(output.address, output.value)
-              })
 
-              inputs.forEach((input: any) => {
-                let i = 0
-                txb.sign(i, keyPair, p2sh.redeem.output, undefined, inputs[i].value)
-                i++
-              })
-              rawTx = txb.build().toHex()
-              console.log(rawTx)
-              return resolve(rawTx)
-            } else {
-              return reject("You don't have enough Satoshis to cover the miner fee.")
+                const keyPair = this.bitcoinlib.ECPair.fromWIF(key.privateKey, net.connect)
+                const p2wpkh = this.bitcoinlib.payments.p2wpkh({ pubkey: keyPair.publicKey, network: net.connect })
+                const p2sh = this.bitcoinlib.payments.p2sh({ redeem: p2wpkh, network: net.connect })
+                accountsUsed.push(keyPair)
+                p2shUsed.push(p2sh)
+              }
+            })
+          })
+
+          const txb = new BitcoinLib.TransactionBuilder(net.connect)
+
+
+          txb.setVersion(1)
+
+          inputs.forEach((input: any) => {
+            txb.addInput(input.txid, input.vout)
+          })
+
+          outputs.forEach((output: any) => {
+            if (!output.address) {
+              output.address = change
             }
-          }
-        })
+            txb.addOutput(output.address, output.value)
+          })
+
+          inputs.forEach((input: any) => {
+            let i = 0
+            txb.sign(i, accountsUsed[i], p2shUsed[i].redeem.output, undefined, inputs[i].value)
+            i++
+          })
+          rawTx = txb.build().toHex()
+          console.log(rawTx)
+          return resolve(rawTx)
+        } else {
+          return reject("2: You don't have enough Satoshis to cover the miner fee.")
+        }
+
       })
     }
 
@@ -353,7 +400,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
     accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
       const wallet = this.generateHDWallet(entropy, network)
 
-      const insight: any = new Explorers.Insight('https://testnet.blockexplorer.com', 'testnet')
+      const insight: any = new Explorers.Insight('https://test-insight.bitpay.com', 'testnet')
       let usedAddresses: any = []
       let emptyAddresses: any = []
       let change = false
