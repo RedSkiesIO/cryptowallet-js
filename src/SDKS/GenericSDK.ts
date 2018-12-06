@@ -68,19 +68,12 @@ export namespace CryptoWallet.SDKS {
 
     abstract importWIF(wif: string): Object;
 
-    abstract gernerateP2SHMultiSig(keys: Array<string>): Object;
-
     abstract createRawTx(accounts: object[], change: string, utxos: any, entropy: string, network: string, toAddress: string, amount: number): Object;
 
     abstract verifyTxSignature(transaction: object): boolean;
 
-    abstract create1t1tx(keypair: any, txHash: string, txNumber: number, address: string, amount: number): String;
-
-    abstract create2t2tx(txparams: any): String;
-
     abstract accountDiscovery(entropy: string, netork: string): Object;
 
-    abstract getUTXOs(addresses: String[], network: string): Object;
 
     getWalletHistory(addresses: Array<String>, network: string, lastBlock: number, full?: boolean): Object {
       const result: any = []

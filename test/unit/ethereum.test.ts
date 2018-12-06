@@ -53,12 +53,20 @@ describe('ethereumSDK (wallet)', () => {
 
   // })
 
-  // it('can get the transaction history of a wallet', async () => {
-  //   const addresses = ['0x156AE1c2797494353C143070D01D5E4903bE2EB3']
-  //   const tData: any = await eth.getWalletHistory(addresses, 'ETHEREUM', 0, true)
-  //   console.log(tData)
+  it('can get the transaction history of a wallet', async () => {
+    const wallet = eth.generateHDWallet(entropy, 'ETHEREUM')
+    const addresses = []
 
-  // })
+    for (let i: number = 0; i < 10; i++) {
+      const key: any = eth.generateKeyPair(wallet, i)
+      addresses.push(key.address)
+    }
+
+    const history = await eth.getWalletHistory(addresses, 'ETHEREUM_ROPSTEN', 0)
+    console.log(history)
+    //const tData: any = await eth.getWalletHistory(addresses, 'ETHEREUM', 0, true)
+
+  })
 
   // it('can createTX', () => {
   //   const wallet: any = eth.generateHDWallet(entropy, network)

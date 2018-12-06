@@ -37,10 +37,10 @@ describe('bitcoinSDK (wallet)', () => {
   //   assert.equal(keypair.type, 'Bitcoin')
   // })
 
-  it('can import a keypair from a WIF', () => {
-    const address = btc.importWIF('L3HzwnRNYi193kEQRJpNprvEwFB5BE7LfRMPw9xNJ3sPXNhDUe73')
-    assert.strictEqual(address, '3E93qR2WQ6o3amf4JQuUHzg11c87HKwJAx')
-  })
+  // it('can import a keypair from a WIF', () => {
+  //   const address = btc.importWIF('L3HzwnRNYi193kEQRJpNprvEwFB5BE7LfRMPw9xNJ3sPXNhDUe73')
+  //   assert.strictEqual(address, '3E93qR2WQ6o3amf4JQuUHzg11c87HKwJAx')
+  // })
 
   // it('can generate a segwit address', () => {
   //   const wallet: any = btc.generateHDWallet(entropy, network)
@@ -112,17 +112,17 @@ describe('bitcoinSDK (wallet)', () => {
 
 
 
-  it('can discover an account', async (done) => {
+  // it('can discover an account', async (done) => {
 
-    const externalAccountDiscovery: any = await btc.accountDiscovery(entropy, 'BITCOIN_TESTNET')
-    const internalAccountDiscovery: any = await btc.accountDiscovery(entropy, 'BITCOIN_TESTNET', true)
-    console.log(externalAccountDiscovery)
-    console.log(internalAccountDiscovery)
+  //   const externalAccountDiscovery: any = await btc.accountDiscovery(entropy, 'BITCOIN_TESTNET')
+  //   const internalAccountDiscovery: any = await btc.accountDiscovery(entropy, 'BITCOIN_TESTNET', true)
+  //   console.log(externalAccountDiscovery)
+  //   console.log(internalAccountDiscovery)
 
-    expect(1).to.equal(1)
-    done()
+  //   expect(1).to.equal(1)
+  //   done()
 
-  })
+  // })
 
 })
 

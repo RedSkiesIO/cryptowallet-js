@@ -13,21 +13,13 @@ export namespace CryptoWallet.SDKS.Ethereum {
       throw new Error("Method not implemented.");
     }
 
-    getUTXOs(addresses: String[], network: string): Object {
-      throw new Error("Method not implemented.");
-    }
+
 
 
     private ethereumlib = EthereumLib;
     private web3: any = Web3;
-    /**
-     *
-     * @param entropy
-     * @param cointype
-     */
-    generateHDWallet(entropy: string): Object {
-      return super.generateHDWallet(entropy, 'ETHEREUM')
-    }
+
+
 
     /**
      *
@@ -65,13 +57,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
       return result
     }
 
-    /**
-     *
-     * @param keys
-     */
-    gernerateP2SHMultiSig(keys: string[]): Object {
-      throw new Error('Method not used for Ethereum')
-    }
+
 
     /**
      * 
@@ -138,58 +124,109 @@ export namespace CryptoWallet.SDKS.Ethereum {
       }
     }
 
-    // getTransactionHistory(address: string, network: string, lastBlock: number, beforeBlock?: number, limit?: number): Object {
-
-    //   var api = require('etherscan-api').init('YourApiKey','ropsten', '3000');
-    //   var txlist = api.account.txlist('0x3FAcfa472e86E3EDaEaa837f6BA038ac01F7F539');
-    //   txlist.then(function (res: any) {
-    //     res.result.forEach((r:any)=>{
-    //       let sent, confirmed = false
-    //       if(r.from === address){
-    //         sent = true
-    //       }
-    //       if(r.confirmations > 11){
-    //         confirmed = true
-
-    //       }
-
-    //       const transaction = {
-    //         hash: r.hash,
-    //         blockHeight: r.blockNumber,
-    //         fee: r.cumulativeGasUsed,
-    //         sent: sent,
-    //         value: r.value,
-    //         sender: r.from,
-    //         receiver: r.to,
-    //         confirmed: confirmed,
-    //         confirmedTime: r.timeStamp
-
-    //       }
-    //     })
-
-    //   })
+    getTransactionHistory(address: string, addresses: string[], network: string, lastBlock: number, beforeBlock?: number, limit?: number): Object {
+      return new Promise(async (resolve, reject) => {
 
 
-    // }
+        const URL = 'http://api-ropsten.etherscan.io/api?module=account&action=txlist&address=' + address + '&startblock=' + lastBlock + '&sort=desc&apikey=' + this.networks.ethToken
+
+        await this.axios.get(URL)
+          .then(async (res: any) => {
+
+            if (!res.data.result) {
+              return resolve()
+            }
+            else {
+              let transactions: any = []
+
+              const nextBlock: number = 0//res.data.result[0].blockNumber
+              res.data.result.forEach((r: any) => {
+                let receiver = r.to, sent = false, confirmed = false, contractCall = false
+                if (r.from === address.toLowerCase()) {
+                  sent = true
+                }
+                if (r.confirmations > 11) {
+                  confirmed = true
+
+                }
+                if (!r.to) {
+                  receiver = r.contractAddress
+                  contractCall = true
+                }
+
+                const transaction = {
+                  hash: r.hash,
+                  blockHeight: r.blockNumber,
+                  fee: r.cumulativeGasUsed,
+                  sent: sent,
+                  value: r.value,
+                  sender: r.from,
+                  receiver: receiver,
+                  contractCall: contractCall,
+                  confirmed: confirmed,
+                  confirmedTime: r.timeStamp
+                }
+
+                transactions.push(transaction)
+              })
+              let balance = 0
+              await this.axios.get('https://api-ropsten.etherscan.io/api?module=account&action=balance&address=' + address + '&tag=latest&apikey=' + this.networks.ethToken)
+                .then((res: any) => {
+                  balance = res.data.result
+
+                  const history = {
+                    address: address,
+                    balance: balance,
+                    totalTransactions: transactions.length,
+                    nextBlock: nextBlock,
+                    txs: transactions
+
+                  }
+
+                  return resolve(history)
+
+                })
+            }
+
+          })
+      })
+
+
+
+
+    }
     /**
      *
      */
-    create1t1tx(): String {
-      throw new Error('Method not used for ethereum.')
+
+
+
+    getWalletHistory(addresses: string[], network: string, lastBlock: number, full?: boolean): Object {
+      const result: any = []
+
+      return new Promise((resolve, reject) => {
+        const promises: any = [];
+
+        addresses.forEach((address: any) => {
+
+          promises.push(
+
+            new Promise(async (resolve, reject) => {
+              const history: any = await this.getTransactionHistory(address, addresses, network, 0, lastBlock)
+              if (history.totalTransactions > 0) {
+                result.push(history)
+              }
+              resolve()
+            })
+          )
+
+        })
+
+        Promise.all(promises).then(() => {
+          resolve(result)
+        })
+      })
     }
-
-    /**
-     *
-     */
-    create2t2tx(txparams: any): String {
-      throw new Error('Method not used for ethereum.')
-    }
-
-
-    getWalletHistory(addresses: Array<String>, network: string, lastBlock: number, full?: boolean): Object {
-      throw new Error('Method not used for ethereum.')
-    }
-
     // accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
     //   const wallet = this.generateHDWallet(entropy)
 
