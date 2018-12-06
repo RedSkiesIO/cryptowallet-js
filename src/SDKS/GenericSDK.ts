@@ -178,7 +178,7 @@ export namespace CryptoWallet.SDKS {
                 sender: senders,
                 receiver: receivers,
                 confirmed: confirmed,
-                confirmedTime: result.confirmed
+                confirmedTime: result.received
               }
               transactions.push(transaction)
             })

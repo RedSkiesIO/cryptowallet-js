@@ -178,11 +178,15 @@ namespace CryptoWallet.SDKS.Bitcoin {
           inputs.forEach((input: any) => {
 
             accounts.forEach((account: any) => {
+              let key: any
               if (input.address === account.address) {
-                const key: any = this.generateKeyPair(wallet, account.index)
+
 
                 if (account.change) {
-                  const key: any = this.generateKeyPair(wallet, account.index, true)
+                  key = this.generateKeyPair(wallet, account.index, true)
+                }
+                else {
+                  key = this.generateKeyPair(wallet, account.index)
                 }
 
                 const keyPair = this.bitcoinlib.ECPair.fromWIF(key.privateKey, net.connect)
