@@ -77,7 +77,7 @@ export declare const ETHEREUM: {
 };
 export declare const ETHEREUM_ROPSTEN: {
     name: string;
-    testName: string;
+    networkName: string;
     bip: number;
     sendTxApi: string;
     getTranApi: string;

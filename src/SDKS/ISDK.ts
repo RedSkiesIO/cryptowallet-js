@@ -11,11 +11,11 @@ export namespace CryptoWallet.SDKS {
 
 
 
-    createRawTx(accounts: object[], change: string, utxos: any, entropy: string, network: string, toAddress: string, amount: number): Object;
+    createRawTx(accounts: object[], change: string, utxos: any, wallet: any, toAddress: string, amount: number): Object;
 
     broadcastTx(rawTx: object, network: string): Object;
 
-
+    getUTXOs(addresses: Array<String>, network: string): Object;
 
     verifyTxSignature(transaction: object): boolean;
 

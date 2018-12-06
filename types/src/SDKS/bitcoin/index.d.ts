@@ -45,7 +45,7 @@ declare namespace CryptoWallet.SDKS.Bitcoin {
          * @param toAddress
          * @param amount
          */
-        createRawTx(accounts: object[], change: string, utxos: any, entropy: string, network: string, toAddress: string, amount: number): Object;
+        createRawTx(accounts: object[], change: string, utxos: any, wallet: any, toAddress: string, amount: number): Object;
         broadcastTx(rawTx: object, network: string): Object;
         /**
          *

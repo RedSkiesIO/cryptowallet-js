@@ -47,26 +47,25 @@ describe('ethereumSDK (wallet)', () => {
 
   // it('can restore a wallet from the mnemonic', async () => {
 
-  //   const tData: any = await eth.accountDiscovery(entropy, 'ETHEREUM_ROPSTEN')
-  //   console.log(tData)
-
+  //   const accounts: any = await eth.accountDiscovery(entropy, 'ETHEREUM_ROPSTEN')
+  //   console.log(accounts)
 
   // })
 
-  it('can get the transaction history of a wallet', async () => {
-    const wallet = eth.generateHDWallet(entropy, 'ETHEREUM')
-    const addresses = []
+  // it('can get the transaction history of a wallet', async () => {
+  //   const wallet = eth.generateHDWallet(entropy, 'ETHEREUM')
+  //   const addresses = []
 
-    for (let i: number = 0; i < 10; i++) {
-      const key: any = eth.generateKeyPair(wallet, i)
-      addresses.push(key.address)
-    }
+  //   for (let i: number = 0; i < 10; i++) {
+  //     const key: any = eth.generateKeyPair(wallet, i)
+  //     addresses.push(key.address)
+  //   }
 
-    const history = await eth.getWalletHistory(addresses, 'ETHEREUM_ROPSTEN', 0)
-    console.log(history)
-    //const tData: any = await eth.getWalletHistory(addresses, 'ETHEREUM', 0, true)
+  //   const history = await eth.getWalletHistory(addresses, 'ETHEREUM_ROPSTEN', 0)
+  //   console.log(history)
+  //   //const tData: any = await eth.getWalletHistory(addresses, 'ETHEREUM', 0, true)
 
-  })
+  // })
 
   // it('can createTX', () => {
   //   const wallet: any = eth.generateHDWallet(entropy, network)

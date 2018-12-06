@@ -11,6 +11,7 @@ import * as Axios from 'axios'
 
 export namespace CryptoWallet.SDKS {
   export abstract class GenericSDK implements ISDK.CryptoWallet.SDKS.ISDK {
+    abstract getUTXOs(addresses: String[], network: string): Object;
 
     bitcoinlib = Bitcoinlib
     networks: any = Networks
@@ -68,7 +69,7 @@ export namespace CryptoWallet.SDKS {
 
     abstract importWIF(wif: string): Object;
 
-    abstract createRawTx(accounts: object[], change: string, utxos: any, entropy: string, network: string, toAddress: string, amount: number): Object;
+    abstract createRawTx(accounts: object[], change: string, utxos: any, network: string, toAddress: string, amount: number): Object;
 
     abstract verifyTxSignature(transaction: object): boolean;
 

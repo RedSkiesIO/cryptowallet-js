@@ -137,20 +137,14 @@ namespace CryptoWallet.SDKS.Bitcoin {
      * @param toAddress
      * @param amount
      */
-    createRawTx(accounts: object[], change: string, utxos: any, entropy: string, network: string, toAddress: string, amount: number): Object {
+    createRawTx(accounts: object[], change: string, utxos: any, wallet: any, toAddress: string, amount: number): Object {
       const unit = Explorers.Unit
       const feeRate = 128
       const transactionAmount = amount * 100000000
       const minerFee = 0.0001 * 100000000
-      const net = this.networks[network]
-      const apiUrl = net.apiUrl
+      const net = wallet.network
       let rawTx
-      console.log(utxos)
 
-      const wallet = this.generateHDWallet(entropy, network)
-
-
-      //const keyPair = BitcoinLib.ECPair.fromWIF(keypair.privateKey, keypair.network.connect)
 
       return new Promise((resolve, reject) => {
 

@@ -2,16 +2,10 @@ import GenericSDK from '../GenericSDK';
 import * as IEthereumSDK from './IEthereumSDK';
 export declare namespace CryptoWallet.SDKS.Ethereum {
     class EthereumSDK extends GenericSDK implements IEthereumSDK.CryptyoWallet.SDKS.Ethereum.IEthereumSDK {
-        accountDiscovery(entropy: string, netork: string): Object;
         getUTXOs(addresses: String[], network: string): Object;
+        createRawTx(accounts: object[], change: string, utxos: any, network: string, toAddress: string, amount: number): Object;
         private ethereumlib;
         private web3;
-        /**
-         *
-         * @param entropy
-         * @param cointype
-         */
-        generateHDWallet(entropy: string): Object;
         /**
          *
          * @param wallet
@@ -25,16 +19,10 @@ export declare namespace CryptoWallet.SDKS.Ethereum {
         importWIF(wif: string): Object;
         /**
          *
-         * @param keys
-         */
-        gernerateP2SHMultiSig(keys: string[]): Object;
-        /**
-         *
          * @param keypair
          * @param toAddress
          * @param amount
          */
-        createRawTx(keypair: any, toAddress: String, amount: number): Object;
         /**
          *
          * @param rawTx
@@ -46,15 +34,9 @@ export declare namespace CryptoWallet.SDKS.Ethereum {
          * @param tx
          */
         verifyTxSignature(tx: any): boolean;
-        /**
-         *
-         */
-        create1t1tx(): String;
-        /**
-         *
-         */
-        create2t2tx(txparams: any): String;
-        getWalletHistory(addresses: Array<String>, network: string, lastBlock: number, full?: boolean): Object;
+        getTransactionHistory(address: string, addresses: string[], network: string, lastBlock: number, beforeBlock?: number, limit?: number): Object;
+        getWalletHistory(addresses: string[], network: string, lastBlock: number, full?: boolean): Object;
+        accountDiscovery(entropy: string, network: string, internal?: boolean): Object;
     }
 }
 declare const _default: typeof CryptoWallet.SDKS.Ethereum.EthereumSDK;
