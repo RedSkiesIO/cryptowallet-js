@@ -464,11 +464,10 @@ namespace CryptoWallet.SDKS.Bitcoin {
         }
 
         if (internal) {
-          usedAddresses.forEach((address: any) => {
-            if (address.balance === 0) {
-              usedAddresses.pull(address)
-            }
-          })
+          usedAddresses = usedAddresses.filter((item: any) => {
+            if (item.balance === 0) return false;
+            return true;
+          });
         }
 
         const result = {
