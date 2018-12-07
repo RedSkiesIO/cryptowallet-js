@@ -72,7 +72,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
       const privateKey = new Buffer(keypair.privateKey.substr(2), 'hex')
 
       const Web3 = require('web3');
-      const web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/352fc30cd8364caabaea4a3d67da773f'))
+      const web3 = new Web3(new Web3.providers.HttpProvider(keypair.network.provider))
 
 
       return new Promise((resolve, reject) => {
@@ -104,7 +104,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
      */
     broadcastTx(rawTx: object, network: string): Object {
       const Web3 = require('web3');
-      const web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/352fc30cd8364caabaea4a3d67da773f'))
+      const web3 = new Web3(new Web3.providers.HttpProvider(this.networks[network].provider))
       return new Promise((resolve, reject) => {
         web3.eth.sendSignedTransaction(rawTx, function (err: any, result: any) {
           if (err) return console.log('error', err)

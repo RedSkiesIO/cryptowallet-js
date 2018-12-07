@@ -81,6 +81,7 @@ export declare const ETHEREUM_ROPSTEN: {
     bip: number;
     sendTxApi: string;
     getTranApi: string;
+    provider: string;
 };
 export declare const BITCOIN_TESTNET: {
     name: string;
