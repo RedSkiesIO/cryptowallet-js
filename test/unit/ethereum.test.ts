@@ -67,13 +67,15 @@ describe('ethereumSDK (wallet)', () => {
 
   // })
 
-  // it('can createTX', () => {
+  // it('can createTX', async () => {
   //   const wallet: any = eth.generateHDWallet(entropy, network)
   //   const keypair: any = eth.generateKeyPair(wallet, 0)
   //   const keypair2: any = eth.generateKeyPair(wallet, 1)
 
-  //   const rawTx = eth.createRawTx(keypair, keypair2.address, 0.01)
+  //   const rawTx = await eth.createEthTx(keypair, keypair2.address, 0.01)
   //   console.log(rawTx)
+  //   const sendTx = await eth.broadcastTx(rawTx, 'ETHEREUM_ROPSTEN')
+  //   console.log(sendTx)
   //   // const verify = eth.verifyTxSignature(rawTx)
   //   // assert.strictEqual(verify, true)
   // })

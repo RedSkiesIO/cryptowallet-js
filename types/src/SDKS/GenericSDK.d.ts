@@ -3,6 +3,7 @@ import * as ISDK from './ISDK';
 import * as Bitcoinlib from 'bitcoinjs-lib';
 export declare namespace CryptoWallet.SDKS {
     abstract class GenericSDK implements ISDK.CryptoWallet.SDKS.ISDK {
+        createEthTx(keypair: any, toAddress: String, amount: number): Object;
         abstract getUTXOs(addresses: String[], network: string): Object;
         bitcoinlib: typeof Bitcoinlib;
         networks: any;

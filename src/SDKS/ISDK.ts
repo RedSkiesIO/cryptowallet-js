@@ -9,6 +9,7 @@ export namespace CryptoWallet.SDKS {
 
     importWIF(wif: string): Object;
 
+    createEthTx(keypair: any, toAddress: String, amount: number): Object;
 
 
     createRawTx(accounts: object[], change: string, utxos: any, wallet: any, toAddress: string, amount: number): Object;

@@ -68,31 +68,34 @@ export namespace CryptoWallet.SDKS.Ethereum {
      * @param toAddress 
      * @param amount 
      */
-    // createRawTx(keypair: any, toAddress: String, amount: number): Object {
-    //   const privateKey = new Buffer(keypair.privateKey.substr(2), 'hex')
-    //   const web3 = new Web3(new Web3.providers.httpProvider('https://ropsten.infura.io/v61hsMvKfFW08T9q4Msu'))
+    createEthTx(keypair: any, toAddress: String, amount: number): Object {
+      const privateKey = new Buffer(keypair.privateKey.substr(2), 'hex')
+
+      const Web3 = require('web3');
+      const web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/352fc30cd8364caabaea4a3d67da773f'))
 
 
-    //   return new Promise((resolve, reject) => {
-    //     web3.eth.getTransactionCount(keypair, function (err: any, nonce: any) {
-    //       if (err) {
-    //         return reject(err)
-    //       }
-
-    //       const tx = new EthereumTx({
-    //         nonce: nonce,
-    //         gasPrice: web3.toHex(web3.toWei('20', 'gwei')),
-    //         gasLimit: web3.toHex(100000),
-    //         to: toAddress,
-    //         value: web3.toHex(web3.toWei(amount)),
-    //         chainId: 3
-    //       })
-    //       tx.sign(privateKey)
-    //       const raw = '0x' + tx.serialize().toString('hex')
-    //       return resolve(raw)
-    //     })
-    //   })
-    // }
+      return new Promise((resolve, reject) => {
+        web3.eth.getTransactionCount(keypair.address, function (err: any, nonce: any) {
+          if (err) {
+            return reject(err)
+          }
+          const sendAmount = amount.toString()
+          const tx = new EthereumTx({
+            nonce: nonce,
+            gasPrice: web3.utils.toHex(web3.utils.toWei('20', 'gwei')),
+            gasLimit: web3.utils.toHex(100000),
+            to: toAddress,
+            value: web3.utils.toHex(web3.utils.toWei(sendAmount)),
+            chainId: 3
+          })
+          tx.sign(privateKey)
+          const raw = '0x' + tx.serialize().toString('hex')
+          console.log(raw)
+          return resolve(raw)
+        })
+      })
+    }
 
     /**
      * 
@@ -100,16 +103,12 @@ export namespace CryptoWallet.SDKS.Ethereum {
      * @param network 
      */
     broadcastTx(rawTx: object, network: string): Object {
-      const tx = {
-        tx: rawTx
-      }
+      const Web3 = require('web3');
+      const web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/352fc30cd8364caabaea4a3d67da773f'))
       return new Promise((resolve, reject) => {
-        this.request.post({ url: this.networks[network].sendTxApi, form: JSON.stringify(tx) }, function (error: any, body: any, result: any) {
-          if (error) {
-            return reject('Transaction failed: ' + error)
-          }
-          const output = JSON.parse(result)
-          result = output.tx.hash
+        web3.eth.sendSignedTransaction(rawTx, function (err: any, result: any) {
+          if (err) return console.log('error', err)
+          console.log('sent', result)
           return resolve(result)
         })
       })

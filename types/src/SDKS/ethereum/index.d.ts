@@ -23,6 +23,7 @@ export declare namespace CryptoWallet.SDKS.Ethereum {
          * @param toAddress
          * @param amount
          */
+        createEthTx(keypair: any, toAddress: String, amount: number): Object;
         /**
          *
          * @param rawTx

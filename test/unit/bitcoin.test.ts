@@ -68,7 +68,7 @@ describe('bitcoinSDK (wallet)', () => {
 
   it('can get the transaction history of a wallet', async () => {
     const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf', '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM']
-    const tData: any = await btc.getWalletHistory(addresses, 'BITCOIN_TESTNET', 0, true)
+    const tData: any = await btc.getWalletHistory(addresses, 'BITCOIN_TESTNET', 1446877, true)
     console.log(tData)
 
   })
@@ -112,17 +112,17 @@ describe('bitcoinSDK (wallet)', () => {
 
 
 
-  it('can discover an account', async (done) => {
+  // it('can discover an account', async (done) => {
 
-    const externalAccountDiscovery: any = await btc.accountDiscovery(entropy, 'BITCOIN_TESTNET')
-    const internalAccountDiscovery: any = await btc.accountDiscovery(entropy, 'BITCOIN_TESTNET', true)
-    console.log(externalAccountDiscovery)
-    console.log(internalAccountDiscovery)
+  //   const externalAccountDiscovery: any = await btc.accountDiscovery(entropy, 'BITCOIN_TESTNET')
+  //   const internalAccountDiscovery: any = await btc.accountDiscovery(entropy, 'BITCOIN_TESTNET', true)
+  //   console.log(externalAccountDiscovery)
+  //   console.log(internalAccountDiscovery)
 
-    expect(1).to.equal(1)
-    done()
+  //   expect(1).to.equal(1)
+  //   done()
 
-  })
+  // })
 
 })
 

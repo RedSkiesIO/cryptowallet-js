@@ -11,6 +11,9 @@ import * as Axios from 'axios'
 
 export namespace CryptoWallet.SDKS {
   export abstract class GenericSDK implements ISDK.CryptoWallet.SDKS.ISDK {
+    createEthTx(keypair: any, toAddress: String, amount: number): Object {
+      throw new Error("Method not implemented.");
+    }
     abstract getUTXOs(addresses: String[], network: string): Object;
 
     bitcoinlib = Bitcoinlib
@@ -90,6 +93,12 @@ export namespace CryptoWallet.SDKS {
 
               if (full) {
                 const history: any = await this.getTransactionHistory(address, addresses, network, lastBlock, undefined, 50)
+
+                if (typeof history === "undefined") {
+
+                  return resolve()
+                }
+
                 if (history.hasMore) {
                   let more = true
                   let lBlock = history.lastBlock
@@ -98,7 +107,7 @@ export namespace CryptoWallet.SDKS {
                     nextData.txs.forEach((tx: any) => {
                       history.txs.push(tx)
                     });
-                    if (nextData.hasMore == undefined) { more = false }
+                    if (typeof nextData.hasMore === 'undefined') { more = false }
                     lBlock = nextData.lastBlock
                   }
                 }
@@ -130,6 +139,8 @@ export namespace CryptoWallet.SDKS {
       return new Promise((resolve, reject) => {
         this.axios.get(URL)
           .then((r: any) => {
+
+            if (r.data.txs.length === 0) { return resolve() }
             const hasMore: boolean = r.data.hasMore
             const results = r.data.txs
             const transactions: any = []
