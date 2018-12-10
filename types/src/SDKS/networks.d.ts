@@ -89,6 +89,7 @@ export declare const BITCOIN_TESTNET: {
     apiUrl: string;
     sendTxApi: string;
     getTranApi: string;
+    decodeTxApi: string;
     connect: {
         messagePrefix: string;
         bech32: string;

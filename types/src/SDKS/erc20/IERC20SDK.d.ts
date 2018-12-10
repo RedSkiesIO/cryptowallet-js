@@ -1,0 +1,10 @@
+export declare namespace CryptoWallet.SDKS.Erc20 {
+    interface IERC20SDK {
+        generateERC20Wallet(ethAccount: any, tokenName: string, tokenSymbol: string, contractAddress: string, decimals: number): Object;
+        transferERC20(erc20Wallet: any, to: string, amount: number): Object;
+        approveAccountERC20(erc20Wallet: any, to: string, amount: number): Object;
+        transferAllowanceERC20(erc20Wallet: any, from: string, amount: number): Object;
+        checkAllowanceERC20(erc20Wallet: any, from: string, amount: number): Object;
+        getERC20Balance(erc20Wallet: any): Object;
+    }
+}
