@@ -98,6 +98,7 @@ export const BITCOIN_TESTNET = {
   apiUrl: 'https://chain.so/api/v2/get_tx_unspent/BTCTEST/',
   sendTxApi: 'https://api.blockcypher.com/v1/btc/test3/txs/push',
   getTranApi: 'https://api.blockcypher.com/v1/btc/test3/addrs/',
+  decodeTxApi: 'https://api.blockcypher.com/v1/btc/test3/txs/decode',
   connect: {
 
     messagePrefix: '\x18Bitcoin Signed Message:\n',

@@ -146,7 +146,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
       let rawTx
 
 
-      return new Promise((resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
 
         if (utxos.length === 0) {
           // if no transactions have happened, there is no balance on the address.
@@ -220,8 +220,15 @@ namespace CryptoWallet.SDKS.Bitcoin {
             i++
           })
           rawTx = txb.build().toHex()
-          console.log(rawTx)
-          return resolve(rawTx)
+
+          const transaction = await this.decodeTx(rawTx, change, transactionAmount, toAddress, wallet)
+          const spentInput = inputs
+
+          return resolve({
+            hexTx: rawTx,
+            transaction: transaction,
+            utxo: spentInput
+          })
         } else {
           return reject("2: You don't have enough Satoshis to cover the miner fee.")
         }
@@ -243,6 +250,47 @@ namespace CryptoWallet.SDKS.Bitcoin {
           return resolve(result)
         })
       })
+    }
+
+    decodeTx(rawTx: Object, change: string, amount: number, receiver: string, wallet: any): Object {
+      const tx = {
+        tx: rawTx
+      }
+      return new Promise((resolve, reject) => {
+        Request.post({ url: wallet.network.decodeTxApi, form: JSON.stringify(tx) }, function (error: any, body: any, result: any) {
+          if (error) {
+            return reject('Transaction failed: ' + error)
+          }
+          const output = JSON.parse(result)
+          let confirmed = false
+          if (output.confirmations > 5) { confirmed = true }
+          let senders: any = []
+          output.inputs.forEach((input: any) => {
+            const inputAddr = input.addresses
+            inputAddr.forEach((addr: any) => {
+              senders.push(addr)
+            })
+
+          })
+          const transaction = {
+            hash: output.hash,
+            blockHeight: output.block_height,
+            fee: output.fees,
+            sent: true,
+            value: amount,
+            change: change,
+            sender: senders,
+            receiver: receiver,
+            confirmed: confirmed,
+            receivedTime: output.received,
+            confirmedTime: output.confirmed
+
+          }
+          return resolve(transaction)
+        })
+      })
+
+
     }
 
     // createRawTx(keypair: any, toAddress: string, amount: number): Object {

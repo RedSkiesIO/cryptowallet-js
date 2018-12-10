@@ -66,12 +66,12 @@ describe('bitcoinSDK (wallet)', () => {
 
   // })
 
-  it('can get the transaction history of a wallet', async () => {
-    const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf', '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM']
-    const tData: any = await btc.getWalletHistory(addresses, 'BITCOIN_TESTNET', 1446877, true)
-    console.log(tData)
+  // it('can get the transaction history of a wallet', async () => {
+  //   const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf', '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM']
+  //   const tData: any = await btc.getWalletHistory(addresses, 'BITCOIN_TESTNET', 1446877, true)
+  //   console.log(tData)
 
-  })
+  // })
 
 
   // it('can get the unspent transactions of a wallet', async () => {
@@ -80,34 +80,34 @@ describe('bitcoinSDK (wallet)', () => {
 
   // })
 
-  // it('can create a raw transaction', async () => {
-  //   const wallet = btc.generateHDWallet(entropy, 'BITCOIN_TESTNET')
-  //   const receiverWallet = btc.generateHDWallet(entropy2, 'BITCOIN_TESTNET')
+  it('can create a raw transaction', async () => {
+    const wallet = btc.generateHDWallet(entropy, 'BITCOIN_TESTNET')
+    const receiverWallet = btc.generateHDWallet(entropy2, 'BITCOIN_TESTNET')
 
-  //   const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf', '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM']
-  //   const utxos: any = await btc.getUTXOs(addresses, 'BITCOIN_TESTNET')
-  //   console.log(utxos)
+    const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf', '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM']
+    const utxos: any = await btc.getUTXOs(addresses, 'BITCOIN_TESTNET')
+    console.log(utxos)
 
-  //   const accounts = [{
-  //     address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
-  //     index: 0,
-  //     change: false
-  //   },
-  //   {
-  //     address: '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM',
-  //     index: 1,
-  //     change: false
+    const accounts = [{
+      address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+      index: 0,
+      change: false
+    },
+    {
+      address: '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM',
+      index: 1,
+      change: false
 
-  //   }]
+    }]
 
-  //   const change: any = btc.generateKeyPair(wallet, 0, true)
-  //   console.log('Change: ' + change.address)
-  //   const testAddress: any = btc.generateKeyPair(receiverWallet, 0)
-  //   console.log('To: ' + testAddress.address)
+    const change: any = btc.generateKeyPair(wallet, 0, true)
+    console.log('Change: ' + change.address)
+    const testAddress: any = btc.generateKeyPair(receiverWallet, 0)
+    console.log('To: ' + testAddress.address)
 
-  //   const tData: any = await btc.createRawTx(accounts, change.address, utxos, wallet, testAddress.address, 0.001)
-
-  // })
+    const tData: any = await btc.createRawTx(accounts, change.address, utxos, wallet, testAddress.address, 0.001)
+    console.log(tData)
+  })
 
 
 
