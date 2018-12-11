@@ -1,7 +1,12 @@
 export namespace CryptoWallet.SDKS.Erc20 {
   export interface IERC20SDK {
 
-    generateERC20Wallet(ethAccount: any, tokenName: string, tokenSymbol: string, contractAddress: string, decimals: number): Object;
+    generateERC20Wallet(
+      ethAccount: any,
+      tokenName: string,
+      tokenSymbol: string,
+      contractAddress: string,
+      decimals: number): Object;
 
     transferERC20(erc20Wallet: any, to: string, amount: number): Object;
 
