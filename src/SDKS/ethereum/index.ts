@@ -13,8 +13,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
     implements IEthereumSDK.CryptyoWallet.SDKS.Ethereum.IEthereumSDK {
     Bip = bip44hdkey
 
-
-    private ethereumlib = EthereumLib;
+    ethereumlib = EthereumLib;
 
     Web3: any = Web3;
 
@@ -127,8 +126,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
     )
       : Object {
       return new Promise(async (resolve, reject) => {
-        const URL = `http://api-ropsten.etherscan.io/api?module=account&action=txlist&address=
-        ${address}&startblock=${lastBlock}&sort=desc&apikey=${this.networks.ethToken}`;
+        const URL = `${this.networks[network].getTranApi + address}&startblock=${lastBlock}&sort=desc&apikey=${this.networks.ethToken}`;
 
         await this.axios.get(URL)
           .then(async (res: any) => {
@@ -173,8 +171,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
             });
             let balance = 0;
             await this.axios.get(
-              `https://api-ropsten.etherscan.io/api?module=account&action=balance&address=
-              ${address}&tag=latest&apikey=${this.networks.ethToken}`,
+              `${this.networks[network].getBalanceApi + address}&tag=latest&apikey=${this.networks.ethToken}`,
             )
 
               .then((bal: any) => {

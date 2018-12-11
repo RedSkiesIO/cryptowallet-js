@@ -121,9 +121,10 @@ export namespace CryptoWallet.SDKS.ERC20 {
 
         getERC20TransactionHistory(erc20Wallet: any, lastBlock?: number): Object {
           return new Promise(async (resolve, reject) => {
-            let URL = `http://api-ropsten.etherscan.io/api?module=account&action=tokentx&contractaddress=${erc20Wallet.contract}&address=${erc20Wallet.address}&startblock=${lastBlock}&sort=desc&apikey=${this.networks.ethToken}`;
+            let URL = `${erc20Wallet.network.getErc20TranApi + erc20Wallet.contract}&address=${erc20Wallet.address}&startblock=${lastBlock}&sort=desc&apikey=${this.networks.ethToken}`;
             if (typeof lastBlock === 'undefined') {
-              URL = `http://api-ropsten.etherscan.io/api?module=account&action=tokentx&contractaddress=${erc20Wallet.contract}&address=${erc20Wallet.address}&sort=desc&apikey=${this.networks.ethToken}`;
+              URL = `${erc20Wallet.network.getErc20TranApi + erc20Wallet.contract}&address=${erc20Wallet.address}&sort=desc&apikey=${this.networks.ethToken}`;
+              console.log(URL);
             }
             await this.axios.get(URL)
               .then(async (res: any) => {

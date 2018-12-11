@@ -127,16 +127,17 @@ namespace CryptoWallet.SDKS.Bitcoin {
 
           const result: any = [];
 
+          if (utxos.length === 0) {
+            // if no transactions have happened, there is no balance on the address.
+            return resolve(result);
+          }
+
           utxos.forEach((utxo: any) => {
             const u = utxo.toJSON();
             u.value = utxo.satoshis;
             result.push(u);
           });
 
-          if (utxos.length === 0) {
-            // if no transactions have happened, there is no balance on the address.
-            return resolve('You have no funds');
-          }
 
           return resolve(result);
         });

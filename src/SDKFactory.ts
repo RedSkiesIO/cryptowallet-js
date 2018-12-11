@@ -7,7 +7,7 @@ import * as ISDK from './SDKS/ISDK';
 
 export namespace CryptoWallet {
 
-  export function createSDK(sdk: string): ISDK.CryptoWallet.SDKS.ISDK {
+  export function createSDK(sdk: string) {
     switch (sdk) {
       case 'Bitcoin':
         return new BitcoinSDK();
