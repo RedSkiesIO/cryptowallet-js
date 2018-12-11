@@ -1,6 +1,7 @@
 import * as Mocha from 'mocha'
 import * as Chai from 'chai'
 import { CryptoWallet } from '../../src/SDKFactory'
+import ERC20 from '../../src/SDKS/erc20'
 import { generateKeyPair } from 'crypto'
 import { AssertionError } from 'assert'
 
@@ -8,8 +9,9 @@ var assert = Chai.assert
 
 const expect = Chai.expect
 const eth = CryptoWallet.createSDK('Ethereum')
+const erc20 = new ERC20
 const entropy = 'nut mixture license bean page mimic iron spice rail uncover then warfare'
-const network = 'ETHEREUM'
+const network = 'ETHEREUM_ROPSTEN'
 const rootKey: string = 'xprv9s21ZrQH143K468LbsXz8YqCZjiP1ZCLXy4nV352PWToQYEi1WxeEDKzWRd3vWbSfUjQuFAPwPMPG1KRVtsLDc3YvD7X1MktbTzcmsEqjPw'
 
 
@@ -20,29 +22,40 @@ const pubKey1 = '0x02201bde53932f1eae0c3108c26ac2de2d7662faeb59fd8ef552ec9d40310
 const derPath = `m/44'/60'/0'/0/0`
 
 describe('ethereumSDK (wallet)', () => {
-  it('can create a HD wallet', () => {
-    const wallet: any = eth.generateHDWallet(entropy, network)
+  // it('can create a HD wallet', () => {
+  //   const wallet: any = eth.generateHDWallet(entropy, network)
 
-    expect(wallet.mnemonic).to.equal(entropy)
-    expect(wallet.privateKey).to.equal(rootKey)
-    expect(wallet.bip).to.equal(bip)
-    expect(wallet.type).to.equal(60)
-  })
+  //   expect(wallet.mnemonic).to.equal(entropy)
+  //   expect(wallet.privateKey).to.equal(rootKey)
+  //   expect(wallet.bip).to.equal(bip)
+  //   expect(wallet.type).to.equal(60)
+  // })
 
-  it('can create a key pair', () => {
+  // it('can create a key pair', () => {
+  //   const wallet: any = eth.generateHDWallet(entropy, network)
+  //   const keypair: any = eth.generateKeyPair(wallet, 0)
+  //   assert.strictEqual(keypair.derivationPath, derPath)
+  //   assert.strictEqual(keypair.address, '0x8f97Bb9335747E4fCdDA8680F66ed96DcBe27F49')
+  //   assert.strictEqual(keypair.privateKey, '0x42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73')
+  //   assert.strictEqual(keypair.type, 'Ethereum')
+  // })
+
+  // it('can import key from WIF', () => {
+  //   const keypair: any = eth.importWIF('42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73')
+
+  //   assert.strictEqual(keypair.address, '0x8f97Bb9335747E4fCdDA8680F66ed96DcBe27F49')
+  //   assert.strictEqual(keypair.privateKey, '0x42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73')
+  // })
+
+  it('can transfer an erc20 token', async () => {
+    const contract = '0x26705403968a8c73656a2fed0f89245698718f3f'
     const wallet: any = eth.generateHDWallet(entropy, network)
     const keypair: any = eth.generateKeyPair(wallet, 0)
-    assert.strictEqual(keypair.derivationPath, derPath)
-    assert.strictEqual(keypair.address, '0x8f97Bb9335747E4fCdDA8680F66ed96DcBe27F49')
-    assert.strictEqual(keypair.privateKey, '0x42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73')
-    assert.strictEqual(keypair.type, 'Ethereum')
-  })
+    const erc20Wallet: any = erc20.generateERC20Wallet(keypair, 'Atlas City Token', 'ACT', contract, 3)
+    const balance = await erc20.getERC20Balance(erc20Wallet)
+    //const sendTx = await erc20.transferAllowanceERC20(erc20Wallet, '0x6B92382DEdd2bb7650eB388C553568552206b102', 10000)
+    console.log(balance)
 
-  it('can import key from WIF', () => {
-    const keypair: any = eth.importWIF('42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73')
-
-    assert.strictEqual(keypair.address, '0x8f97Bb9335747E4fCdDA8680F66ed96DcBe27F49')
-    assert.strictEqual(keypair.privateKey, '0x42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73')
   })
 
   // it('can restore a wallet from the mnemonic', async () => {
@@ -79,6 +92,20 @@ describe('ethereumSDK (wallet)', () => {
   //   // const verify = eth.verifyTxSignature(rawTx)
   //   // assert.strictEqual(verify, true)
   // })
+
+  it('can get the transaction history of an ERC20 wallet', async () => {
+    const wallet = eth.generateHDWallet(entropy, 'ETHEREUM_ROPSTEN')
+    const contract = '0x26705403968a8c73656a2fed0f89245698718f3f'
+    const keypair: any = eth.generateKeyPair(wallet, 0)
+    const erc20Wallet: any = erc20.generateERC20Wallet(keypair, 'Atlas City Token', 'ACT', contract, 3)
+
+    const history = await erc20.getERC20TransactionHistory(erc20Wallet)
+    console.log(history)
+
+
+  })
+
+
 })
 
 

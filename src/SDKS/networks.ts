@@ -89,7 +89,8 @@ export const ETHEREUM_ROPSTEN = {
   bip: 60,
   sendTxApi: 'https://api.blockcypher.com/v1/eth/main/txs/push',
   getTranApi: 'http://api-ropsten.etherscan.io/api?module=account&action=txlist&address=',
-  provider: 'https://ropsten.infura.io/v3/352fc30cd8364caabaea4a3d67da773f'
+  provider: 'https://ropsten.infura.io/v3/352fc30cd8364caabaea4a3d67da773f',
+  chainId: 3
 }
 
 export const BITCOIN_TESTNET = {

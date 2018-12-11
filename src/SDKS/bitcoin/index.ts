@@ -289,8 +289,6 @@ namespace CryptoWallet.SDKS.Bitcoin {
           return resolve(transaction)
         })
       })
-
-
     }
 
     // createRawTx(keypair: any, toAddress: string, amount: number): Object {
