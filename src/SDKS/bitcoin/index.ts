@@ -56,12 +56,14 @@ namespace CryptoWallet.SDKS.Bitcoin {
      * @param keyPair
      */
     generateSegWitAddress(keyPair: any): Object {
-      return this.bitcoinlib.payments.p2wpkh(
+      const key = this.bitcoinlib.ECPair.fromWIF(keyPair.privateKey, keyPair.network.connect);
+      const { address } = this.bitcoinlib.payments.p2wpkh(
         {
-          pubkey: keyPair.publicKey,
-          network: keyPair.network,
+          pubkey: key.publicKey,
+          network: keyPair.network.connect,
         },
       );
+      return address;
     }
 
     /**
@@ -69,13 +71,15 @@ namespace CryptoWallet.SDKS.Bitcoin {
      * @param keyPair
      */
     generateSegWitP2SH(keyPair: any): Object {
+      const key = this.bitcoinlib.ECPair.fromWIF(keyPair.privateKey, keyPair.network.connect);
       return this.bitcoinlib.payments.p2sh({
         redeem: this.bitcoinlib.payments.p2wpkh(
           {
-            pubkey: keyPair.publicKey,
-            network: keyPair.network,
+            pubkey: key.publicKey,
+            network: keyPair.network.connect,
           },
         ),
+        network: keyPair.network.connect,
       });
     }
 
@@ -98,10 +102,16 @@ namespace CryptoWallet.SDKS.Bitcoin {
      *
      * @param wif
      */
-    importWIF(wif: string): Object {
-      const keyPair = this.bitcoinlib.ECPair.fromWIF(wif);
+    importWIF(wif: string, network: string): Object {
+      const keyPair = this.bitcoinlib.ECPair.fromWIF(wif, this.networks[network].connect);
       const { address } = this.bitcoinlib.payments.p2sh({
-        redeem: this.bitcoinlib.payments.p2wpkh({ pubkey: keyPair.publicKey }),
+        redeem: this.bitcoinlib.payments.p2wpkh(
+          {
+            pubkey: keyPair.publicKey,
+            network: this.networks[network].connect,
+          },
+        ),
+        network: this.networks[network].connect,
       });
       return address;
     }
@@ -402,7 +412,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
     accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
       const wallet = this.generateHDWallet(entropy, network);
 
-      const insight: any = new Explorers.Insight('https://testnet.blockexplorer.com/', 'testnet');
+      const insight: any = new Explorers.Insight('https://testnet.blockexplorer.com', 'testnet');
       let usedAddresses: any = [];
       const emptyAddresses: any = [];
       let change = false;
@@ -423,6 +433,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
               index: i,
             };
 
+
             if (result.received > 0) {
               usedAddresses.push(result);
             } else {
@@ -438,6 +449,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
         let startIndex = 0;
 
         const discover = async () => {
+          console.log('discovering');
           const promises = [];
 
           for (let i: any = startIndex; i < startIndex + 20; i += 1) {
@@ -456,7 +468,9 @@ namespace CryptoWallet.SDKS.Bitcoin {
             discover();
           }
         };
-        discover();
+
+        await discover();
+
         if (internal) {
           usedAddresses = usedAddresses.filter((item: any) => {
             if (item.balance === 0) return false;

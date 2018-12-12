@@ -31,7 +31,7 @@ export namespace CryptoWallet.SDKS {
       let externalNode;
       let internalNode;
       let bip;
-      if (cointype === 0 || cointype === 1) {
+      if (cointype === 0 || cointype === 1 || cointype === 2) {
         externalNode = root.derive(`m/49'/${cointype}'/0'/0`);
         internalNode = root.derive(`m/49'/${cointype}'/0'/1`); // needed for bitcoin
         bip = 49;
@@ -76,7 +76,7 @@ export namespace CryptoWallet.SDKS {
 
     abstract broadcastTx(rawTx: object, network: string): Object;
 
-    abstract importWIF(wif: string): Object;
+    abstract importWIF(wif: string, network: string): Object;
 
     // abstract createRawTx(
     // accounts: object[],

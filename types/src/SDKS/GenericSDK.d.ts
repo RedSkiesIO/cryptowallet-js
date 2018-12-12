@@ -11,7 +11,7 @@ export declare namespace CryptoWallet.SDKS {
         generateHDWallet(entropy: string, network: string): Object;
         generateKeyPair(wallet: any, index: number, external?: boolean): Object;
         abstract broadcastTx(rawTx: object, network: string): Object;
-        abstract importWIF(wif: string): Object;
+        abstract importWIF(wif: string, network: string): Object;
         abstract verifyTxSignature(transaction: object): boolean;
         abstract accountDiscovery(entropy: string, netork: string): Object;
         getWalletHistory(addresses: string[], network: string, lastBlock: number, full?: boolean): Object;

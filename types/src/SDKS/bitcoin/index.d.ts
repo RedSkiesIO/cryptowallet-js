@@ -33,7 +33,7 @@ declare namespace CryptoWallet.SDKS.Bitcoin {
          *
          * @param wif
          */
-        importWIF(wif: string): Object;
+        importWIF(wif: string, network: string): Object;
         /**
          *
          * @param keys

@@ -6,7 +6,7 @@ export namespace CryptoWallet.SDKS {
 
     generateKeyPair(wallet: object, index: number, internal?: boolean): Object;
 
-    importWIF(wif: string): Object;
+    importWIF(wif: string, network: string): Object;
 
     // createRawTx(
     // accounts: object[],
