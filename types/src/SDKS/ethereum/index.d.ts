@@ -1,11 +1,12 @@
+/// <reference path="../../../../src/types/module.d.ts" />
 import GenericSDK from '../GenericSDK';
 import * as IEthereumSDK from './IEthereumSDK';
 export declare namespace CryptoWallet.SDKS.Ethereum {
     class EthereumSDK extends GenericSDK implements IEthereumSDK.CryptyoWallet.SDKS.Ethereum.IEthereumSDK {
-        getUTXOs(addresses: String[], network: string): Object;
-        createRawTx(accounts: object[], change: string, utxos: any, network: string, toAddress: string, amount: number): Object;
-        private ethereumlib;
-        private web3;
+        Bip: any;
+        ethereumlib: any;
+        Web3: any;
+        VerifyTx: any;
         /**
          *
          * @param wallet

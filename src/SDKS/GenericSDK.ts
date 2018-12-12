@@ -212,6 +212,7 @@ export namespace CryptoWallet.SDKS {
                 value,
                 change,
                 confirmed,
+                confirmations: result.confirmations,
                 hash: result.hash,
                 blockHeight: result.block_height,
                 fee: result.fees,

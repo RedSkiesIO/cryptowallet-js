@@ -1,4 +1,5 @@
-import * as ISDK from './SDKS/ISDK';
+import BitcoinSDK from './SDKS/bitcoin';
+import EthereumSDK from './SDKS/ethereum';
 export declare namespace CryptoWallet {
-    function createSDK(sdk: string): ISDK.CryptoWallet.SDKS.ISDK;
+    function createSDK(sdk: string): BitcoinSDK | EthereumSDK;
 }

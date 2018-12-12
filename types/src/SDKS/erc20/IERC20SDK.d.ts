@@ -6,5 +6,6 @@ export declare namespace CryptoWallet.SDKS.Erc20 {
         transferAllowanceERC20(erc20Wallet: any, from: string, amount: number): Object;
         checkAllowanceERC20(erc20Wallet: any, from: string, amount: number): Object;
         getERC20Balance(erc20Wallet: any): Object;
+        getERC20TransactionHistory(erc20Wallet: any, lastBlock?: number): Object;
     }
 }

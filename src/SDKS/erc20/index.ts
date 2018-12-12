@@ -136,8 +136,8 @@ export namespace CryptoWallet.SDKS.ERC20 {
 
                 // const nextBlock: number = 0//res.data.result[0].blockNumber
                 res.data.result.forEach((r: any) => {
-                  const receiver = r.to; let sent = false; let confirmed = false; const
-                    contractCall = false;
+                  const receiver = r.to; let sent = false; let confirmed = false;
+                  const contractCall = false;
                   if (r.from === erc20Wallet.address.toLowerCase()) {
                     sent = true;
                   }

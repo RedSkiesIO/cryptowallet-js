@@ -1,8 +1,10 @@
 /// <reference path="../../../../src/types/module.d.ts" />
-import GenericSDK from '../GenericSDK';
 import * as IBitcoinSDK from './IBitcoinSDK';
+import GenericSDK from '../GenericSDK';
 declare namespace CryptoWallet.SDKS.Bitcoin {
     class BitcoinSDK extends GenericSDK implements IBitcoinSDK.CryptyoWallet.SDKS.Bitcoin.IBitcoinSDK {
+        Explore: any;
+        Req: any;
         /**
         *
         * @param wallet
@@ -27,7 +29,6 @@ declare namespace CryptoWallet.SDKS.Bitcoin {
          * @param key3
          * @param key4
          */
-        generateSegWit3of4MultiSigAddress(key1: string, key2: string, key3: string, key4: string): Object;
         /**
          *
          * @param wif
@@ -37,17 +38,17 @@ declare namespace CryptoWallet.SDKS.Bitcoin {
          *
          * @param keys
          */
-        gernerateP2SHMultiSig(keys: Array<string>): Object;
-        getUTXOs(addresses: Array<String>, network: string): Object;
+        gernerateP2SHMultiSig(keys: string[]): Object;
+        getUTXOs(addresses: string[], network: string): Object;
         /**
          *
          * @param keypair
          * @param toAddress
          * @param amount
          */
-        createRawTx(accounts: object[], change: string, utxos: any, wallet: any, toAddress: string, amount: number): Object;
+        createRawTx(accounts: object[], change: string[], utxos: any, wallet: any, toAddress: string, amount: number): Object;
         broadcastTx(rawTx: object, network: string): Object;
-        decodeTx(rawTx: Object, change: string, amount: number, receiver: string, wallet: any): Object;
+        decodeTx(rawTx: Object, change: string[], amount: number, receiver: string, wallet: any): Object;
         /**
          *
          * @param transaction

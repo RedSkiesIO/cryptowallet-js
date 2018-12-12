@@ -1,8 +1,10 @@
 /* eslint-disable import/no-unresolved */
-// /<reference path="../../types/module.d.ts" />
+// eslint-disable-next-line spaced-comment
+///<reference path="../../types/module.d.ts" />
 import * as BitcoinLib from 'bitcoinjs-lib';
 import * as Bitcoinaddress from 'bitcoin-address';
 import * as Coinselect from 'coinselect';
+import * as CoinSelectSplit from 'coinselect/split';
 import * as Request from 'request';
 import * as Explorers from 'bitcore-explorers';
 import * as Networks from '../networks';
@@ -152,7 +154,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
      */
     createRawTx(
       accounts: object[],
-      change: string,
+      change: string[],
       utxos: any,
       wallet: any,
       toAddress: string,
@@ -180,12 +182,27 @@ namespace CryptoWallet.SDKS.Bitcoin {
 
         // check whether the balance of the address covers the miner fee
         if ((balance - transactionAmount - minerFee) > 0) {
-          const targets = [{
+          const targets: any = [{
             address: toAddress,
             value: transactionAmount,
-          }];
+          },
+          ];
 
-          const { inputs, outputs, fee } = Coinselect(utxos, targets, feeRate);
+
+          let result = Coinselect(utxos, targets, feeRate);
+          if (change.length > 1) {
+            change.forEach((c) => {
+              const tar = {
+                address: c,
+              };
+              targets.push(tar);
+            });
+            const { inputs, outputs, fee } = result;
+            result = CoinSelectSplit(inputs, targets, feeRate);
+          }
+
+          const { inputs, outputs, fee } = result;
+          console.log(`inputs:${inputs}`);
           const accountsUsed: any = [];
           const p2shUsed: any = [];
           inputs.forEach((input: any) => {
@@ -220,11 +237,11 @@ namespace CryptoWallet.SDKS.Bitcoin {
           });
 
           outputs.forEach((output: any) => {
+            let { address } = output;
             if (!output.address) {
-              // eslint-disable-next-line no-param-reassign
-              output.address = change;
+              ([address] = change);
             }
-            txb.addOutput(output.address, output.value);
+            txb.addOutput(address, output.value);
           });
 
           inputs.forEach((input: any) => {
@@ -275,7 +292,11 @@ namespace CryptoWallet.SDKS.Bitcoin {
       });
     }
 
-    decodeTx(rawTx: Object, change: string, amount: number, receiver: string, wallet: any): Object {
+    decodeTx(rawTx: Object,
+      change: string[],
+      amount: number,
+      receiver: string,
+      wallet: any): Object {
       const tx = {
         tx: rawTx,
       };
@@ -303,6 +324,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
               change,
               receiver,
               confirmed,
+              confirmations: output.confirmations,
               hash: output.hash,
               blockHeight: output.block_height,
               fee: output.fees,
@@ -380,7 +402,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
     accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
       const wallet = this.generateHDWallet(entropy, network);
 
-      const insight: any = new Explorers.Insight('https://test-insight.bitpay.com', 'testnet');
+      const insight: any = new Explorers.Insight('https://testnet.blockexplorer.com/', 'testnet');
       let usedAddresses: any = [];
       const emptyAddresses: any = [];
       let change = false;
@@ -412,10 +434,10 @@ namespace CryptoWallet.SDKS.Bitcoin {
       }
 
       return new Promise(async (resolve, reject) => {
-        let discover = true;
+        // let discover = true;
         let startIndex = 0;
 
-        while (discover) {
+        const discover = async () => {
           const promises = [];
 
           for (let i: any = startIndex; i < startIndex + 20; i += 1) {
@@ -424,17 +446,17 @@ namespace CryptoWallet.SDKS.Bitcoin {
             promises.push(new Promise(async (res, rej) => res(checkAddress(keypair.address, i))));
           }
 
-          // eslint-disable-next-line no-await-in-loop
+
           await Promise.all(promises);
           if (emptyAddresses.length > 0) {
             const min = Math.min(...emptyAddresses);
             startIndex = min;
           }
-          if (emptyAddresses.length > 20) {
-            discover = false;
+          if (emptyAddresses.length <= 20) {
+            discover();
           }
-        }
-
+        };
+        discover();
         if (internal) {
           usedAddresses = usedAddresses.filter((item: any) => {
             if (item.balance === 0) return false;
