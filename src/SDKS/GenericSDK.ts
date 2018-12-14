@@ -160,10 +160,12 @@ export namespace CryptoWallet.SDKS {
     //   const apiUrl = this.networks[network].getTranApi;
     //   let returnAmount = 10;
     //   if (limit != null) { returnAmount = limit; }
-    //   let URL = `${apiUrl + address}/full?${this.networks.token}&after=${lastBlock}&limit=${returnAmount}`;
+    //   let URL = `${apiUrl + address}
+    // /full?${this.networks.token}&after=${lastBlock}&limit=${returnAmount}`;
 
     //   if (beforeBlock != null) {
-    //     URL = `${apiUrl + address}/full?${this.networks.token}&before=${lastBlock}&limit=${returnAmount}`;
+    //     URL = `${apiUrl + address}
+    // /full?${this.networks.token}&before=${lastBlock}&limit=${returnAmount}`;
     //   }
 
     //   return new Promise((resolve, reject) => {

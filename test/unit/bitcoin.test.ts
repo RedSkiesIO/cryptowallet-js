@@ -94,17 +94,15 @@ describe('bitcoinSDK (wallet)', () => {
   //   console.log(tData);
   // });
 
-  // it('can get the transaction history of a wallet', async () => {
-  //   const wallet: any = btc.generateHDWallet(entropy2, network);
-  //   const addresses: any = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf', '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM', '2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA',
-  //   ];
-  //   const tData: any = await btc.getTransactionHistory('2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
-  //     addresses, 'BITCOIN_TESTNET', 0, 50);
-  //   console.log(tData);
-
-  //   console.log(tData.txs[0]);
-  //   console.log(tData.txs[10]);
-  // });
+  it('can get the transaction history of a wallet', async () => {
+    const wallet: any = btc.generateHDWallet(entropy2, network);
+    const addresses: any = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+      '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM', '2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA',
+    ];
+    const tData: any = await btc.getTransactionHistory('2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
+      addresses, 'BITCOIN_TESTNET', 0, 50);
+    console.log(tData);
+  });
 
   it('can get the balance of a wallet', async () => {
     const wallet: any = btc.generateHDWallet(entropy2, network);

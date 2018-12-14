@@ -126,7 +126,8 @@ export namespace CryptoWallet.SDKS.Ethereum {
     // )
     //   : Object {
     //   return new Promise(async (resolve, reject) => {
-    //     const URL = `${this.networks[network].getTranApi + address}&startblock=${lastBlock}&sort=desc&apikey=${this.networks.ethToken}`;
+    //     const URL = `${this.networks[network].getTranApi
+    //  + address}&startblock=${lastBlock}&sort=desc&apikey=${this.networks.ethToken}`;
 
     //     await this.axios.get(URL)
     //       .then(async (res: any) => {
@@ -171,7 +172,8 @@ export namespace CryptoWallet.SDKS.Ethereum {
     //         });
     //         let balance = 0;
     //         await this.axios.get(
-    //           `${this.networks[network].getBalanceApi + address}&tag=latest&apikey=${this.networks.ethToken}`,
+    //           `${this.networks[network].getBalanceApi + address}
+    // &tag=latest&apikey=${this.networks.ethToken}`,
     //         )
 
     //           .then((bal: any) => {
