@@ -34,7 +34,12 @@ export const LITECOIN = {
 
 export const LITECOIN_TESTNET = {
   name: 'Litecoin Testnet',
+  type: 'litecoin testnet',
   bip: 1,
+  discovery: 'https://testnet.litecore.io',
+  sendTxApi: 'https://chain.so/api/v2/send_tx/LTCTEST',
+  // getTranApi: 'https://api.blockcypher.com/v1/btc/test3/addrs/',
+  // decodeTxApi: 'https://api.blockcypher.com/v1/btc/test3/txs/decode',
   connect: {
     messagePrefix: '\x19Litecoin Signed Message:\n',
     bip32: {
@@ -47,18 +52,48 @@ export const LITECOIN_TESTNET = {
   },
 };
 
+export const DASH = {
+  name: 'Dash',
+  bip: 5,
+  connect: {
+    messagePrefix: 'unused',
+    bip32: {
+      public: 0x0488b21e,
+      private: 0x0488ade4,
+    },
+    pubKeyHash: 0x4c,
+    scriptHash: 0x10,
+    wif: 0xcc,
+  },
+};
+
+export const DASH_TESTNET = {
+  name: 'Dash Testnet',
+  bip: 5,
+  connect: {
+    messagePrefix: 'unused',
+    bip32: {
+      public: 0x043587cf,
+      private: 0x04358394,
+    },
+    pubKeyHash: 0x8c,
+    scriptHash: 0x13,
+    wif: 0xef,
+  },
+};
+
 export const DOGECOIN = {
   name: 'Dogecoin',
   bip: 3,
   connect: {
-    messagePrefix: '\x18Dogecoin Signed Message:\n',
+    messagePrefix: '\x19Dogecoin Signed Message:\n',
     bip32: {
-      private: 0x02fac398,
       public: 0x02facafd,
+      private: 0x02fac398,
     },
+    pubKeyHash: 0x1e,
+    scriptHash: 0x16,
     wif: 0x9e,
-    public: 0x1e,
-    scripthash: 0x16,
   },
 };
 
@@ -74,6 +109,33 @@ export const DOGECOIN_TESTNET = {
     wif: 0xf1,
     public: 0x71,
     scripthash: 0xc4,
+  },
+};
+export const VIACOIN = {
+  name: 'Viacoin',
+
+  connect: {
+    messagePrefix: '\x18Viacoin Signed Message:\n',
+    bip32: {
+      public: 0x0488b21e,
+      private: 0x0488ade4,
+    },
+    pubKeyHash: 0x47,
+    scriptHash: 0x21,
+    wif: 0xc7,
+  },
+};
+export const VIACOIN_TESTNET = {
+  name: 'Viacoin Testnet',
+  connect: {
+    messagePrefix: '\x18Viacoin Signed Message:\n',
+    bip32: {
+      public: 0x043587cf,
+      private: 0x04358394,
+    },
+    pubKeyHash: 0x7f,
+    scriptHash: 0xc4,
+    wif: 0xff,
   },
 };
 
@@ -97,8 +159,10 @@ export const ETHEREUM_ROPSTEN = {
 
 export const BITCOIN_TESTNET = {
   name: 'Bitcoin Testnet',
+  type: 'testnet',
   bip: 1,
-  apiUrl: 'https://chain.so/api/v2/get_tx_unspent/BTCTEST/',
+  discovery: 'https://test-insight.bitpay.com',
+  apiUrl: 'https://chain.so/api/v2/send_tx/BTCTEST',
   sendTxApi: 'https://api.blockcypher.com/v1/btc/test3/txs/push',
   getTranApi: 'https://api.blockcypher.com/v1/btc/test3/addrs/',
   decodeTxApi: 'https://api.blockcypher.com/v1/btc/test3/txs/decode',

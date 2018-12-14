@@ -116,114 +116,114 @@ export namespace CryptoWallet.SDKS.Ethereum {
       return false;
     }
 
-    getTransactionHistory(
-      address: string,
-      addresses: string[],
-      network: string,
-      lastBlock: number,
-      beforeBlock?: number,
-      limit?: number,
-    )
-      : Object {
-      return new Promise(async (resolve, reject) => {
-        const URL = `${this.networks[network].getTranApi + address}&startblock=${lastBlock}&sort=desc&apikey=${this.networks.ethToken}`;
+    // getTransactionHistory(
+    //   address: string,
+    //   addresses: string[],
+    //   network: string,
+    //   lastBlock: number,
+    //   beforeBlock?: number,
+    //   limit?: number,
+    // )
+    //   : Object {
+    //   return new Promise(async (resolve, reject) => {
+    //     const URL = `${this.networks[network].getTranApi + address}&startblock=${lastBlock}&sort=desc&apikey=${this.networks.ethToken}`;
 
-        await this.axios.get(URL)
-          .then(async (res: any) => {
-            if (!res.data.result) {
-              return resolve();
-            }
+    //     await this.axios.get(URL)
+    //       .then(async (res: any) => {
+    //         if (!res.data.result) {
+    //           return resolve();
+    //         }
 
-            const transactions: any = [];
+    //         const transactions: any = [];
 
-            const nextBlock: number = 0; // res.data.result[0].blockNumber
-            res.data.result.forEach((r: any) => {
-              let receiver = r.to;
-              let sent = false;
-              let confirmed = false;
-              let contractCall = false;
+    //         const nextBlock: number = 0; // res.data.result[0].blockNumber
+    //         res.data.result.forEach((r: any) => {
+    //           let receiver = r.to;
+    //           let sent = false;
+    //           let confirmed = false;
+    //           let contractCall = false;
 
-              if (r.from === address.toLowerCase()) {
-                sent = true;
-              }
-              if (r.confirmations > 11) {
-                confirmed = true;
-              }
-              if (!r.to) {
-                receiver = r.contractAddress;
-                contractCall = true;
-              }
+    //           if (r.from === address.toLowerCase()) {
+    //             sent = true;
+    //           }
+    //           if (r.confirmations > 11) {
+    //             confirmed = true;
+    //           }
+    //           if (!r.to) {
+    //             receiver = r.contractAddress;
+    //             contractCall = true;
+    //           }
 
-              const transaction = {
-                sent,
-                receiver,
-                contractCall,
-                confirmed,
-                hash: r.hash,
-                blockHeight: r.blockNumber,
-                fee: r.cumulativeGasUsed,
-                value: r.value,
-                sender: r.from,
-                confirmedTime: r.timeStamp,
-              };
+    //           const transaction = {
+    //             sent,
+    //             receiver,
+    //             contractCall,
+    //             confirmed,
+    //             hash: r.hash,
+    //             blockHeight: r.blockNumber,
+    //             fee: r.cumulativeGasUsed,
+    //             value: r.value,
+    //             sender: r.from,
+    //             confirmedTime: r.timeStamp,
+    //           };
 
-              transactions.push(transaction);
-            });
-            let balance = 0;
-            await this.axios.get(
-              `${this.networks[network].getBalanceApi + address}&tag=latest&apikey=${this.networks.ethToken}`,
-            )
+    //           transactions.push(transaction);
+    //         });
+    //         let balance = 0;
+    //         await this.axios.get(
+    //           `${this.networks[network].getBalanceApi + address}&tag=latest&apikey=${this.networks.ethToken}`,
+    //         )
 
-              .then((bal: any) => {
-                balance = bal.data.result;
-              });
-            const history = {
-              address,
-              balance,
-              nextBlock,
-              totalTransactions: transactions.length,
-              txs: transactions,
+    //           .then((bal: any) => {
+    //             balance = bal.data.result;
+    //           });
+    //         const history = {
+    //           address,
+    //           balance,
+    //           nextBlock,
+    //           totalTransactions: transactions.length,
+    //           txs: transactions,
 
-            };
+    //         };
 
-            return resolve(history);
-          });
-      });
-    }
+    //         return resolve(history);
+    //       });
+    //   });
+    // }
 
-    getWalletHistory(
-      addresses: string[],
-      network: string,
-      lastBlock: number,
-      full?: boolean,
-    )
-      : Object {
-      const result: any = [];
+    // getWalletHistory(
+    //   addresses: string[],
+    //   network: string,
+    //   lastBlock: number,
+    //   full?: boolean,
+    // )
+    //   : Object {
+    //   const result: any = [];
 
-      return new Promise((resolve, reject) => {
-        const promises: any = [];
+    //   return new Promise((resolve, reject) => {
+    //     const promises: any = [];
 
-        addresses.forEach((address: any) => {
-          promises.push(
+    //     addresses.forEach((address: any) => {
+    //       promises.push(
 
-            new Promise(async (res, rej) => {
-              const history: any = await this.getTransactionHistory(
-                address, addresses, network, 0, lastBlock,
-              );
+    //         new Promise(async (res, rej) => {
+    //           const history: any = await this.getTransactionHistory(
+    //             address, addresses, network, 0, lastBlock,
+    //           );
 
-              if (history.totalTransactions > 0) {
-                result.push(history);
-              }
-              res();
-            }),
-          );
-        });
+    //           if (history.totalTransactions > 0) {
+    //             result.push(history);
+    //           }
+    //           res();
+    //         }),
+    //       );
+    //     });
 
-        Promise.all(promises).then(() => {
-          resolve(result);
-        });
-      });
-    }
+    //     Promise.all(promises).then(() => {
+    //       resolve(result);
+    //     });
+    //   });
+    // }
 
     accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
       const wallet = this.generateHDWallet(entropy, network);

@@ -36,8 +36,6 @@ export declare namespace CryptoWallet.SDKS.Ethereum {
          * @param tx
          */
         verifyTxSignature(tx: any): boolean;
-        getTransactionHistory(address: string, addresses: string[], network: string, lastBlock: number, beforeBlock?: number, limit?: number): Object;
-        getWalletHistory(addresses: string[], network: string, lastBlock: number, full?: boolean): Object;
         accountDiscovery(entropy: string, network: string, internal?: boolean): Object;
     }
 }

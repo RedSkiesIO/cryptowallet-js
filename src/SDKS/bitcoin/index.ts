@@ -28,7 +28,8 @@ namespace CryptoWallet.SDKS.Bitcoin {
       let node = wallet.externalNode;
       if (internal) { node = wallet.internalNode; }
       const addrNode = node.deriveChild(index);
-      const { address } = this.bitcoinlib.payments.p2sh({
+
+      let result: any = this.bitcoinlib.payments.p2sh({
         redeem: this.bitcoinlib.payments.p2wpkh(
           {
             pubkey: addrNode.publicKey,
@@ -38,11 +39,19 @@ namespace CryptoWallet.SDKS.Bitcoin {
         network: wallet.network.connect,
       });
 
+
+      if (wallet.bip === 44) {
+        result = this.bitcoinlib.payments.p2pkh({
+          pubkey: addrNode.publicKey, network: wallet.network.connect,
+        });
+      }
+
+      const { address } = result;
       const keypair = {
         address,
         publicKey: addrNode.publicKey.toString('hex'),
         privateKey: this.wif.encode(wallet.network.connect.wif, addrNode.privateKey, true),
-        derivationPath: `m/49'/${wallet.type}'/0'/0/${index}`,
+        derivationPath: `m/${wallet.bip}'/${wallet.type}'/0'/0/${index}`,
         type: wallet.network.name,
         network: wallet.network,
         change: internal,
@@ -104,6 +113,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
      */
     importWIF(wif: string, network: string): Object {
       const keyPair = this.bitcoinlib.ECPair.fromWIF(wif, this.networks[network].connect);
+
       const { address } = this.bitcoinlib.payments.p2sh({
         redeem: this.bitcoinlib.payments.p2wpkh(
           {
@@ -130,7 +140,9 @@ namespace CryptoWallet.SDKS.Bitcoin {
     getUTXOs(addresses: string[], network: string): Object {
       return new Promise((resolve, reject) => {
         const unit = Explorers.Unit;
-        const insight = new this.Explore.Insight('https://test-insight.bitpay.com', 'testnet');
+        const insight = new this.Explore.Insight(
+          this.networks[network].discovery, this.networks[network].type,
+        );
         insight.getUnspentUtxos(addresses, (error: string, utxos: any) => {
           if (error) {
             // any other error
@@ -175,7 +187,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
       const transactionAmount = amount * 100000000;
       const minerFee = 0.0001 * 100000000;
       const net = wallet.network;
-      let rawTx;
+      let rawTx: any;
 
       return new Promise(async (resolve, reject) => {
         if (utxos.length === 0) {
@@ -211,10 +223,11 @@ namespace CryptoWallet.SDKS.Bitcoin {
             result = CoinSelectSplit(inputs, targets, feeRate);
           }
 
-          const { inputs, outputs, fee } = result;
-          console.log(`inputs:${inputs}`);
+          const { inputs, outputs, fees } = result;
+
           const accountsUsed: any = [];
           const p2shUsed: any = [];
+          console.log(`Inputs:${inputs}`);
           inputs.forEach((input: any) => {
             accounts.forEach((account: any) => {
               let key: any;
@@ -238,6 +251,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
             });
           });
 
+
           const txb = new BitcoinLib.TransactionBuilder(net.connect);
 
           txb.setVersion(1);
@@ -253,21 +267,36 @@ namespace CryptoWallet.SDKS.Bitcoin {
             }
             txb.addOutput(address, output.value);
           });
-
+          let i = 0;
           inputs.forEach((input: any) => {
-            let i = 0;
             txb.sign(i, accountsUsed[i], p2shUsed[i].redeem.output, undefined, inputs[i].value);
             i += 1;
           });
           rawTx = txb.build().toHex();
 
-          const transaction = await this.decodeTx(
-            rawTx,
+          const senders: any = [];
+          inputs.forEach((input: any) => {
+            const inputAddr = input.addresses;
+            inputAddr.forEach((addr: any) => {
+              senders.push(addr);
+            });
+          });
+
+          const transaction = {
             change,
-            transactionAmount,
-            toAddress,
-            wallet,
-          );
+            receiver: toAddress,
+            confirmed: false,
+            confirmations: 0,
+            hash: txb.build().getId(),
+            blockHeight: undefined,
+            fee: fees,
+            sent: true,
+            value: amount,
+            sender: senders,
+            receivedTime: undefined,
+            confirmedTime: undefined,
+
+          };
           const spentInput = inputs;
 
           return resolve({
@@ -276,29 +305,27 @@ namespace CryptoWallet.SDKS.Bitcoin {
             utxo: spentInput,
           });
         }
-        return resolve("2: You don't have enough Satoshis to cover the miner fee.");
+        return resolve("You don't have enough Satoshis to cover the miner fee.");
       });
     }
 
     broadcastTx(rawTx: object, network: string): Object {
-      const tx = {
-        tx: rawTx,
-      };
       return new Promise((resolve, reject) => {
-        Request.post(
+        Request.post(this.networks[network].apiUrl,
           {
-            url: this.networks[network].sendTxApi,
-            form: JSON.stringify(tx),
+            form: {
+              tx_hex: rawTx,
+            },
           },
           (error: any, body: any, result: any) => {
             if (error) {
-              return reject(new Error(`Transaction failed: ${error}`));
+              return resolve(new Error(`Transaction failed: ${error}`));
             }
+
             const output = JSON.parse(result);
-            const res = output.tx.hash;
+            const res = output.data.txid;
             return resolve(res);
-          },
-        );
+          });
       });
     }
 
@@ -310,45 +337,57 @@ namespace CryptoWallet.SDKS.Bitcoin {
       const tx = {
         tx: rawTx,
       };
-      return new Promise((resolve, reject) => {
-        this.Req.post(
-          {
-            url: wallet.network.decodeTxApi,
-            form: JSON.stringify(tx),
-          },
-          (error: any, body: any, result: any) => {
-            if (error) {
-              return reject(new Error(`Transaction failed: ${error}`));
-            }
-            const output = JSON.parse(result);
-            let confirmed = false;
-            if (output.confirmations > 5) { confirmed = true; }
-            const senders: any = [];
-            output.inputs.forEach((input: any) => {
-              const inputAddr = input.addresses;
-              inputAddr.forEach((addr: any) => {
-                senders.push(addr);
-              });
-            });
-            const transaction = {
-              change,
-              receiver,
-              confirmed,
-              confirmations: output.confirmations,
-              hash: output.hash,
-              blockHeight: output.block_height,
-              fee: output.fees,
-              sent: true,
-              value: amount,
-              sender: senders,
-              receivedTime: output.received,
-              confirmedTime: output.confirmed,
+      // return new Promise((resolve, reject) => {
+      console.log('hex :', JSON.stringify(rawTx));
+      const Tx: any = this.bitcoinlib.Transaction.fromHex(JSON.stringify(rawTx));
 
-            };
-            return resolve(transaction);
-          },
-        );
-      });
+      const transaction = {
+        change,
+        receiver,
+        hash: Tx.getId(),
+
+      };
+
+      return Tx;
+
+      // this.Req.post(
+      //   {
+      //     url: wallet.network.decodeTxApi,
+      //     form: JSON.stringify(tx),
+      //   },
+      //   (error: any, body: any, result: any) => {
+      //     if (error) {
+      //       return reject(new Error(`Transaction failed: ${error}`));
+      //     }
+      //     const output = JSON.parse(result);
+      //     let confirmed = false;
+      //     if (output.confirmations > 5) { confirmed = true; }
+      //     const senders: any = [];
+      //     output.inputs.forEach((input: any) => {
+      //       const inputAddr = input.addresses;
+      //       inputAddr.forEach((addr: any) => {
+      //         senders.push(addr);
+      //       });
+      //     });
+      //     const transaction = {
+      //       change,
+      //       receiver,
+      //       confirmed,
+      //       confirmations: output.confirmations,
+      //       hash: output.hash,
+      //       blockHeight: output.block_height,
+      //       fee: output.fees,
+      //       sent: true,
+      //       value: amount,
+      //       sender: senders,
+      //       receivedTime: output.received,
+      //       confirmedTime: output.confirmed,
+
+      //     };
+      //     return resolve(transaction);
+      //   },
+      // );
+      // });
     }
 
     /**
@@ -410,9 +449,9 @@ namespace CryptoWallet.SDKS.Bitcoin {
     }
 
     accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
-      const wallet = this.generateHDWallet(entropy, network);
+      const wallet: any = this.generateHDWallet(entropy, network);
 
-      const insight: any = new Explorers.Insight('https://testnet.blockexplorer.com', 'testnet');
+      const insight: any = new Explorers.Insight(wallet.network.discovery, wallet.network.type);
       let usedAddresses: any = [];
       const emptyAddresses: any = [];
       let change = false;
@@ -445,21 +484,24 @@ namespace CryptoWallet.SDKS.Bitcoin {
       }
 
       return new Promise(async (resolve, reject) => {
-        // let discover = true;
         let startIndex = 0;
 
         const discover = async () => {
-          console.log('discovering');
           const promises = [];
 
           for (let i: any = startIndex; i < startIndex + 20; i += 1) {
-            const keypair: any = this.generateKeyPair(wallet, i, internal);
+            const number = i;
+            const keypair: any = this.generateKeyPair(wallet, number, internal);
 
-            promises.push(new Promise(async (res, rej) => res(checkAddress(keypair.address, i))));
+            promises.push(
+              new Promise(async (res, rej) => res(checkAddress(keypair.address, number))),
+            );
           }
 
 
           await Promise.all(promises);
+
+
           if (emptyAddresses.length > 0) {
             const min = Math.min(...emptyAddresses);
             startIndex = min;

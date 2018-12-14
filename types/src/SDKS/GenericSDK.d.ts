@@ -1,3 +1,4 @@
+/// <reference path="../../module.d.ts" />
 import * as Bitcoinlib from 'bitcoinjs-lib';
 import * as ISDK from './ISDK';
 export declare namespace CryptoWallet.SDKS {
@@ -14,8 +15,8 @@ export declare namespace CryptoWallet.SDKS {
         abstract importWIF(wif: string, network: string): Object;
         abstract verifyTxSignature(transaction: object): boolean;
         abstract accountDiscovery(entropy: string, netork: string): Object;
-        getWalletHistory(addresses: string[], network: string, lastBlock: number, full?: boolean): Object;
-        getTransactionHistory(address: string, addresses: string[], network: string, lastBlock: number, beforeBlock?: number, limit?: number): Object;
+        getTransactionHistory(addresses: string[], network: string, from: number, to: number): Object;
+        getBalance(addresses: string[], network: string): Object;
     }
 }
 declare const _default: typeof CryptoWallet.SDKS.GenericSDK;

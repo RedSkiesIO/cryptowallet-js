@@ -25,18 +25,19 @@ export namespace CryptoWallet.SDKS {
     accountDiscovery(entropy: string, netork: string, internal?: boolean): Object;
 
     getTransactionHistory(
-      address: string,
       addresses: Array<String>,
       network: string,
-      lastBlock: number,
-      beforeBlock?: number,
-      limit?: number): Object;
+      from: number,
+      to: number,
+    ): Object;
 
-    getWalletHistory(
-      addresses: Array<String>,
-      network: string,
-      lastBlock: number,
-      full?: boolean): Object;
+    getBalance(addresses: string[], network: string): Object;
+
+    // getWalletHistory(
+    //   addresses: Array<String>,
+    //   network: string,
+    //   lastBlock: number,
+    //   full?: boolean): Object;
 
     // getTransactionHistory(
     // address: string,

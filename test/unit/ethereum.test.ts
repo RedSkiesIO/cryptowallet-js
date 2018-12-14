@@ -55,7 +55,8 @@ describe('ethereumSDK (wallet)', () => {
   //   const contract = '0x26705403968a8c73656a2fed0f89245698718f3f';
   //   const wallet: any = eth.generateHDWallet(entropy, network);
   //   const keypair: any = eth.generateKeyPair(wallet, 0);
-  //   const erc20Wallet: any = erc20.generateERC20Wallet(keypair, 'Atlas City Token', 'ACT', contract, 3);
+  //   const erc20Wallet: any = erc20.generateERC20Wallet(
+  // keypair, 'Atlas City Token', 'ACT', contract, 3);
   //   const balance = await erc20.getERC20Balance(erc20Wallet);
   //   // const sendTx = await erc20.transferAllowanceERC20(
   //   // erc20Wallet, '0x6B92382DEdd2bb7650eB388C553568552206b102', 10000)
@@ -101,7 +102,8 @@ describe('ethereumSDK (wallet)', () => {
   //   const wallet = eth.generateHDWallet(entropy, 'ETHEREUM_ROPSTEN');
   //   const contract = '0x26705403968a8c73656a2fed0f89245698718f3f';
   //   const keypair: any = eth.generateKeyPair(wallet, 0);
-  //   const erc20Wallet: any = erc20.generateERC20Wallet(keypair, 'Atlas City Token', 'ACT', contract, 3);
+  //   const erc20Wallet: any = erc20.generateERC20Wallet(
+  // keypair, 'Atlas City Token', 'ACT', contract, 3);
 
   //   const history = await erc20.getERC20TransactionHistory(erc20Wallet);
   //   console.log(history);
