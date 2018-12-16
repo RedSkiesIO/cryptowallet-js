@@ -47,13 +47,12 @@ declare namespace CryptoWallet.SDKS.Bitcoin {
          * @param amount
          */
         createRawTx(accounts: object[], change: string[], utxos: any, wallet: any, toAddress: string, amount: number): Object;
-        broadcastTx(rawTx: object, network: string): Object;
-        decodeTx(rawTx: Object, change: string[], amount: number, receiver: string, wallet: any): Object;
+        broadcastTx(tx: object, network: string): Object;
         /**
          *
          * @param transaction
          */
-        verifyTxSignature(transaction: any): boolean;
+        verifyTxSignature(transaction: any, network: string): boolean;
         /**
          *
          */

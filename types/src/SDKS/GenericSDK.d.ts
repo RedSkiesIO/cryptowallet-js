@@ -10,11 +10,32 @@ export declare namespace CryptoWallet.SDKS {
         request: any;
         axios: any;
         generateHDWallet(entropy: string, network: string): Object;
-        generateKeyPair(wallet: any, index: number, external?: boolean): Object;
-        abstract broadcastTx(rawTx: object, network: string): Object;
-        abstract importWIF(wif: string, network: string): Object;
-        abstract verifyTxSignature(transaction: object): boolean;
-        abstract accountDiscovery(entropy: string, netork: string): Object;
+        /**
+        *
+        * @param wallet
+        * @param index
+        * @param external
+        */
+        generateKeyPair(wallet: any, index: number, internal?: boolean): Object;
+        broadcastTx(tx: object, network: string): Object;
+        /**
+        *
+        * @param wif
+        */
+        importWIF(wif: string, network: string): Object;
+        /**
+     *
+     * @param keypair
+     * @param toAddress
+     * @param amount
+     */
+        createRawTx(accounts: object[], change: string[], utxos: any, wallet: any, toAddress: string, amount: number): Object;
+        /**
+        *
+        * @param transaction
+        */
+        verifyTxSignature(transaction: any, network: string): boolean;
+        accountDiscovery(entropy: string, network: string, internal?: boolean): Object;
         getTransactionHistory(addresses: string[], network: string, from: number, to: number): Object;
         getBalance(addresses: string[], network: string): Object;
     }

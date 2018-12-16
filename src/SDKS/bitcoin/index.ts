@@ -40,7 +40,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
       });
 
 
-      if (wallet.bip === 44) {
+      if (!wallet.network.segwit) {
         result = this.bitcoinlib.payments.p2pkh({
           pubkey: addrNode.publicKey, network: wallet.network.connect,
         });
@@ -139,32 +139,32 @@ namespace CryptoWallet.SDKS.Bitcoin {
 
     getUTXOs(addresses: string[], network: string): Object {
       return new Promise((resolve, reject) => {
-        const unit = Explorers.Unit;
-        const insight = new this.Explore.Insight(
-          this.networks[network].discovery, this.networks[network].type,
-        );
-        insight.getUnspentUtxos(addresses, (error: string, utxos: any) => {
-          if (error) {
-            // any other error
-            return reject(error);
-          }
+        const apiUrl = this.networks[network].discovery;
+        const URL = `${apiUrl}/addrs/${addresses.toString()}/utxo`;
+        console.log('URL :', URL);
+        this.axios.get(URL)
+          .then((r: any) => {
+            // if (error) {
+            //   // any other error
+            //   return reject(error);
+            // }
 
-          const result: any = [];
+            const result: any = [];
 
-          if (utxos.length === 0) {
-            // if no transactions have happened, there is no balance on the address.
+            if (r.data.length === 0) {
+              // if no transactions have happened, there is no balance on the address.
+              return resolve(result);
+            }
+
+            r.data.forEach((utxo: any) => {
+              const u = utxo;
+              u.value = utxo.satoshis;
+              result.push(u);
+            });
+
+
             return resolve(result);
-          }
-
-          utxos.forEach((utxo: any) => {
-            const u = utxo.toJSON();
-            u.value = utxo.satoshis;
-            result.push(u);
           });
-
-
-          return resolve(result);
-        });
       });
     }
 
@@ -239,6 +239,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
                 }
 
                 const keyPair = this.bitcoinlib.ECPair.fromWIF(key.privateKey, net.connect);
+
                 const p2wpkh = this.bitcoinlib.payments.p2wpkh(
                   { pubkey: keyPair.publicKey, network: net.connect },
                 );
@@ -269,17 +270,18 @@ namespace CryptoWallet.SDKS.Bitcoin {
           });
           let i = 0;
           inputs.forEach((input: any) => {
-            txb.sign(i, accountsUsed[i], p2shUsed[i].redeem.output, undefined, inputs[i].value);
+            if (wallet.network.segwit) {
+              txb.sign(i, accountsUsed[i], p2shUsed[i].redeem.output, undefined, inputs[i].value);
+            } else {
+              txb.sign(i, accountsUsed[i]);
+            }
             i += 1;
           });
           rawTx = txb.build().toHex();
 
           const senders: any = [];
           inputs.forEach((input: any) => {
-            const inputAddr = input.addresses;
-            inputAddr.forEach((addr: any) => {
-              senders.push(addr);
-            });
+            senders.push(input.address);
           });
 
           const transaction = {
@@ -288,12 +290,12 @@ namespace CryptoWallet.SDKS.Bitcoin {
             confirmed: false,
             confirmations: 0,
             hash: txb.build().getId(),
-            blockHeight: undefined,
+            blockHeight: -1,
             fee: fees,
             sent: true,
             value: amount,
             sender: senders,
-            receivedTime: undefined,
+            receivedTime: new Date().toISOString(),
             confirmedTime: undefined,
 
           };
@@ -309,93 +311,110 @@ namespace CryptoWallet.SDKS.Bitcoin {
       });
     }
 
-    broadcastTx(rawTx: object, network: string): Object {
+    broadcastTx(tx: object, network: string): Object {
       return new Promise((resolve, reject) => {
-        Request.post(this.networks[network].apiUrl,
-          {
-            form: {
-              tx_hex: rawTx,
+        if (this.networks[network].segwit) {
+          Request.post(this.networks[network].broadcastUrl,
+            {
+              form: {
+                tx_hex: tx,
+              },
             },
-          },
-          (error: any, body: any, result: any) => {
-            if (error) {
-              return resolve(new Error(`Transaction failed: ${error}`));
-            }
-
-            const output = JSON.parse(result);
-            const res = output.data.txid;
-            return resolve(res);
-          });
+            (error: any, body: any, result: any) => {
+              if (error) {
+                return resolve(new Error(`Transaction failed: ${error}`));
+              }
+              console.log('result :', result);
+              const output = JSON.parse(result);
+              const res = output.data.txid;
+              return resolve(res);
+            });
+        } else {
+          Request.post(`${this.networks[network].discovery}/tx/send`,
+            {
+              form: {
+                rawtx: tx,
+              },
+            },
+            (error: any, body: any, result: any) => {
+              if (error) {
+                return resolve(new Error(`Transaction failed: ${error}`));
+              }
+              console.log('result :', result);
+              const res = result.txid;
+              return resolve(res);
+            });
+        }
       });
     }
 
-    decodeTx(rawTx: Object,
-      change: string[],
-      amount: number,
-      receiver: string,
-      wallet: any): Object {
-      const tx = {
-        tx: rawTx,
-      };
-      // return new Promise((resolve, reject) => {
-      console.log('hex :', JSON.stringify(rawTx));
-      const Tx: any = this.bitcoinlib.Transaction.fromHex(JSON.stringify(rawTx));
+    // decodeTx(rawTx: Object,
+    //   change: string[],
+    //   amount: number,
+    //   receiver: string,
+    //   wallet: any): Object {
+    //   const tx = {
+    //     tx: rawTx,
+    //   };
+    //   // return new Promise((resolve, reject) => {
+    //   console.log('hex :', JSON.stringify(rawTx));
+    //   const Tx: any = this.bitcoinlib.Transaction.fromHex(JSON.stringify(rawTx));
 
-      const transaction = {
-        change,
-        receiver,
-        hash: Tx.getId(),
+    //   const transaction = {
+    //     change,
+    //     receiver,
+    //     hash: Tx.getId(),
 
-      };
+    //   };
 
-      return Tx;
+    //   return Tx;
 
-      // this.Req.post(
-      //   {
-      //     url: wallet.network.decodeTxApi,
-      //     form: JSON.stringify(tx),
-      //   },
-      //   (error: any, body: any, result: any) => {
-      //     if (error) {
-      //       return reject(new Error(`Transaction failed: ${error}`));
-      //     }
-      //     const output = JSON.parse(result);
-      //     let confirmed = false;
-      //     if (output.confirmations > 5) { confirmed = true; }
-      //     const senders: any = [];
-      //     output.inputs.forEach((input: any) => {
-      //       const inputAddr = input.addresses;
-      //       inputAddr.forEach((addr: any) => {
-      //         senders.push(addr);
-      //       });
-      //     });
-      //     const transaction = {
-      //       change,
-      //       receiver,
-      //       confirmed,
-      //       confirmations: output.confirmations,
-      //       hash: output.hash,
-      //       blockHeight: output.block_height,
-      //       fee: output.fees,
-      //       sent: true,
-      //       value: amount,
-      //       sender: senders,
-      //       receivedTime: output.received,
-      //       confirmedTime: output.confirmed,
+    // this.Req.post(
+    //   {
+    //     url: wallet.network.decodeTxApi,
+    //     form: JSON.stringify(tx),
+    //   },
+    //   (error: any, body: any, result: any) => {
+    //     if (error) {
+    //       return reject(new Error(`Transaction failed: ${error}`));
+    //     }
+    //     const output = JSON.parse(result);
+    //     let confirmed = false;
+    //     if (output.confirmations > 5) { confirmed = true; }
+    //     const senders: any = [];
+    //     output.inputs.forEach((input: any) => {
+    //       const inputAddr = input.addresses;
+    //       inputAddr.forEach((addr: any) => {
+    //         senders.push(addr);
+    //       });
+    //     });
+    //     const transaction = {
+    //       change,
+    //       receiver,
+    //       confirmed,
+    //       confirmations: output.confirmations,
+    //       hash: output.hash,
+    //       blockHeight: output.block_height,
+    //       fee: output.fees,
+    //       sent: true,
+    //       value: amount,
+    //       sender: senders,
+    //       receivedTime: output.received,
+    //       confirmedTime: output.confirmed,
 
-      //     };
-      //     return resolve(transaction);
-      //   },
-      // );
-      // });
-    }
+    //     };
+    //     return resolve(transaction);
+    //   },
+    // );
+    // });
+    // }
 
     /**
      *
      * @param transaction
      */
-    verifyTxSignature(transaction: any): boolean {
-      const keyPairs = transaction.pubKeys.map((q: any) => this.bitcoinlib.ECPair.fromPublicKey(Buffer.from(q, 'hex')));
+    verifyTxSignature(transaction: any, network: string): boolean {
+      const keyPairs = transaction.pubKeys.map((q: any) => this.bitcoinlib.ECPair.fromPublicKey(Buffer.from(q, 'hex'), this.networks[network].connect));
 
       const tx = this.bitcoinlib.Transaction.fromHex(transaction.txHex);
       const valid: boolean[] = [];
@@ -450,6 +469,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
 
     accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
       const wallet: any = this.generateHDWallet(entropy, network);
+      const apiUrl = wallet.network.discovery;
 
       const insight: any = new Explorers.Insight(wallet.network.discovery, wallet.network.type);
       let usedAddresses: any = [];
@@ -459,29 +479,30 @@ namespace CryptoWallet.SDKS.Bitcoin {
         change = true;
       }
 
-      function checkAddress(address: string, i: number): Promise<object> {
+      const checkAddress = (address: string, i: number) => {
+        const URL = `${apiUrl}/addr/${address}?noTxList=1`;
+
         return new Promise(async (resolve, reject) => {
-          await insight.address(address, (err: any, addr: any) => {
-            if (err) {
-              return reject(new Error(err));
-            }
-            const result = {
-              address: addr.address.toString(),
-              received: addr.totalReceived,
-              balance: addr.balance,
-              index: i,
-            };
+          this.axios.get(URL)
+            .then((addr: any) => {
+              const result = {
+                address,
+                received: addr.data.totalReceived,
+                balance: addr.data.balance,
+                index: i,
+              };
 
 
-            if (result.received > 0) {
-              usedAddresses.push(result);
-            } else {
-              emptyAddresses.push(result.index);
-            }
-            return resolve(result);
-          });
+              if (result.received > 0) {
+                usedAddresses.push(result);
+              } else {
+                emptyAddresses.push(result.index);
+              }
+              return resolve(result);
+            })
+            .catch((error: any) => reject(new Error(error)));
         });
-      }
+      };
 
       return new Promise(async (resolve, reject) => {
         let startIndex = 0;
@@ -511,21 +532,23 @@ namespace CryptoWallet.SDKS.Bitcoin {
           }
         };
 
+
         await discover();
 
+        const result: any = {
+          change,
+          active: usedAddresses,
+          nextAddress: startIndex,
+        };
+        const allAddresses = usedAddresses;
         if (internal) {
+          result.used = allAddresses;
           usedAddresses = usedAddresses.filter((item: any) => {
             if (item.balance === 0) return false;
             return true;
           });
         }
 
-        const result = {
-          change,
-          used: usedAddresses,
-          nextAddress: startIndex,
-
-        };
 
         return resolve(result);
       });

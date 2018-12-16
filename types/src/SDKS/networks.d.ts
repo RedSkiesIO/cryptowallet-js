@@ -3,6 +3,7 @@ export declare const ethToken = "2JAADVNZG512YIZSCF7S6JDXS8QI7PSUFY";
 export declare const BITCOIN: {
     name: string;
     bip: number;
+    segwit: boolean;
     connect: {
         messagePrefix: string;
         bip32: {
@@ -17,6 +18,7 @@ export declare const BITCOIN: {
 export declare const LITECOIN: {
     name: string;
     bip: number;
+    segwit: boolean;
     connect: {
         messagePrefix: string;
         bip32: {
@@ -32,8 +34,9 @@ export declare const LITECOIN_TESTNET: {
     name: string;
     type: string;
     bip: number;
+    segwit: boolean;
     discovery: string;
-    sendTxApi: string;
+    broadcastUrl: string;
     connect: {
         messagePrefix: string;
         bip32: {
@@ -48,6 +51,7 @@ export declare const LITECOIN_TESTNET: {
 export declare const DASH: {
     name: string;
     bip: number;
+    segwit: boolean;
     connect: {
         messagePrefix: string;
         bip32: {
@@ -62,6 +66,9 @@ export declare const DASH: {
 export declare const DASH_TESTNET: {
     name: string;
     bip: number;
+    segwit: boolean;
+    discovery: string;
+    broadcastUrl: string;
     connect: {
         messagePrefix: string;
         bip32: {
@@ -76,6 +83,7 @@ export declare const DASH_TESTNET: {
 export declare const DOGECOIN: {
     name: string;
     bip: number;
+    segwit: boolean;
     connect: {
         messagePrefix: string;
         bip32: {
@@ -90,6 +98,7 @@ export declare const DOGECOIN: {
 export declare const DOGECOIN_TESTNET: {
     name: string;
     bip: number;
+    segwit: boolean;
     connect: {
         messagePrefix: string;
         bip32: {
@@ -103,6 +112,7 @@ export declare const DOGECOIN_TESTNET: {
 };
 export declare const VIACOIN: {
     name: string;
+    segwit: boolean;
     connect: {
         messagePrefix: string;
         bip32: {
@@ -116,6 +126,7 @@ export declare const VIACOIN: {
 };
 export declare const VIACOIN_TESTNET: {
     name: string;
+    segwit: boolean;
     connect: {
         messagePrefix: string;
         bip32: {
@@ -147,8 +158,9 @@ export declare const BITCOIN_TESTNET: {
     name: string;
     type: string;
     bip: number;
+    segwit: boolean;
     discovery: string;
-    apiUrl: string;
+    broadcastUrl: string;
     sendTxApi: string;
     getTranApi: string;
     decodeTxApi: string;

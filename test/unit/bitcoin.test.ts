@@ -82,6 +82,13 @@ describe('bitcoinSDK (wallet)', () => {
     assert.equal(keypair.address, 'XwzcnQSMZRhZDcNZZmskLB2ztiJnsD26vG');
   });
 
+  it('can create a dash testnet key pair', () => {
+    const wallet: any = btc.generateHDWallet(entropy, 'DASH_TESTNET');
+    const keypair: any = btc.generateKeyPair(wallet, 0);
+    console.log('address :', keypair.address);
+    // assert.equal(keypair.address, 'XwzcnQSMZRhZDcNZZmskLB2ztiJnsD26vG');
+  });
+
 
   // it('can get the transaction history of a wallet', async () => {
   //   const wallet: any = btc.generateHDWallet(entropy2, network);
@@ -94,25 +101,28 @@ describe('bitcoinSDK (wallet)', () => {
   //   console.log(tData);
   // });
 
-  it('can get the transaction history of a wallet', async () => {
-    const wallet: any = btc.generateHDWallet(entropy2, network);
-    const addresses: any = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
-      '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM', '2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA',
-    ];
-    const tData: any = await btc.getTransactionHistory('2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
-      addresses, 'BITCOIN_TESTNET', 0, 50);
-    console.log(tData);
-  });
+  // it('can get the transaction history of a wallet', async () => {
+  //   const wallet: any = btc.generateHDWallet(entropy2, network);
+  //   const addresses: any = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+  //     '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM', '2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA',
+  //   ];
+  //   const tData: any = await btc.getTransactionHistory(
+  //     addresses, 'BITCOIN_TESTNET', 0, 50,
+  //   );
+  //   console.log(tData);
+  // });
 
-  it('can get the balance of a wallet', async () => {
-    const wallet: any = btc.generateHDWallet(entropy2, network);
-    const addresses: any = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf', '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM', '2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA',
-    ];
-    const tData: any = await btc.getBalance(
-      addresses, 'BITCOIN_TESTNET',
-    );
-    console.log(tData);
-  });
+  // it('can get the balance of a wallet', async () => {
+  //   const wallet: any = btc.generateHDWallet(entropy2, network);
+  //   const addresses: any = [
+  // '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+  // '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM', '2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA',
+  //   ];
+  //   const tData: any = await btc.getBalance(
+  //     addresses, 'BITCOIN_TESTNET',
+  //   );
+  //   console.log(tData);
+  // });
 
   // it('can get the unspent transactions of a wallet', async () => {
   //   const addresses = [
@@ -202,17 +212,57 @@ describe('bitcoinSDK (wallet)', () => {
   // });
 
 
-  // it('can discover an account', async (done) => {
-  //   const externalAccountDiscovery: any = await btc.accountDiscovery(
-  // testEntropy, 'BITCOIN_TESTNET');
-  //   const internalAccountDiscovery: any = await btc.accountDiscovery(
-  //     testEntropy, 'BITCOIN_TESTNET', true,
-  //   );
-  //   console.log(externalAccountDiscovery);
-  //   console.log(internalAccountDiscovery);
+  // it('can create a dash testnet raw transaction', async () => {
+  //   const wallet = btc.generateHDWallet(entropy, 'DASH_TESTNET');
+  //   const receiverWallet = btc.generateHDWallet(entropy2, 'DASH_TESTNET');
 
-  //   // expect(externalAccountDiscovery.used.length).to.equal(1);
+  //   const addresses = [
+  //     'yWxRFULbGzvNuFafp1jUFNenXbiGrdoNWr', 'yifJaS4dzhySqAWmFfm3E2gaysZRQmaJix'];
+  //   const utxos: any = await btc.getUTXOs(addresses, 'DASH_TESTNET');
+
+
+  //   const accounts = [{
+  //     address: 'yWxRFULbGzvNuFafp1jUFNenXbiGrdoNWr',
+  //     index: 0,
+  //     change: false,
+  //   },
+  //   {
+  //     address: 'yifJaS4dzhySqAWmFfm3E2gaysZRQmaJix',
+  //     index: 0,
+  //     change: true,
+  //   }];
+
+  //   const change1: any = btc.generateKeyPair(wallet, 0, true);
+  //   const change2: any = btc.generateKeyPair(wallet, 1, true);
+
+  //   const change = [
+  //     change1.address];
+
+  //   const testAddress: any = btc.generateKeyPair(receiverWallet, 0);
+  //   console.log(`To: ${testAddress.address}`);
+
+  //   const tData: any = await btc.createRawTx(
+  //     accounts, change, utxos, wallet, testAddress.address, 0.1,
+  //   );
+  //   console.log(tData);
+
+  //   const pushTx = await btc.broadcastTx(tData.hexTx, 'DASH_TESTNET');
+  //   console.log('txid :', pushTx);
   // });
+
+
+  it('can discover an account', async (done) => {
+    const externalAccountDiscovery: any = await btc.accountDiscovery(
+      entropy, 'BITCOIN_TESTNET',
+    );
+    const internalAccountDiscovery: any = await btc.accountDiscovery(
+      entropy, 'BITCOIN_TESTNET', true,
+    );
+    console.log(externalAccountDiscovery);
+    console.log(internalAccountDiscovery);
+
+    // expect(externalAccountDiscovery.used.length).to.equal(1);
+  });
 });
 
 

@@ -4,6 +4,7 @@ export const ethToken = '2JAADVNZG512YIZSCF7S6JDXS8QI7PSUFY';
 export const BITCOIN = {
   name: 'Bitcoin',
   bip: 0,
+  segwit: true,
   connect: {
     messagePrefix: '\x18Bitcoin Signed Message:\n',
     bip32: {
@@ -20,6 +21,7 @@ export const BITCOIN = {
 export const LITECOIN = {
   name: 'Litecoin',
   bip: 2,
+  segwit: true,
   connect: {
     messagePrefix: '\x19Litecoin Signed Message:\n',
     bip32: {
@@ -36,10 +38,9 @@ export const LITECOIN_TESTNET = {
   name: 'Litecoin Testnet',
   type: 'litecoin testnet',
   bip: 1,
-  discovery: 'https://testnet.litecore.io',
-  sendTxApi: 'https://chain.so/api/v2/send_tx/LTCTEST',
-  // getTranApi: 'https://api.blockcypher.com/v1/btc/test3/addrs/',
-  // decodeTxApi: 'https://api.blockcypher.com/v1/btc/test3/txs/decode',
+  segwit: true,
+  discovery: 'https://testnet.litecore.io/api',
+  broadcastUrl: 'https://chain.so/api/v2/send_tx/LTCTEST',
   connect: {
     messagePrefix: '\x19Litecoin Signed Message:\n',
     bip32: {
@@ -55,6 +56,7 @@ export const LITECOIN_TESTNET = {
 export const DASH = {
   name: 'Dash',
   bip: 5,
+  segwit: false,
   connect: {
     messagePrefix: 'unused',
     bip32: {
@@ -69,7 +71,10 @@ export const DASH = {
 
 export const DASH_TESTNET = {
   name: 'Dash Testnet',
-  bip: 5,
+  bip: 1,
+  segwit: false,
+  discovery: 'https://testnet-insight.dashevo.org/insight-api',
+  broadcastUrl: 'https://chain.so/api/v2/send_tx/DASHTEST',
   connect: {
     messagePrefix: 'unused',
     bip32: {
@@ -85,6 +90,7 @@ export const DASH_TESTNET = {
 export const DOGECOIN = {
   name: 'Dogecoin',
   bip: 3,
+  segwit: false,
   connect: {
     messagePrefix: '\x19Dogecoin Signed Message:\n',
     bip32: {
@@ -100,6 +106,7 @@ export const DOGECOIN = {
 export const DOGECOIN_TESTNET = {
   name: 'Dogecoin Testnet',
   bip: 1,
+  segwit: false,
   connect: {
     messagePrefix: '\x18Dogecoin Signed Message:\n',
     bip32: {
@@ -113,7 +120,7 @@ export const DOGECOIN_TESTNET = {
 };
 export const VIACOIN = {
   name: 'Viacoin',
-
+  segwit: false,
   connect: {
     messagePrefix: '\x18Viacoin Signed Message:\n',
     bip32: {
@@ -127,6 +134,7 @@ export const VIACOIN = {
 };
 export const VIACOIN_TESTNET = {
   name: 'Viacoin Testnet',
+  segwit: false,
   connect: {
     messagePrefix: '\x18Viacoin Signed Message:\n',
     bip32: {
@@ -161,8 +169,9 @@ export const BITCOIN_TESTNET = {
   name: 'Bitcoin Testnet',
   type: 'testnet',
   bip: 1,
-  discovery: 'https://test-insight.bitpay.com',
-  apiUrl: 'https://chain.so/api/v2/send_tx/BTCTEST',
+  segwit: true,
+  discovery: 'https://test-insight.bitpay.com/api',
+  broadcastUrl: 'https://chain.so/api/v2/send_tx/BTCTEST',
   sendTxApi: 'https://api.blockcypher.com/v1/btc/test3/txs/push',
   getTranApi: 'https://api.blockcypher.com/v1/btc/test3/addrs/',
   decodeTxApi: 'https://api.blockcypher.com/v1/btc/test3/txs/decode',
