@@ -323,6 +323,7 @@ export namespace CryptoWallet.SDKS {
     accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
       const wallet: any = this.generateHDWallet(entropy, network);
       const apiUrl = wallet.network.discovery;
+
       let usedAddresses: any = [];
       const emptyAddresses: any = [];
       let change = false;
@@ -383,21 +384,23 @@ export namespace CryptoWallet.SDKS {
           }
         };
 
+
         await discover();
 
+        const result: any = {
+          change,
+          active: usedAddresses,
+          nextAddress: startIndex,
+        };
+        const allAddresses = usedAddresses;
         if (internal) {
+          result.used = allAddresses;
           usedAddresses = usedAddresses.filter((item: any) => {
             if (item.balance === 0) return false;
             return true;
           });
         }
 
-        const result = {
-          change,
-          used: usedAddresses,
-          nextAddress: startIndex,
-
-        };
 
         return resolve(result);
       });

@@ -471,7 +471,6 @@ namespace CryptoWallet.SDKS.Bitcoin {
       const wallet: any = this.generateHDWallet(entropy, network);
       const apiUrl = wallet.network.discovery;
 
-      const insight: any = new Explorers.Insight(wallet.network.discovery, wallet.network.type);
       let usedAddresses: any = [];
       const emptyAddresses: any = [];
       let change = false;
@@ -537,7 +536,6 @@ namespace CryptoWallet.SDKS.Bitcoin {
 
         const result: any = {
           change,
-          active: usedAddresses,
           nextAddress: startIndex,
         };
         const allAddresses = usedAddresses;
@@ -548,6 +546,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
             return true;
           });
         }
+        result.active = usedAddresses;
 
 
         return resolve(result);

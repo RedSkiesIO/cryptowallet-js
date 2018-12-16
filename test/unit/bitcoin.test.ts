@@ -14,6 +14,9 @@ const btc: any = CryptoWallet.createSDK('Bitcoin');
 const entropy = 'nut mixture license bean page mimic iron spice rail uncover then warfare';
 const entropy2 = 'calm steel soccer pulse polar depend bar bargain give pave ancient member';
 const testEntropy = 'nest orient spare seek crawl maze must pause grape bird quarter shrimp';
+
+const entro = 'input fancy dilemma valley master body witness actual hat today ceiling idea';
+
 const network = 'BITCOIN_TESTNET';
 const rootKey: string = 'xprv9s21ZrQH143K468LbsXz8YqCZjiP1ZCLXy4nV352PWToQYEi1WxeEDKzWRd3vWbSfUjQuFAPwPMPG1KRVtsLDc3YvD7X1MktbTzcmsEqjPw';
 
@@ -253,10 +256,10 @@ describe('bitcoinSDK (wallet)', () => {
 
   it('can discover an account', async (done) => {
     const externalAccountDiscovery: any = await btc.accountDiscovery(
-      entropy, 'BITCOIN_TESTNET',
+      entro, 'BITCOIN_TESTNET',
     );
     const internalAccountDiscovery: any = await btc.accountDiscovery(
-      entropy, 'BITCOIN_TESTNET', true,
+      entro, 'BITCOIN_TESTNET', true,
     );
     console.log(externalAccountDiscovery);
     console.log(internalAccountDiscovery);
