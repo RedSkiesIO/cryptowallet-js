@@ -389,7 +389,6 @@ export namespace CryptoWallet.SDKS {
 
         const result: any = {
           change,
-          active: usedAddresses,
           nextAddress: startIndex,
         };
         const allAddresses = usedAddresses;
@@ -400,6 +399,7 @@ export namespace CryptoWallet.SDKS {
             return true;
           });
         }
+        result.active = usedAddresses;
 
 
         return resolve(result);
@@ -569,7 +569,7 @@ export namespace CryptoWallet.SDKS {
       const apiUrl = this.networks[network].discovery;
       const returnAmount = 10;
 
-      const URL = `${apiUrl}/api/addrs/${addresses.toString()}/txs?from=${from}&to=${to}`;
+      const URL = `${apiUrl}/addrs/${addresses.toString()}/txs?from=${from}&to=${to}`;
 
       console.log(URL);
 
@@ -660,7 +660,8 @@ export namespace CryptoWallet.SDKS {
       const apiUrl = this.networks[network].discovery;
 
       const getAddrBalance = (addr: string) => {
-        const URL = `${apiUrl}/api/addr/${addr}?noTxList=1`;
+        const URL = `${apiUrl}/addr/${addr}?noTxList=1`;
+
         return new Promise((resolve, reject) => {
           this.axios.get(URL)
             .then((r: any) => {

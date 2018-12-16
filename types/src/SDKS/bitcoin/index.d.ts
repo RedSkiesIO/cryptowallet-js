@@ -6,13 +6,6 @@ declare namespace CryptoWallet.SDKS.Bitcoin {
         Explore: any;
         Req: any;
         /**
-        *
-        * @param wallet
-        * @param index
-        * @param external
-        */
-        generateKeyPair(wallet: any, index: number, internal?: boolean): Object;
-        /**
          *
          * @param keyPair
          */
@@ -31,28 +24,10 @@ declare namespace CryptoWallet.SDKS.Bitcoin {
          */
         /**
          *
-         * @param wif
-         */
-        importWIF(wif: string, network: string): Object;
-        /**
-         *
          * @param keys
          */
         gernerateP2SHMultiSig(keys: string[]): Object;
         getUTXOs(addresses: string[], network: string): Object;
-        /**
-         *
-         * @param keypair
-         * @param toAddress
-         * @param amount
-         */
-        createRawTx(accounts: object[], change: string[], utxos: any, wallet: any, toAddress: string, amount: number): Object;
-        broadcastTx(tx: object, network: string): Object;
-        /**
-         *
-         * @param transaction
-         */
-        verifyTxSignature(transaction: any, network: string): boolean;
         /**
          *
          */
@@ -61,7 +36,6 @@ declare namespace CryptoWallet.SDKS.Bitcoin {
          *
          */
         create2t2tx(txparams: any): String;
-        accountDiscovery(entropy: string, network: string, internal?: boolean): Object;
     }
 }
 declare const _default: typeof CryptoWallet.SDKS.Bitcoin.BitcoinSDK;

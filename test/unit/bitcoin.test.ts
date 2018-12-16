@@ -115,17 +115,17 @@ describe('bitcoinSDK (wallet)', () => {
   //   console.log(tData);
   // });
 
-  // it('can get the balance of a wallet', async () => {
-  //   const wallet: any = btc.generateHDWallet(entropy2, network);
-  //   const addresses: any = [
-  // '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
-  // '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM', '2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA',
-  //   ];
-  //   const tData: any = await btc.getBalance(
-  //     addresses, 'BITCOIN_TESTNET',
-  //   );
-  //   console.log(tData);
-  // });
+  it('can get the balance of a wallet', async () => {
+    const wallet: any = btc.generateHDWallet(entropy2, network);
+    const addresses: any = [
+      '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+      '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM', '2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA',
+    ];
+    const tData: any = await btc.getBalance(
+      addresses, 'BITCOIN_TESTNET',
+    );
+    console.log(tData);
+  });
 
   // it('can get the unspent transactions of a wallet', async () => {
   //   const addresses = [
@@ -254,18 +254,18 @@ describe('bitcoinSDK (wallet)', () => {
   // });
 
 
-  it('can discover an account', async (done) => {
-    const externalAccountDiscovery: any = await btc.accountDiscovery(
-      entro, 'BITCOIN_TESTNET',
-    );
-    const internalAccountDiscovery: any = await btc.accountDiscovery(
-      entro, 'BITCOIN_TESTNET', true,
-    );
-    console.log(externalAccountDiscovery);
-    console.log(internalAccountDiscovery);
+  // it('can discover an account', async (done) => {
+  //   const externalAccountDiscovery: any = await btc.accountDiscovery(
+  //     entro, 'BITCOIN_TESTNET',
+  //   );
+  //   const internalAccountDiscovery: any = await btc.accountDiscovery(
+  //     entro, 'BITCOIN_TESTNET', true,
+  //   );
+  //   console.log(externalAccountDiscovery);
+  //   console.log(internalAccountDiscovery);
 
-    // expect(externalAccountDiscovery.used.length).to.equal(1);
-  });
+  //   // expect(externalAccountDiscovery.used.length).to.equal(1);
+  // });
 });
 
 
