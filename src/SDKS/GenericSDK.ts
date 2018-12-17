@@ -208,12 +208,13 @@ export namespace CryptoWallet.SDKS {
             result = CoinSelectSplit(inputs, targets, feeRate);
           }
 
-          let { inputs, outputs, fee } = result;
-          console.log('fees :', fee);
+          const { inputs, outputs } = result;
+          let { fee } = result;
+
 
           const accountsUsed: any = [];
           const p2shUsed: any = [];
-          console.log(`Inputs:${inputs}`);
+
           inputs.forEach((input: any) => {
             accounts.forEach((account: any) => {
               let key: any;
