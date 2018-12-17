@@ -115,17 +115,17 @@ describe('bitcoinSDK (wallet)', () => {
   //   console.log(tData);
   // });
 
-  it('can get the balance of a wallet', async () => {
-    const wallet: any = btc.generateHDWallet(entropy2, network);
-    const addresses: any = [
-      '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
-      '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM', '2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA',
-    ];
-    const tData: any = await btc.getBalance(
-      addresses, 'BITCOIN_TESTNET',
-    );
-    console.log(tData);
-  });
+  // it('can get the balance of a wallet', async () => {
+  //   const wallet: any = btc.generateHDWallet(entropy2, network);
+  //   const addresses: any = [
+  //     '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+  //     '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM', '2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA',
+  //   ];
+  //   const tData: any = await btc.getBalance(
+  //     addresses, 'BITCOIN_TESTNET',
+  //   );
+  //   console.log(tData);
+  // });
 
   // it('can get the unspent transactions of a wallet', async () => {
   //   const addresses = [
@@ -141,45 +141,45 @@ describe('bitcoinSDK (wallet)', () => {
   //   expect(tData.length).to.equal(1);
   // });
 
-  // it('can create a raw transaction', async () => {
-  //   const wallet = btc.generateHDWallet(entropy, 'BITCOIN_TESTNET');
-  //   const receiverWallet = btc.generateHDWallet(entropy2, 'BITCOIN_TESTNET');
+  it('can create a raw transaction', async () => {
+    const wallet = btc.generateHDWallet(entropy, 'BITCOIN_TESTNET');
+    const receiverWallet = btc.generateHDWallet(entropy2, 'BITCOIN_TESTNET');
 
-  //   const addresses = [
-  //     '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf', '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM'];
-  //   const utxos: any = await btc.getUTXOs(addresses, 'BITCOIN_TESTNET');
-  //   console.log(utxos);
+    const addresses = [
+      '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf', '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM'];
+    const utxos: any = await btc.getUTXOs(addresses, 'BITCOIN_TESTNET');
+    console.log(utxos);
 
-  //   const accounts = [{
-  //     address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
-  //     index: 0,
-  //     change: false,
-  //   },
-  //   {
-  //     address: '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM',
-  //     index: 1,
-  //     change: false,
+    const accounts = [{
+      address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+      index: 0,
+      change: false,
+    },
+    {
+      address: '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM',
+      index: 1,
+      change: false,
 
-  //   }];
+    }];
 
-  //   const change1: any = btc.generateKeyPair(wallet, 0, true);
-  //   const change2: any = btc.generateKeyPair(wallet, 1, true);
+    const change1: any = btc.generateKeyPair(wallet, 0, true);
+    const change2: any = btc.generateKeyPair(wallet, 1, true);
 
-  //   const change = [
-  //     change1.address];
+    const change = [
+      change1.address];
 
-  //   const testAddress: any = btc.generateKeyPair(receiverWallet, 0);
-  //   console.log(`To: ${testAddress.address}`);
+    const testAddress: any = btc.generateKeyPair(receiverWallet, 0);
+    console.log(`To: ${testAddress.address}`);
 
-  //   const tData: any = await btc.createRawTx(
-  //     accounts, change, utxos, wallet, testAddress.address, 0.001,
-  //   );
-  //   console.log(tData);
+    const tData: any = await btc.createRawTx(
+      accounts, change, utxos, wallet, testAddress.address, 0.001,
+    );
+    console.log(tData);
 
 
-  //   // const pushTx = await btc.broadcastTx(tData.hexTx, 'BITCOIN_TESTNET');
-  //   // console.log('txid :', pushTx);
-  // });
+    const pushTx = await btc.broadcastTx(tData.hexTx, 'BITCOIN_TESTNET');
+    console.log('txid :', pushTx);
+  });
 
   // it('can create a litecoin testnet raw transaction', async () => {
   //   const wallet = btc.generateHDWallet(entropy, 'LITECOIN_TESTNET');

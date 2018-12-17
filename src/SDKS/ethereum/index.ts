@@ -43,14 +43,14 @@ export namespace CryptoWallet.SDKS.Ethereum {
      *
      * @param wif
      */
-    importWIF(wif: string): Object {
+    importWIF(wif: string, network: string): Object {
       const rawKey = Buffer.from(wif, 'hex');
       const keypair = this.ethereumlib.fromPrivateKey(rawKey);
       const result = {
         publicKey: `0x${keypair.getPublicKeyString()}`,
         address: keypair.getChecksumAddressString(),
         privateKey: `0x${keypair.getPrivateKey().toString('hex')}`,
-        type: 'Ethereum',
+        type: this.networks[network].name,
       };
       return result;
     }
@@ -116,82 +116,97 @@ export namespace CryptoWallet.SDKS.Ethereum {
       return false;
     }
 
-    // getTransactionHistory(
-    //   address: string,
-    //   addresses: string[],
-    //   network: string,
-    //   lastBlock: number,
-    //   beforeBlock?: number,
-    //   limit?: number,
-    // )
-    //   : Object {
-    //   return new Promise(async (resolve, reject) => {
-    //     const URL = `${this.networks[network].getTranApi
-    //  + address}&startblock=${lastBlock}&sort=desc&apikey=${this.networks.ethToken}`;
+    getTransactionHistory(
+      addresses: string[],
+      network: string,
+      startBlock: number,
+      endBlock?: number,
+    )
+      : Object {
+      return new Promise(async (resolve, reject) => {
+        const URL = `${this.networks[network].getTranApi
+          + addresses[0]}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
 
-    //     await this.axios.get(URL)
-    //       .then(async (res: any) => {
-    //         if (!res.data.result) {
-    //           return resolve();
-    //         }
+        await this.axios.get(URL)
+          .then(async (res: any) => {
+            if (!res.data.result) {
+              return resolve();
+            }
 
-    //         const transactions: any = [];
+            const transactions: any = [];
 
-    //         const nextBlock: number = 0; // res.data.result[0].blockNumber
-    //         res.data.result.forEach((r: any) => {
-    //           let receiver = r.to;
-    //           let sent = false;
-    //           let confirmed = false;
-    //           let contractCall = false;
+            const nextBlock: number = 0; // res.data.result[0].blockNumber
+            res.data.result.forEach((r: any) => {
+              let receiver = r.to;
+              let sent = false;
+              let confirmed = false;
+              let contractCall = false;
 
-    //           if (r.from === address.toLowerCase()) {
-    //             sent = true;
-    //           }
-    //           if (r.confirmations > 11) {
-    //             confirmed = true;
-    //           }
-    //           if (!r.to) {
-    //             receiver = r.contractAddress;
-    //             contractCall = true;
-    //           }
+              if (r.from === addresses[0].toLowerCase()) {
+                sent = true;
+              }
+              if (r.confirmations > 11) {
+                confirmed = true;
+              }
+              if (!r.to) {
+                receiver = r.contractAddress;
+                contractCall = true;
+              }
 
-    //           const transaction = {
-    //             sent,
-    //             receiver,
-    //             contractCall,
-    //             confirmed,
-    //             hash: r.hash,
-    //             blockHeight: r.blockNumber,
-    //             fee: r.cumulativeGasUsed,
-    //             value: r.value,
-    //             sender: r.from,
-    //             confirmedTime: r.timeStamp,
-    //           };
+              const transaction = {
+                sent,
+                receiver,
+                contractCall,
+                confirmed,
+                hash: r.hash,
+                blockHeight: r.blockNumber,
+                fee: r.cumulativeGasUsed,
+                value: r.value,
+                sender: r.from,
+                confirmedTime: r.timeStamp,
+              };
 
-    //           transactions.push(transaction);
-    //         });
-    //         let balance = 0;
-    //         await this.axios.get(
-    //           `${this.networks[network].getBalanceApi + address}
-    // &tag=latest&apikey=${this.networks.ethToken}`,
-    //         )
+              transactions.push(transaction);
+            });
 
-    //           .then((bal: any) => {
-    //             balance = bal.data.result;
-    //           });
-    //         const history = {
-    //           address,
-    //           balance,
-    //           nextBlock,
-    //           totalTransactions: transactions.length,
-    //           txs: transactions,
+            const history = {
+              addresses,
+              nextBlock,
+              totalTransactions: transactions.length,
+              txs: transactions,
 
-    //         };
+            };
 
-    //         return resolve(history);
-    //       });
-    //   });
-    // }
+            return resolve(history);
+          });
+      });
+    }
+
+    getBalance(addresses: string[], network: string): Object {
+      let balance = 0;
+      const promises: any = [];
+
+      const getAddrBalance = (addr: string) => new Promise(async (resolve, reject) => {
+        await this.axios.get(
+          `${this.networks[network].getBalanceApi + addr}
+    &tag=latest&apikey=${this.networks.ethToken}`,
+        )
+          .then((bal: any) => {
+            balance += bal.data.result;
+            resolve();
+          });
+      });
+
+      return new Promise(async (resolve, reject) => {
+        addresses.forEach((addr) => {
+          promises.push(
+            new Promise(async (res, rej) => res(getAddrBalance(addr))),
+          );
+        });
+        await Promise.all(promises);
+        return balance;
+      });
+    }
 
     // getWalletHistory(
     //   addresses: string[],

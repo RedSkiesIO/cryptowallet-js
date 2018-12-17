@@ -208,7 +208,8 @@ export namespace CryptoWallet.SDKS {
             result = CoinSelectSplit(inputs, targets, feeRate);
           }
 
-          const { inputs, outputs, fees } = result;
+          let { inputs, outputs, fee } = result;
+          console.log('fees :', fee);
 
           const accountsUsed: any = [];
           const p2shUsed: any = [];
@@ -268,19 +269,20 @@ export namespace CryptoWallet.SDKS {
           inputs.forEach((input: any) => {
             senders.push(input.address);
           });
+          fee /= 100000000;
 
           const transaction = {
+            fee,
             change,
             receiver: toAddress,
             confirmed: false,
             confirmations: 0,
             hash: txb.build().getId(),
             blockHeight: -1,
-            fee: fees,
             sent: true,
             value: amount,
             sender: senders,
-            receivedTime: new Date().toISOString(),
+            receivedTime: new Date().getTime() / 1000,
             confirmedTime: undefined,
 
           };
@@ -582,7 +584,7 @@ export namespace CryptoWallet.SDKS {
             if (r.data.totalItems > to) { more = true; }
             const results = r.data.items;
             const transactions: any = [];
-            const oldestBlock: number = results[results.length - 1].block_height - 1;
+
 
             results.forEach((result: any) => {
               let confirmed = false;

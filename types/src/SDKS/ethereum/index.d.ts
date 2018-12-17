@@ -17,7 +17,7 @@ export declare namespace CryptoWallet.SDKS.Ethereum {
          *
          * @param wif
          */
-        importWIF(wif: string): Object;
+        importWIF(wif: string, network: string): Object;
         /**
          *
          * @param keypair
@@ -36,6 +36,8 @@ export declare namespace CryptoWallet.SDKS.Ethereum {
          * @param tx
          */
         verifyTxSignature(tx: any): boolean;
+        getTransactionHistory(addresses: string[], network: string, startBlock: number, endBlock?: number): Object;
+        getBalance(addresses: string[], network: string): Object;
         accountDiscovery(entropy: string, network: string, internal?: boolean): Object;
     }
 }
