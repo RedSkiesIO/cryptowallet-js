@@ -235,7 +235,7 @@ export namespace CryptoWallet.SDKS {
 
 
       const feeRate = minerRate;
-      const transactionAmount = amount * 100000000;
+      const transactionAmount = Math.floor((amount * 100000000));
       const net = wallet.network;
       let rawTx: any;
 
