@@ -198,7 +198,10 @@ export namespace CryptoWallet.SDKS {
 
     getTransactionFee(network: string): Object {
       return new Promise((resolve, reject) => {
-        const URL = 'https://api.blockcypher.com/v1/btc/main';
+        if (!this.networks[network].connect) {
+          throw new Error('Invalid network type');
+        }
+        const URL = this.networks[network].feeApi;
         this.axios.get(URL)
           .then((r: any) => resolve({
             high: r.data.high_fee_per_kb / 1000,

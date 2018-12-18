@@ -5,6 +5,7 @@ export const BITCOIN = {
   name: 'Bitcoin',
   bip: 0,
   segwit: true,
+  feeApi: 'https://api.blockcypher.com/v1/btc/main',
   connect: {
     messagePrefix: '\x18Bitcoin Signed Message:\n',
     bip32: {
@@ -22,6 +23,7 @@ export const LITECOIN = {
   name: 'Litecoin',
   bip: 2,
   segwit: true,
+  feeApi: 'https://api.blockcypher.com/v1/ltc/main',
   connect: {
     messagePrefix: '\x19Litecoin Signed Message:\n',
     bip32: {
@@ -39,6 +41,7 @@ export const LITECOIN_TESTNET = {
   type: 'litecoin testnet',
   bip: 1,
   segwit: true,
+  feeApi: 'https://api.blockcypher.com/v1/ltc/main',
   discovery: 'https://testnet.litecore.io/api',
   broadcastUrl: 'https://chain.so/api/v2/send_tx/LTCTEST',
   connect: {
@@ -57,6 +60,7 @@ export const DASH = {
   name: 'Dash',
   bip: 5,
   segwit: false,
+  feeApi: 'https://api.blockcypher.com/v1/dash/main',
   connect: {
     messagePrefix: 'unused',
     bip32: {
@@ -75,6 +79,7 @@ export const DASH_TESTNET = {
   segwit: false,
   discovery: 'https://testnet-insight.dashevo.org/insight-api',
   broadcastUrl: 'https://chain.so/api/v2/send_tx/DASHTEST',
+  feeApi: 'https://api.blockcypher.com/v1/dash/main',
   connect: {
     messagePrefix: 'unused',
     bip32: {
@@ -175,6 +180,7 @@ export const BITCOIN_TESTNET = {
   sendTxApi: 'https://api.blockcypher.com/v1/btc/test3/txs/push',
   getTranApi: 'https://api.blockcypher.com/v1/btc/test3/addrs/',
   decodeTxApi: 'https://api.blockcypher.com/v1/btc/test3/txs/decode',
+  feeApi: 'https://api.blockcypher.com/v1/btc/main',
   connect: {
 
     messagePrefix: '\x18Bitcoin Signed Message:\n',
@@ -194,6 +200,7 @@ export const REGTEST = {
   type: 'test',
   discovery: 'http://192.168.1.195:3001/api',
   segwit: false,
+  feeApi: 'https://api.blockcypher.com/v1/btc/main',
   connect: {
     messagePrefix: '\x18Bitcoin Signed Message:\n',
     bech32: 'bcrt',

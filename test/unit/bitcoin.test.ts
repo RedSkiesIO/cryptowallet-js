@@ -498,7 +498,7 @@ describe('bitcoinSDK (wallet)', () => {
   // });
 
   it('can get the transaction fee rate', async () => {
-    const feeRate = await btc.getTransactionFee('BTC_TESTNET');
+    const feeRate = await btc.getTransactionFee('BITCOIN_TESTNET');
     console.log('feeRate :', feeRate);
   });
 });
