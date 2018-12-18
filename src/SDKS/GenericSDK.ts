@@ -196,6 +196,18 @@ export namespace CryptoWallet.SDKS {
       return true;
     }
 
+    getTransactionFee(network: string): Object {
+      return new Promise((resolve, reject) => {
+        const URL = 'https://api.blockcypher.com/v1/btc/main';
+        this.axios.get(URL)
+          .then((r: any) => resolve({
+            high: r.data.high_fee_per_kb / 1000,
+            medium: r.data.medium_fee_per_kb / 1000,
+            low: r.data.low_fee_per_kb / 1000,
+          }));
+      });
+    }
+
     /**
  *
  * @param keypair
@@ -209,6 +221,7 @@ export namespace CryptoWallet.SDKS {
       wallet: any,
       toAddress: string,
       amount: number,
+      minerRate: number,
     ): Object {
       if (!wallet.network.connect) {
         throw new Error('Invalid wallet type');
@@ -216,9 +229,10 @@ export namespace CryptoWallet.SDKS {
       if (!this.validateAddress(toAddress, wallet)) {
         throw new Error('Invalid to address');
       }
-      const feeRate = 128;
+
+
+      const feeRate = minerRate;
       const transactionAmount = amount * 100000000;
-      const minerFee = 0.0001 * 100000000;
       const net = wallet.network;
       let rawTx: any;
 
@@ -260,6 +274,7 @@ export namespace CryptoWallet.SDKS {
 
           const accountsUsed: any = [];
           const p2shUsed: any = [];
+          const changeInputUsed: any = [];
 
           inputs.forEach((input: any) => {
             accounts.forEach((account: any) => {
@@ -267,6 +282,7 @@ export namespace CryptoWallet.SDKS {
               if (input.address === account.address) {
                 if (account.change) {
                   key = this.generateKeyPair(wallet, account.index, true);
+                  changeInputUsed.push(account);
                 } else {
                   key = this.generateKeyPair(wallet, account.index);
                 }
@@ -332,12 +348,15 @@ export namespace CryptoWallet.SDKS {
             confirmedTime: undefined,
 
           };
+
           const spentInput = inputs;
 
           return resolve({
+            changeInputUsed,
             transaction,
             hexTx: rawTx,
             utxo: spentInput,
+
           });
         }
         return resolve("You don't have enough Satoshis to cover the miner fee.");

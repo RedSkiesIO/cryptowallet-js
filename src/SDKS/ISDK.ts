@@ -14,7 +14,8 @@ export namespace CryptoWallet.SDKS {
       utxos: any,
       wallet: any,
       toAddress: string,
-      amount: number): Object;
+      amount: number,
+      feeRate: number): Object;
 
     broadcastTx(rawTx: object, network: string): Object;
 

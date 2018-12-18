@@ -25,13 +25,14 @@ export declare namespace CryptoWallet.SDKS {
         importWIF(wif: string, network: string): Object;
         broadcastTx(tx: object, network: string): Object;
         validateAddress(address: string, wallet: any): boolean;
+        getTransactionFee(network: string): Object;
         /**
      *
      * @param keypair
      * @param toAddress
      * @param amount
      */
-        createRawTx(accounts: object[], change: string[], utxos: any, wallet: any, toAddress: string, amount: number): Object;
+        createRawTx(accounts: object[], change: string[], utxos: any, wallet: any, toAddress: string, amount: number, minerRate: number): Object;
         /**
         *
         * @param transaction
