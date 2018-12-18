@@ -48,7 +48,7 @@ export namespace CryptoWallet.SDKS {
         bip = 49;
       } else if (this.networks[network].name === 'Regtest') {
         externalNode = root.derive('m/0');
-        internalNode = root.derive('m/0');
+        internalNode = root.derive('m/1');
       } else {
         externalNode = root.derive(`m/44'/${cointype}'/0'/0`);
         internalNode = root.derive(`m/44'/${cointype}'/0'/1`); // needed for bitcoin
@@ -178,9 +178,10 @@ export namespace CryptoWallet.SDKS {
               if (error) {
                 return resolve(new Error(`Transaction failed: ${error}`));
               }
-              console.log('result :', result);
-              const res = result.txid;
-              return resolve(res);
+
+              const res = JSON.parse(result);
+              const { txid } = res;
+              return resolve(txid);
             });
         }
       });
