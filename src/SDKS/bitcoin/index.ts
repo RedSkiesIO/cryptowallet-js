@@ -82,7 +82,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
       return new Promise((resolve, reject) => {
         const apiUrl = this.networks[network].discovery;
         const URL = `${apiUrl}/addrs/${addresses.toString()}/utxo`;
-        console.log('URL :', URL);
+
         this.axios.get(URL)
           .then((r: any) => {
             const result: any = [];

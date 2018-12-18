@@ -12,6 +12,7 @@ import * as CoinSelectSplit from 'coinselect/split';
 import * as Networks from './networks';
 import * as ISDK from './ISDK';
 
+
 export namespace CryptoWallet.SDKS {
   export abstract class GenericSDK implements ISDK.CryptoWallet.SDKS.ISDK {
     bitcoinlib = Bitcoinlib;
@@ -26,7 +27,14 @@ export namespace CryptoWallet.SDKS {
 
     axios: any = Axios;
 
+
     generateHDWallet(entropy: string, network: string): Object {
+      if (!this.bip39.validateMnemonic(entropy)) {
+        throw new TypeError('Invalid entropy');
+      }
+      if (!this.networks[network]) {
+        throw new TypeError('Invalid network');
+      }
       const cointype = this.networks[network].bip;
       const root = Bip44hdkey.fromMasterSeed(
         this.bip39.mnemonicToSeed(entropy),
@@ -38,6 +46,9 @@ export namespace CryptoWallet.SDKS {
         externalNode = root.derive(`m/49'/${cointype}'/0'/0`);
         internalNode = root.derive(`m/49'/${cointype}'/0'/1`); // needed for bitcoin
         bip = 49;
+      } else if (this.networks[network].name === 'Regtest') {
+        externalNode = root.derive('m/0');
+        internalNode = root.derive('m/0');
       } else {
         externalNode = root.derive(`m/44'/${cointype}'/0'/0`);
         internalNode = root.derive(`m/44'/${cointype}'/0'/1`); // needed for bitcoin
@@ -63,6 +74,9 @@ export namespace CryptoWallet.SDKS {
     * @param external
     */
     generateKeyPair(wallet: any, index: number, internal?: boolean): Object {
+      if (!wallet.network.connect) {
+        throw new Error('Invalid wallet type');
+      }
       let node = wallet.externalNode;
       if (internal) { node = wallet.internalNode; }
       const addrNode = node.deriveChild(index);
@@ -98,8 +112,45 @@ export namespace CryptoWallet.SDKS {
       return keypair;
     }
 
+    /**
+     *
+     * @param wif
+     * @param network
+     */
+    importWIF(wif: string, network: string): Object {
+      if (!this.networks[network].connect) {
+        throw new Error('Invalid network type');
+      }
+      const keyPair = this.bitcoinlib.ECPair.fromWIF(wif, this.networks[network].connect);
+
+      let result: any = this.bitcoinlib.payments.p2sh({
+        redeem: this.bitcoinlib.payments.p2wpkh(
+          {
+            pubkey: keyPair.publicKey,
+            network: this.networks[network].connect,
+          },
+        ),
+        network: this.networks[network].connect,
+      });
+
+      if (!this.networks[network].segwit) {
+        result = this.bitcoinlib.payments.p2pkh({
+          pubkey: keyPair.publicKey, network: this.networks[network].connect,
+        });
+      }
+
+      const { address } = result;
+      return {
+        address,
+        keyPair,
+      };
+    }
+
     broadcastTx(tx: object, network: string): Object {
       return new Promise((resolve, reject) => {
+        if (!this.networks[network].connect) {
+          throw new Error('Invalid network type');
+        }
         if (this.networks[network].segwit) {
           Request.post(this.networks[network].broadcastUrl,
             {
@@ -135,23 +186,13 @@ export namespace CryptoWallet.SDKS {
       });
     }
 
-    /**
-    *
-    * @param wif
-    */
-    importWIF(wif: string, network: string): Object {
-      const keyPair = this.bitcoinlib.ECPair.fromWIF(wif, this.networks[network].connect);
-
-      const { address } = this.bitcoinlib.payments.p2sh({
-        redeem: this.bitcoinlib.payments.p2wpkh(
-          {
-            pubkey: keyPair.publicKey,
-            network: this.networks[network].connect,
-          },
-        ),
-        network: this.networks[network].connect,
-      });
-      return address;
+    validateAddress(address: string, wallet: any): boolean {
+      try {
+        this.bitcoinlib.address.toOutputScript(address, wallet.network.connect);
+      } catch (e) {
+        return false;
+      }
+      return true;
     }
 
     /**
@@ -168,6 +209,12 @@ export namespace CryptoWallet.SDKS {
       toAddress: string,
       amount: number,
     ): Object {
+      if (!wallet.network.connect) {
+        throw new Error('Invalid wallet type');
+      }
+      if (!this.validateAddress(toAddress, wallet)) {
+        throw new Error('Invalid to address');
+      }
       const feeRate = 128;
       const transactionAmount = amount * 100000000;
       const minerFee = 0.0001 * 100000000;
@@ -177,7 +224,7 @@ export namespace CryptoWallet.SDKS {
       return new Promise(async (resolve, reject) => {
         if (utxos.length === 0) {
           // if no transactions have happened, there is no balance on the address.
-          return resolve("1: You don't have enough Satoshis to cover the miner fee.");
+          return resolve("You don't have enough balance to cover transaction");
         }
 
         // get balance
@@ -188,13 +235,12 @@ export namespace CryptoWallet.SDKS {
         }
 
         // check whether the balance of the address covers the miner fee
-        if ((balance - transactionAmount - minerFee) > 0) {
+        if ((balance - transactionAmount - feeRate) > 0) {
           const targets: any = [{
             address: toAddress,
             value: transactionAmount,
           },
           ];
-
 
           let result = Coinselect(utxos, targets, feeRate);
           if (change.length > 1) {
@@ -204,13 +250,12 @@ export namespace CryptoWallet.SDKS {
               };
               targets.push(tar);
             });
-            const { inputs, outputs, fee } = result;
+            const { inputs } = result;
             result = CoinSelectSplit(inputs, targets, feeRate);
           }
 
           const { inputs, outputs } = result;
           let { fee } = result;
-
 
           const accountsUsed: any = [];
           const p2shUsed: any = [];
@@ -238,7 +283,6 @@ export namespace CryptoWallet.SDKS {
               }
             });
           });
-
 
           const txb = new this.bitcoinlib.TransactionBuilder(net.connect);
 
@@ -275,7 +319,7 @@ export namespace CryptoWallet.SDKS {
           const transaction = {
             fee,
             change,
-            receiver: toAddress,
+            receiver: [toAddress],
             confirmed: false,
             confirmations: 0,
             hash: txb.build().getId(),
@@ -304,6 +348,9 @@ export namespace CryptoWallet.SDKS {
     * @param transaction
     */
     verifyTxSignature(transaction: any, network: string): boolean {
+      if (!this.networks[network].connect) {
+        throw new Error('Invalid network type');
+      }
       const keyPairs = transaction.pubKeys.map((q: any) => this.bitcoinlib.ECPair.fromPublicKey(Buffer.from(q, 'hex'), this.networks[network].connect));
 
       const tx = this.bitcoinlib.Transaction.fromHex(transaction.txHex);
@@ -324,9 +371,11 @@ export namespace CryptoWallet.SDKS {
     }
 
     accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
+      if (!this.networks[network].connect) {
+        throw new Error('Invalid network type');
+      }
       const wallet: any = this.generateHDWallet(entropy, network);
       const apiUrl = wallet.network.discovery;
-
       let usedAddresses: any = [];
       const emptyAddresses: any = [];
       let change = false;
@@ -338,6 +387,7 @@ export namespace CryptoWallet.SDKS {
         const URL = `${apiUrl}/addr/${address}?noTxList=1`;
 
         return new Promise(async (resolve, reject) => {
+          console.log('URL :', URL);
           this.axios.get(URL)
             .then((addr: any) => {
               const result = {
@@ -346,7 +396,6 @@ export namespace CryptoWallet.SDKS {
                 balance: addr.data.balance,
                 index: i,
               };
-
 
               if (result.received > 0) {
                 usedAddresses.push(result);
@@ -374,9 +423,7 @@ export namespace CryptoWallet.SDKS {
             );
           }
 
-
           await Promise.all(promises);
-
 
           if (emptyAddresses.length > 0) {
             const min = Math.min(...emptyAddresses);
@@ -386,7 +433,6 @@ export namespace CryptoWallet.SDKS {
             discover();
           }
         };
-
 
         await discover();
 
@@ -404,164 +450,11 @@ export namespace CryptoWallet.SDKS {
         }
         result.active = usedAddresses;
 
-
         return resolve(result);
       });
     }
 
     // abstract getUTXOs(addresses: String[], network: string): Object;
-
-    // getWalletHistory(
-    //   addresses: string[],
-    //   network: string,
-    //   lastBlock: number,
-    //   full?: boolean,
-    // ): Object {
-    //   const result: any = [];
-    //   return new Promise((resolve, reject) => {
-    //     const promises: any = [];
-
-    //     addresses.forEach((address: any) => {
-    //       promises.push(
-    //         new Promise(async (res, rej) => {
-    //           if (full) {
-    //             const history: any = await this.getTransactionHistory(address,
-    //               addresses,
-    //               network,
-    //               lastBlock,
-    //               undefined, 50);
-
-    //             if (typeof history === 'undefined') {
-    //               return res();
-    //             }
-
-    //             if (history.hasMore) {
-    //               let more = true;
-    //               let lBlock = history.lastBlock;
-    //               while (more) {
-    //                 // eslint-disable-next-line no-await-in-loop
-    //                 const nextData: any = await this.getTransactionHistory(
-    //                   address, addresses, network, 0, lBlock,
-    //                 );
-    //                 nextData.txs.forEach((tx: any) => {
-    //                   history.txs.push(tx);
-    //                 });
-    //                 if (typeof nextData.hasMore === 'undefined') { more = false; }
-    //                 lBlock = nextData.lastBlock;
-    //               }
-    //             }
-    //             result.push(history);
-    //           } else {
-    //             const history = await this.getTransactionHistory(
-    //               address, addresses, network, lastBlock,
-    //             );
-    //             result.push(history);
-    //           }
-    //           return res();
-    //         }),
-    //       );
-    //     });
-    //     Promise.all(promises).then(() => {
-    //       resolve(result);
-    //     });
-    //   });
-    // }
-
-    // getTransactionHistory(
-    //   address: string,
-    //   addresses: string[],
-    //   network: string,
-    //   lastBlock: number,
-    //   beforeBlock?: number,
-    //   limit?: number,
-    // ): Object {
-    //   const apiUrl = this.networks[network].getTranApi;
-    //   let returnAmount = 10;
-    //   if (limit != null) { returnAmount = limit; }
-    //   let URL = `${apiUrl + address}
-    // /full?${this.networks.token}&after=${lastBlock}&limit=${returnAmount}`;
-
-    //   if (beforeBlock != null) {
-    //     URL = `${apiUrl + address}
-    // /full?${this.networks.token}&before=${lastBlock}&limit=${returnAmount}`;
-    //   }
-
-    //   return new Promise((resolve, reject) => {
-    //     this.axios.get(URL)
-    //       .then((r: any) => {
-    //         if (r.data.txs.length === 0) { return resolve(); }
-    //         const more: boolean = r.data.hasMore;
-    //         const results = r.data.txs;
-    //         const transactions: any = [];
-    //         const oldestBlock: number = results[results.length - 1].block_height - 1;
-
-    //         results.forEach((result: any) => {
-    //           let confirmed = false;
-    //           if (result.confirmations > 5) { confirmed = true; }
-    //           let sent: boolean = false;
-    //           let value: number = 0;
-    //           let change: number = 0;
-    //           const receivers: any = [];
-    //           const senders: any = [];
-
-    //           result.inputs.forEach((input: any) => {
-    //             const inputAddr = input.addresses;
-    //             inputAddr.forEach((addr: any) => {
-    //               if (addr === address) {
-    //                 sent = true;
-    //               }
-    //               senders.push(addr);
-    //             });
-    //           });
-    //           result.outputs.forEach((output: any) => {
-    //             const outputAddr = output.addresses;
-    //             outputAddr.forEach((addr: any) => {
-    //               if (sent && !addresses.includes(addr)) {
-    //                 receivers.push(addr);
-    //                 value += output.value;
-    //               } else if (!sent && addresses.includes(addr)) {
-    //                 ({ value } = output);
-    //                 receivers.push(addr);
-    //               } else {
-    //                 change = output.value;
-    //               }
-    //             });
-    //           });
-
-    //           const transaction = {
-    //             sent,
-    //             value,
-    //             change,
-    //             confirmed,
-    //             confirmations: result.confirmations,
-    //             hash: result.hash,
-    //             blockHeight: result.block_height,
-    //             fee: result.fees,
-    //             sender: senders,
-    //             receiver: receivers,
-    //             receivedTime: result.received,
-    //             confirmedTime: result.confirmed,
-    //           };
-    //           transactions.push(transaction);
-    //         });
-
-    //         const history = {
-    //           more,
-    //           address: r.data.address,
-    //           balance: r.data.balance,
-    //           unconfirmedBalance: r.data.unconfirmed_balance,
-    //           finalBalance: r.data.final_balance,
-    //           totalTransactions: r.data.n_tx,
-    //           finalTotalTransactions: r.data.final_n_tx,
-    //           lastBlock: oldestBlock,
-    //           txs: transactions,
-    //         };
-
-    //         return resolve(history);
-    //       })
-    //       .catch((error: any) => reject(error));
-    //   });
-    // }
 
     getTransactionHistory(
       addresses: string[],
@@ -569,13 +462,12 @@ export namespace CryptoWallet.SDKS {
       from: number,
       to: number,
     ): Object {
+      if (!this.networks[network].connect) {
+        throw new Error('Invalid network type');
+      }
       const apiUrl = this.networks[network].discovery;
       const returnAmount = 10;
-
       const URL = `${apiUrl}/addrs/${addresses.toString()}/txs?from=${from}&to=${to}`;
-
-      console.log(URL);
-
 
       return new Promise((resolve, reject) => {
         this.axios.get(URL)
@@ -653,50 +545,76 @@ export namespace CryptoWallet.SDKS {
     }
 
     getBalance(addresses: string[], network: string): Object {
-      let balance = 0;
-      let totalReceived = 0;
-      let totalSent = 0;
-      let unconfirmedBalance = 0;
-      let txAmount = 0;
-      let unconfirmedTxAmount = 0;
-      const promises: any = [];
-      const apiUrl = this.networks[network].discovery;
+      if (!this.networks[network].connect) {
+        throw new Error('Invalid network type');
+      }
 
-      const getAddrBalance = (addr: string) => {
-        const URL = `${apiUrl}/addr/${addr}?noTxList=1`;
+      return new Promise((resolve, reject) => {
+        let balance = 0;
+        const apiUrl = this.networks[network].discovery;
+        const URL = `${apiUrl}/addrs/${addresses.toString()}/utxo`;
 
-        return new Promise((resolve, reject) => {
-          this.axios.get(URL)
-            .then((r: any) => {
-              balance += r.data.balance;
-              totalReceived += r.data.totalReceived;
-              totalSent += r.data.totalSent;
-              unconfirmedBalance += r.data.unconfirmedBalance;
-              txAmount += r.data.txApperances;
-              unconfirmedTxAmount += r.data.unconfirmedTxApperances;
-              resolve();
+        this.axios.get(URL)
+          .then((r: any) => {
+            if (r.data.length === 0) {
+              balance = 0;
+              return resolve(balance);
+            }
+
+            r.data.forEach((utxo: any) => {
+              balance += utxo.amount;
             });
-        });
-      };
-      return new Promise(async (resolve, reject) => {
-        addresses.forEach((addr) => {
-          promises.push(
-            new Promise(async (res, rej) => res(getAddrBalance(addr))),
-          );
-        });
-        await Promise.all(promises);
 
-        return resolve(
-          {
-            balance,
-            totalReceived,
-            totalSent,
-            unconfirmedBalance,
-            txAmount,
-            unconfirmedTxAmount,
-          },
-        );
+            return resolve(balance);
+          });
       });
+
+
+      // let balance = 0;
+      // const totalReceived = 0;
+      // const totalSent = 0;
+      // const unconfirmedBalance = 0;
+      // const txCount = 0;
+      // const unconfirmedTxCount = 0;
+      // let txids: any = [];
+      // const promises: any = [];
+      // const apiUrl = this.networks[network].discovery;
+
+      // function onlyUnique(value: any, index: any, self: any) {
+      //   return self.indexOf(value) === index;
+      // }
+
+      // const getAddrBalance = (addr: string) => {
+      //   const URL = `${apiUrl}/addr/${addr}`;
+
+      //   return new Promise((resolve, reject) => {
+      //     this.axios.get(URL)
+      //       .then((r: any) => {
+      //         const { transactions } = r.data;
+      //         balance += r.data.balance;
+      //         transactions.forEach((tx: string) => {
+      //           txids.push(tx);
+      //         });
+      //         resolve();
+      //       });
+      //   });
+      // };
+      // return new Promise(async (resolve, reject) => {
+      //   addresses.forEach((addr) => {
+      //     promises.push(
+      //       new Promise(async (res, rej) => res(getAddrBalance(addr))),
+      //     );
+      //   });
+      //   await Promise.all(promises);
+      //   txids = txids.filter(onlyUnique);
+      //   return resolve(
+      //     {
+      //       balance,
+      //       txCount: txids.length,
+
+      //     },
+      //   );
+      // });
     }
   }
 

@@ -176,3 +176,20 @@ export declare const BITCOIN_TESTNET: {
         wif: number;
     };
 };
+export declare const REGTEST: {
+    name: string;
+    type: string;
+    discovery: string;
+    segwit: boolean;
+    connect: {
+        messagePrefix: string;
+        bech32: string;
+        bip32: {
+            public: number;
+            private: number;
+        };
+        pubKeyHash: number;
+        scriptHash: number;
+        wif: number;
+    };
+};

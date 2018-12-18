@@ -17,12 +17,14 @@ export declare namespace CryptoWallet.SDKS {
         * @param external
         */
         generateKeyPair(wallet: any, index: number, internal?: boolean): Object;
-        broadcastTx(tx: object, network: string): Object;
         /**
-        *
-        * @param wif
-        */
+         *
+         * @param wif
+         * @param network
+         */
         importWIF(wif: string, network: string): Object;
+        broadcastTx(tx: object, network: string): Object;
+        validateAddress(address: string, wallet: any): boolean;
         /**
      *
      * @param keypair
