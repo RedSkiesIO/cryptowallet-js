@@ -456,11 +456,13 @@ describe('bitcoinSDK (wallet)', () => {
     const externalIndex1 = 0;
     const externalIndex2 = 0;
 
+
     const external1: any = btc.generateKeyPair(wallet1, externalIndex1);
     const internal1 = btc.generateKeyPair(wallet1, changeIndex1, true);
     const external2 = btc.generateKeyPair(wallet2, externalIndex2);
     const internal2 = btc.generateKeyPair(wallet2, changeIndex2, true);
 
+    // add external account to address and accounts arrays
     const account = {
       address: external1.address,
       change: false,
@@ -471,11 +473,12 @@ describe('bitcoinSDK (wallet)', () => {
 
     const UTXOS1 = btc.getUTXOs(addresses1, 'REGTEST'); // get utxos account1
     const transaction1 = await btc.createRawTx(
-      accounts1, [internal1.address], UTXOS1, wallet1, external2.address, 0.03,
+      accounts1, [internal1.address], UTXOS1, wallet1, external2.address, 0.03, 38,
     );// create transaction 1
     const pushTx = await btc.broadcastTx(transaction1.hexTx, 'REGTEST');// broadcast transaction
     // next change address
     changeIndex1 += 1;
+    // add change account to accounts and address arrays
     const changeAccount = {
       address: internal1.address,
       change: true,
@@ -484,6 +487,7 @@ describe('bitcoinSDK (wallet)', () => {
     accounts1.push(changeAccount);
     addresses1.push(internal1.address);
 
+    //remove input from the arrays if it was a change address
     if (transaction1.changeInputUsed.length > 0) {
       transaction1.changeInputUsed.forEach((tran: any) => {
         addresses1 = addresses1.filter((item: any) => {

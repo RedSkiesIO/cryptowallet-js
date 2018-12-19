@@ -113,6 +113,48 @@ export namespace CryptoWallet.SDKS {
     }
 
     /**
+   *
+   * @param wallet
+   * @param index
+   * @param external
+   */
+    generateAddress(wallet: any, index: number, internal?: boolean): Object {
+      if (!wallet.network.connect) {
+        throw new Error('Invalid wallet type');
+      }
+      let node = wallet.externalNode;
+      if (internal) { node = wallet.internalNode; }
+      const addrNode = node.deriveChild(index);
+
+      let result: any = this.bitcoinlib.payments.p2sh({
+        redeem: this.bitcoinlib.payments.p2wpkh(
+          {
+            pubkey: addrNode.publicKey,
+            network: wallet.network.connect,
+          },
+        ),
+        network: wallet.network.connect,
+      });
+
+
+      if (!wallet.network.segwit) {
+        result = this.bitcoinlib.payments.p2pkh({
+          pubkey: addrNode.publicKey, network: wallet.network.connect,
+        });
+      }
+
+      const { address } = result;
+      const addr = {
+        address,
+        index,
+        type: wallet.network.name,
+        change: internal,
+      };
+
+      return addr;
+    }
+
+    /**
      *
      * @param wif
      * @param network
