@@ -442,56 +442,56 @@ describe('bitcoinSDK (wallet)', () => {
   //   console.log('txid :', pushTx);
   // });
 
-  // it('can simulate 1000 transactions on a wallet', async () => {
-  //   const mnemonic1 = 'capable banner bubble rather wet pull diary produce you grace document ridge';
-  //   const mnemonic2 = 'humor clarify mesh curious slow inject envelope mutual express fox once family';
-  //   const wallet1 = btc.generateHDWallet(mnemonic1, 'REGTEST');
-  //   const wallet2 = btc.generateHDWallet(mnemonic2, 'REGTEST');
-  //   let accounts1: any = [];
-  //   const accounts2 = [];
-  //   let addresses1: any = [];
-  //   const addresses2 = [];
-  //   let changeIndex1 = 0;
-  //   const changeIndex2 = 0;
-  //   const externalIndex1 = 0;
-  //   const externalIndex2 = 0;
+  it('can simulate 1000 transactions on a wallet', async () => {
+    const mnemonic1 = 'capable banner bubble rather wet pull diary produce you grace document ridge';
+    const mnemonic2 = 'humor clarify mesh curious slow inject envelope mutual express fox once family';
+    const wallet1 = btc.generateHDWallet(mnemonic1, 'REGTEST');
+    const wallet2 = btc.generateHDWallet(mnemonic2, 'REGTEST');
+    let accounts1: any = [];
+    const accounts2 = [];
+    let addresses1: any = [];
+    const addresses2 = [];
+    let changeIndex1 = 0;
+    const changeIndex2 = 0;
+    const externalIndex1 = 0;
+    const externalIndex2 = 0;
 
-  //   const sendTransaction = async () => {
-  //     const external1: any = btc.generateAddress(wallet1, externalIndex1);
-  //     const internal1 = btc.generateAddress(wallet1, changeIndex1, true);
-  //     const external2 = btc.generateAddress(wallet2, externalIndex2);
-  //     const internal2 = btc.generateAddress(wallet2, changeIndex2, true);
+    const sendTransaction = async () => {
+      const external1: any = btc.generateAddress(wallet1, externalIndex1);
+      const internal1 = btc.generateAddress(wallet1, changeIndex1, true);
+      const external2 = btc.generateAddress(wallet2, externalIndex2);
+      const internal2 = btc.generateAddress(wallet2, changeIndex2, true);
 
-  //     // add external account to address and accounts arrays
-  //     accounts1.push(external1);
-  //     addresses1.push(external1.address);
+      // add external account to address and accounts arrays
+      accounts1.push(external1);
+      addresses1.push(external1.address);
 
-  //     const UTXOS1 = btc.getUTXOs(addresses1, 'REGTEST'); // get utxos account1
-  //     const transaction1 = await btc.createRawTx(
-  //       accounts1, [internal1.address], UTXOS1, wallet1, external2.address, 0.03, 38,
-  //     );// create transaction 1
-  //     const pushTx = await btc.broadcastTx(transaction1.hexTx, 'REGTEST');// broadcast transaction
-  //     // next change address
-  //     changeIndex1 += 1;
-  //     // add change account to accounts and address arrays
-  //     accounts1.push(internal1);
-  //     addresses1.push(internal1.address);
+      const UTXOS1 = btc.getUTXOs(addresses1, 'REGTEST'); // get utxos account1
+      const transaction1 = await btc.createRawTx(
+        accounts1, [internal1.address], UTXOS1, wallet1, external2.address, 0.03, 38,
+      );// create transaction 1
+      const pushTx = await btc.broadcastTx(transaction1.hexTx, 'REGTEST');// broadcast transaction
+      // next change address
+      changeIndex1 += 1;
+      // add change account to accounts and address arrays
+      accounts1.push(internal1);
+      addresses1.push(internal1.address);
 
-  //     // remove input from the arrays if it was a change address
-  //     if (transaction1.changeInputUsed.length > 0) {
-  //       transaction1.changeInputUsed.forEach((tran: any) => {
-  //         addresses1 = addresses1.filter((item: any) => {
-  //           if (item === tran.address) return false;
-  //           return true;
-  //         });
-  //         accounts1 = accounts1.filter((item: any) => {
-  //           if (item.address === tran.address) return false;
-  //           return true;
-  //         });
-  //       });
-  //     }
-  //   };
-  // });
+      // remove input from the arrays if it was a change address
+      if (transaction1.changeInputUsed.length > 0) {
+        transaction1.changeInputUsed.forEach((tran: any) => {
+          addresses1 = addresses1.filter((item: any) => {
+            if (item === tran.address) return false;
+            return true;
+          });
+          accounts1 = accounts1.filter((item: any) => {
+            if (item.address === tran.address) return false;
+            return true;
+          });
+        });
+      }
+    };
+  });
 
 
   //   const transaction = btc.createRawTx();
