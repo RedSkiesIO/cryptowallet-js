@@ -284,7 +284,7 @@ export namespace CryptoWallet.SDKS {
       return new Promise(async (resolve, reject) => {
         if (utxos.length === 0) {
           // if no transactions have happened, there is no balance on the address.
-          return resolve("You don't have enough balance to cover transaction");
+          throw new Error("You don't have enough balance to cover transaction");
         }
 
         // get balance
@@ -404,7 +404,7 @@ export namespace CryptoWallet.SDKS {
 
           });
         }
-        return resolve("You don't have enough Satoshis to cover the miner fee.");
+        throw new Error("You don't have enough Satoshis to cover the miner fee.");
       });
     }
 

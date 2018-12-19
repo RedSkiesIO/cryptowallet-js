@@ -18,6 +18,13 @@ export declare namespace CryptoWallet.SDKS {
         */
         generateKeyPair(wallet: any, index: number, internal?: boolean): Object;
         /**
+       *
+       * @param wallet
+       * @param index
+       * @param external
+       */
+        generateAddress(wallet: any, index: number, internal?: boolean): Object;
+        /**
          *
          * @param wif
          * @param network

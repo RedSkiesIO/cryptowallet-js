@@ -4,6 +4,7 @@ export declare const BITCOIN: {
     name: string;
     bip: number;
     segwit: boolean;
+    feeApi: string;
     connect: {
         messagePrefix: string;
         bip32: {
@@ -19,6 +20,7 @@ export declare const LITECOIN: {
     name: string;
     bip: number;
     segwit: boolean;
+    feeApi: string;
     connect: {
         messagePrefix: string;
         bip32: {
@@ -35,6 +37,7 @@ export declare const LITECOIN_TESTNET: {
     type: string;
     bip: number;
     segwit: boolean;
+    feeApi: string;
     discovery: string;
     broadcastUrl: string;
     connect: {
@@ -52,6 +55,7 @@ export declare const DASH: {
     name: string;
     bip: number;
     segwit: boolean;
+    feeApi: string;
     connect: {
         messagePrefix: string;
         bip32: {
@@ -69,6 +73,7 @@ export declare const DASH_TESTNET: {
     segwit: boolean;
     discovery: string;
     broadcastUrl: string;
+    feeApi: string;
     connect: {
         messagePrefix: string;
         bip32: {
@@ -164,6 +169,7 @@ export declare const BITCOIN_TESTNET: {
     sendTxApi: string;
     getTranApi: string;
     decodeTxApi: string;
+    feeApi: string;
     connect: {
         messagePrefix: string;
         bech32: string;
@@ -181,6 +187,7 @@ export declare const REGTEST: {
     type: string;
     discovery: string;
     segwit: boolean;
+    feeApi: string;
     connect: {
         messagePrefix: string;
         bech32: string;
