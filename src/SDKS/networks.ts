@@ -156,6 +156,14 @@ export const ETHEREUM = {
   name: 'Ethereum',
   bip: 60,
   sendTxApi: 'https://api.blockcypher.com/v1/eth/main/txs/push',
+  chainId: 1,
+};
+
+export const ETHEREUM_CLASSIC = {
+  name: 'Ethereum Classic',
+  bip: 61,
+  provider: 'https://ethereumclassic.network',
+  chainId: 1,
 };
 
 export const ETHEREUM_ROPSTEN = {

@@ -40,6 +40,28 @@ export namespace CryptoWallet.SDKS.Ethereum {
     }
 
     /**
+         *
+         * @param wallet
+         * @param index
+         */
+    generateAddress(wallet: any, index: number): Object {
+      const addrNode = this.Bip.fromExtendedKey(
+        wallet.externalNode.privateExtendedKey,
+      ).deriveChild(index);
+      const address = {
+        index,
+        address: addrNode.getWallet().getChecksumAddressString(),
+        type: wallet.name,
+      };
+      return address;
+    }
+
+    validateAddress(address: string, network: string): boolean {
+      const web3 = new this.Web3(new Web3.providers.HttpProvider(this.networks[network].provider));
+      return web3.utils.isAddress(address);
+    }
+
+    /**
      *
      * @param wif
      */
@@ -65,7 +87,6 @@ export namespace CryptoWallet.SDKS.Ethereum {
       const privateKey = Buffer.from(keypair.privateKey.substr(2), 'hex');
 
       const web3 = new this.Web3(new Web3.providers.HttpProvider(keypair.network.provider));
-
       return new Promise((resolve, reject) => {
         web3.eth.getTransactionCount(keypair.address, (err: any, nonce: any) => {
           if (err) {
@@ -78,7 +99,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
             gasLimit: web3.utils.toHex(100000),
             to: toAddress,
             value: web3.utils.toHex(web3.utils.toWei(sendAmount)),
-            chainId: 3,
+            chainId: keypair.network.chainId,
           });
           tx.sign(privateKey);
           const raw = `0x${tx.serialize().toString('hex')}`;
@@ -109,8 +130,9 @@ export namespace CryptoWallet.SDKS.Ethereum {
      * @param tx
      */
     verifyTxSignature(tx: any): boolean {
+      const transaction = new EthereumTx(tx);
       this.VerifyTx = tx;
-      if (tx.verifySignature()) {
+      if (transaction.verifySignature()) {
         return true;
       }
       return false;
@@ -123,9 +145,10 @@ export namespace CryptoWallet.SDKS.Ethereum {
       endBlock?: number,
     )
       : Object {
-      return new Promise(async (resolve, reject) => {
+      const transactions: any = [];
+      const getHistory = (address: string) => new Promise(async (resolve, reject) => {
         const URL = `${this.networks[network].getTranApi
-          + addresses[0]}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
+          + address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
 
         await this.axios.get(URL)
           .then(async (res: any) => {
@@ -133,9 +156,6 @@ export namespace CryptoWallet.SDKS.Ethereum {
               return resolve();
             }
 
-            const transactions: any = [];
-
-            const nextBlock: number = 0; // res.data.result[0].blockNumber
             res.data.result.forEach((r: any) => {
               let receiver = r.to;
               let sent = false;
@@ -169,16 +189,25 @@ export namespace CryptoWallet.SDKS.Ethereum {
               transactions.push(transaction);
             });
 
-            const history = {
-              addresses,
-              nextBlock,
-              totalTransactions: transactions.length,
-              txs: transactions,
-
-            };
-
-            return resolve(history);
+            return resolve();
           });
+      });
+      return new Promise(async (resolve, reject) => {
+        const promises: Promise<Object>[] = [];
+        addresses.forEach(async (address: string) => {
+          promises.push(
+            new Promise(async (res, rej) => res(getHistory(address))),
+          );
+        });
+        await Promise.all(promises);
+        const history = {
+          addresses,
+          totalTransactions: transactions.length,
+          txs: transactions,
+
+        };
+
+        return resolve(history);
       });
     }
 
@@ -207,40 +236,6 @@ export namespace CryptoWallet.SDKS.Ethereum {
         return balance;
       });
     }
-
-    // getWalletHistory(
-    //   addresses: string[],
-    //   network: string,
-    //   lastBlock: number,
-    //   full?: boolean,
-    // )
-    //   : Object {
-    //   const result: any = [];
-
-    //   return new Promise((resolve, reject) => {
-    //     const promises: any = [];
-
-    //     addresses.forEach((address: any) => {
-    //       promises.push(
-
-    //         new Promise(async (res, rej) => {
-    //           const history: any = await this.getTransactionHistory(
-    //             address, addresses, network, 0, lastBlock,
-    //           );
-
-    //           if (history.totalTransactions > 0) {
-    //             result.push(history);
-    //           }
-    //           res();
-    //         }),
-    //       );
-    //     });
-
-    //     Promise.all(promises).then(() => {
-    //       resolve(result);
-    //     });
-    //   });
-    // }
 
     accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
       const wallet = this.generateHDWallet(entropy, network);

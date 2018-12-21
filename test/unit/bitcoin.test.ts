@@ -2,7 +2,9 @@
 import * as Mocha from 'mocha';
 import * as Chai from 'chai';
 import * as Bitcoin from 'bitcoinjs-lib';
+import * as series from 'async-series';
 import { CryptoWallet } from '../../src/SDKFactory';
+
 
 const request = require('request');
 
@@ -24,6 +26,36 @@ const rootKey: string = 'xprv9s21ZrQH143K468LbsXz8YqCZjiP1ZCLXy4nV352PWToQYEi1Wx
 
 const bip = 49;
 const derPath = 'm/49\'/1\'/0\'/0/0';
+
+const testAddresses = ['2N3sy5gP2EmDJdxmTv8xBpW1vy6J3oHb6E8',
+  '2MupXGfAZGfQAoCzcwV6jJGrWmy9pYRHwtc',
+  '2N2PMJwMoj7TbB1bvGz2gEFwc5ePJzqcu5g',
+  '2NET9uJ5HYzcAi6C7XMVjBaZA6XXecbYXcw',
+  '2N9qiz6W6dMepqJ4DNCXwCZfc6W37SbBfNS',
+  '2MvC3yKmf1qNVHYv7dPfbrk5ivi6WVazo8p',
+  '2MwToMnT6p5XmdeLyg4McPhW1b4BCY1J9gy',
+  '2N3jcTuZ584StUYQs9i4rdgv4kTCC3tn7R2',
+  '2N2nqW915f4UWUPAbCB9yiRZz4NvaXsKd8e',
+  '2MwToMnT6p5XmdeLyg4McPhW1b4BCY1J9gy',
+  '2N9qiz6W6dMepqJ4DNCXwCZfc6W37SbBfNS',
+  '2NET9uJ5HYzcAi6C7XMVjBaZA6XXecbYXcw',
+  '2N2nqW915f4UWUPAbCB9yiRZz4NvaXsKd8e',
+  '2Mtis9GmfDSWFcR4c7f1bpe5hujchayejVb',
+  '2N5867QoMyvdMPJQCS2LShCDVt2bmGaUxfa',
+  '2NAKtVP3cefduuyQVeD4957izjzcxU44tBj',
+  '2Mwxzp2KNx9SQUfQTHya8GwGhNUjXv1UBE2',
+  '2NF3pzVjvvcgCX4F7QUVAmsK7pQwFzG9iGL',
+  '2NFwvfa68M29y2QpgZDWK6tU4QkhUvCofia',
+  '2N2CfTWTUT56DTNPDAhDNZc4nw346cv5Nby',
+  '2N63ZAehL3G5MKYgeEzVQgemWxRywnMt3pW',
+  '2MwYAWfXtp3isDyVdFbqGSMbQiLx4WBiDYg',
+  '2NDre37bzB7UeSwWxbsPNEXTaRJYYLKtUVM',
+  '2MsdVbvf5oQpuZXbRYUzyqcwtBCzTVUZZhz',
+  '2N9zU9tbzjx6uc1FSkbzXNKFewsV6T9NTN9',
+  '2MsVWjaNLQh5cggKiVHybSQe2ehyqfLCLuT',
+  '2N2Y2nrb1t3LUPJKu2Jih1sY8Gn1YDTWJap',
+  '2NA6ar1wEheAhisGGQhPh9E9nsGHZFYXo2G',
+  '2MsewYGALzRRNiFsPjKV4K8ssQa8KZqeQws'];
 
 
 describe('bitcoinSDK (wallet)', () => {
@@ -120,74 +152,47 @@ describe('bitcoinSDK (wallet)', () => {
   });
 
   it('can validate a bicoin testnet address', () => {
-    const wallet = btc.generateHDWallet(entropy, network);
-    const ad = btc.validateAddress('2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf', wallet);
+    const ad = btc.validateAddress('2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf', 'BITCOIN_TESTNET');
     expect(ad).to.equal(true);
   });
 
   it('can validate a litecoin testnet address', () => {
-    const wallet = btc.generateHDWallet(entropy, 'LITECOIN_TESTNET');
-    const ad = btc.validateAddress('QSc9ybA8G55zU5eSGrw32hFBe3R88gkLWc', wallet);
+    const ad = btc.validateAddress('QSc9ybA8G55zU5eSGrw32hFBe3R88gkLWc', 'LITECOIN_TESTNET');
     expect(ad).to.equal(true);
   });
 
   it('can validate an incorrect testnet address', () => {
-    const wallet = btc.generateHDWallet(entropy, network);
-    const ad = btc.validateAddress('2MyFPraHtEy2uKttPeku1wzokTeyJGTYvkf', wallet);
+    const ad = btc.validateAddress('2MyFPraHtEy2uKttPeku1wzokTeyJGTYvkf', 'BITCOIN_TESTNET');
     expect(ad).to.equal(false);
   });
 
+  it('can get the transaction history of a wallet', async () => {
+    const tData: any = await btc.getTransactionHistory(
+      testAddresses, 'BITCOIN_TESTNET', 0, 50,
+    );
+    expect(tData.txs.length).to.equal(31);
+  });
 
-  // it('can get the transaction history of a wallet', async () => {
-  //   // const discover = await btc.accountDiscovery(entro, network);
-  //   // const discoverChange = await btc.accountDiscovery(entro, network, true);
-  //   // const addresses: any = [];
-  //   // discover.active.forEach((addr: any) => {
-  //   //   addresses.push(addr.address);
-  //   // });
+  it('throws an error when passed an invalid address in getTransactionHistory', async () => {
+    const badFn = () => btc.getTransactionHistory(
+      ['bad address'], 'BITCOIN_TESTNET', 0, 50,
+    );
+    expect(badFn).to.throw('Invalid address used');
+  });
 
-  //   // discoverChange.used.forEach((addr: any) => {
-  //   //   addresses.push(addr.address);
-  //   // });
+  it('throws an error when passed an invalid network in getTransactionHistory', async () => {
+    const badFn = () => btc.getTransactionHistory(
+      testAddresses, 'ETHEREUM', 0, 50,
+    );
+    expect(badFn).to.throw('Invalid network type');
+  });
 
-  //   const addresses = ['2N3sy5gP2EmDJdxmTv8xBpW1vy6J3oHb6E8',
-  //     '2MupXGfAZGfQAoCzcwV6jJGrWmy9pYRHwtc',
-  //     '2N2PMJwMoj7TbB1bvGz2gEFwc5ePJzqcu5g',
-  //     '2NET9uJ5HYzcAi6C7XMVjBaZA6XXecbYXcw',
-  //     '2N9qiz6W6dMepqJ4DNCXwCZfc6W37SbBfNS',
-  //     '2MvC3yKmf1qNVHYv7dPfbrk5ivi6WVazo8p',
-  //     '2MwToMnT6p5XmdeLyg4McPhW1b4BCY1J9gy',
-  //     '2N3jcTuZ584StUYQs9i4rdgv4kTCC3tn7R2',
-  //     '2N2nqW915f4UWUPAbCB9yiRZz4NvaXsKd8e',
-  //     '2MwToMnT6p5XmdeLyg4McPhW1b4BCY1J9gy',
-  //     '2N9qiz6W6dMepqJ4DNCXwCZfc6W37SbBfNS',
-  //     '2NET9uJ5HYzcAi6C7XMVjBaZA6XXecbYXcw',
-  //     '2N2nqW915f4UWUPAbCB9yiRZz4NvaXsKd8e',
-  //     '2Mtis9GmfDSWFcR4c7f1bpe5hujchayejVb',
-  //     '2N5867QoMyvdMPJQCS2LShCDVt2bmGaUxfa',
-  //     '2NAKtVP3cefduuyQVeD4957izjzcxU44tBj',
-  //     '2Mwxzp2KNx9SQUfQTHya8GwGhNUjXv1UBE2',
-  //     '2NF3pzVjvvcgCX4F7QUVAmsK7pQwFzG9iGL',
-  //     '2NFwvfa68M29y2QpgZDWK6tU4QkhUvCofia',
-  //     '2N2CfTWTUT56DTNPDAhDNZc4nw346cv5Nby',
-  //     '2N63ZAehL3G5MKYgeEzVQgemWxRywnMt3pW',
-  //     '2MwYAWfXtp3isDyVdFbqGSMbQiLx4WBiDYg',
-  //     '2NDre37bzB7UeSwWxbsPNEXTaRJYYLKtUVM',
-  //     '2MsdVbvf5oQpuZXbRYUzyqcwtBCzTVUZZhz',
-  //     '2N9zU9tbzjx6uc1FSkbzXNKFewsV6T9NTN9',
-  //     '2MsVWjaNLQh5cggKiVHybSQe2ehyqfLCLuT',
-  //     '2N2Y2nrb1t3LUPJKu2Jih1sY8Gn1YDTWJap',
-  //     '2NA6ar1wEheAhisGGQhPh9E9nsGHZFYXo2G',
-  //     '2MsewYGALzRRNiFsPjKV4K8ssQa8KZqeQws'];
-
-  //   const balance = await btc.getBalance(addresses, network);
-  //   console.log('balance :', balance);
-
-  //   // const tData: any = await btc.getTransactionHistory(
-  //   //   addresses, 'BITCOIN_TESTNET', 0, 50,
-  //   // );
-  //   // console.log('txs :', JSON.stringify(tData));
-  // });
+  it('can get the balance of a wallet', async () => {
+    const tData: any = await btc.getBalance(
+      testAddresses, 'BITCOIN_TESTNET',
+    );
+    expect(tData).to.equal(0.23612026);
+  });
 
   // it('can get the transaction history of a wallet', async () => {
   //   const wallet: any = btc.generateHDWallet(entropy2, network);
@@ -200,24 +205,13 @@ describe('bitcoinSDK (wallet)', () => {
   //   console.log(tData);
   // });
 
-  // it('can get the balance of a wallet', async () => {
-  //   const wallet: any = btc.generateHDWallet(entropy2, network);
-  //   const addresses: any = [
-  //     '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
-  //     '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM', '2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA',
-  //   ];
-  //   const tData: any = await btc.getBalance(
-  //     addresses, 'BITCOIN_TESTNET',
-  //   );
-  //   console.log(tData);
-  // });
 
-  // it('can get the unspent transactions of a wallet', async () => {
-  //   const addresses = [
-  //     '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf', '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM'];
-  //   const tData: any = await btc.getUTXOs(addresses, 'BITCOIN_TESTNET');
-  //   console.log(tData);
-  // });
+  it('can get the unspent transactions of a wallet', async () => {
+    const addresses = [
+      '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf', '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM'];
+    const tData: any = await btc.getUTXOs(addresses, 'BITCOIN_TESTNET');
+    expect(tData.length).to.equal(10);
+  });
 
   // it('can get the unspent transactions of a litecoin testnet wallet', async () => {
   //   const addresses = [
@@ -341,10 +335,10 @@ describe('bitcoinSDK (wallet)', () => {
 
   // it('can discover an account', async (done) => {
   //   const externalAccountDiscovery: any = await btc.accountDiscovery(
-  //     regtest, 'REGTEST',
+  //     'capable banner bubble rather wet pull diary produce you grace document ridge', 'REGTEST',
   //   );
   //   const internalAccountDiscovery: any = await btc.accountDiscovery(
-  //     regtest, 'REGTEST', true,
+  //     'capable banner bubble rather wet pull diary produce you grace document ridge', 'REGTEST', true,
   //   );
   //   console.log(externalAccountDiscovery);
   //   console.log(internalAccountDiscovery);
@@ -433,7 +427,7 @@ describe('bitcoinSDK (wallet)', () => {
 
 
   //   const tData: any = await btc.createRawTx(
-  //     accounts, change, utxos, wallet, 'n1Fbz1krLPDWNNwRHeFCDBjWcwfpf6TA74', 0.1,
+  //     accounts, change, utxos, wallet, 'n3Kg6BFh31LtaaTQeLPAXHZCRG6gHJDDRg', 1, 30,
   //   );
   //   console.log(tData);
 
@@ -442,56 +436,112 @@ describe('bitcoinSDK (wallet)', () => {
   //   console.log('txid :', pushTx);
   // });
 
-  it('can simulate 1000 transactions on a wallet', async () => {
-    const mnemonic1 = 'capable banner bubble rather wet pull diary produce you grace document ridge';
-    const mnemonic2 = 'humor clarify mesh curious slow inject envelope mutual express fox once family';
-    const wallet1 = btc.generateHDWallet(mnemonic1, 'REGTEST');
-    const wallet2 = btc.generateHDWallet(mnemonic2, 'REGTEST');
-    let accounts1: any = [];
-    const accounts2 = [];
-    let addresses1: any = [];
-    const addresses2 = [];
-    let changeIndex1 = 0;
-    const changeIndex2 = 0;
-    const externalIndex1 = 0;
-    const externalIndex2 = 0;
+  // it('can simulate 1000 transactions on a wallet', async () => {
+  //   const mnemonic1 = 'capable banner bubble rather wet pull diary produce you grace document ridge';
+  //   const mnemonic2 = 'humor clarify mesh curious slow inject envelope mutual express fox once family';
+  //   const wallet1 = btc.generateHDWallet(mnemonic1, 'REGTEST');
+  //   const wallet2 = btc.generateHDWallet(mnemonic2, 'REGTEST');
+  //   let accounts1: any = [];
+  //   let accounts2: any = [];
+  //   let addresses1: any = [];
+  //   let addresses2: string[] = [];
+  //   let changeIndex1 = 0;
+  //   let changeIndex2 = 0;
+  //   let externalIndex1 = 0;
+  //   let externalIndex2 = 0;
 
-    const sendTransaction = async () => {
-      const external1: any = btc.generateAddress(wallet1, externalIndex1);
-      const internal1 = btc.generateAddress(wallet1, changeIndex1, true);
-      const external2 = btc.generateAddress(wallet2, externalIndex2);
-      const internal2 = btc.generateAddress(wallet2, changeIndex2, true);
+  //   const sendTransaction = async () => new Promise(async (resolve, reject) => {
+  //     const external1: any = btc.generateAddress(wallet1, externalIndex1);
+  //     const internal1 = btc.generateAddress(wallet1, changeIndex1, true);
+  //     const external2 = btc.generateAddress(wallet2, externalIndex2);
+  //     const internal2 = btc.generateAddress(wallet2, changeIndex2, true);
 
-      // add external account to address and accounts arrays
-      accounts1.push(external1);
-      addresses1.push(external1.address);
+  //     for (let i = 1; i < 10; i += 1) {
+  //       const ex1: any = btc.generateAddress(wallet1, i);
+  //       const ex2: any = btc.generateAddress(wallet2, i);
+  //       const in1: any = btc.generateAddress(wallet1, i);
+  //       const in2: any = btc.generateAddress(wallet2, i);
 
-      const UTXOS1 = btc.getUTXOs(addresses1, 'REGTEST'); // get utxos account1
-      const transaction1 = await btc.createRawTx(
-        accounts1, [internal1.address], UTXOS1, wallet1, external2.address, 0.03, 38,
-      );// create transaction 1
-      const pushTx = await btc.broadcastTx(transaction1.hexTx, 'REGTEST');// broadcast transaction
-      // next change address
-      changeIndex1 += 1;
-      // add change account to accounts and address arrays
-      accounts1.push(internal1);
-      addresses1.push(internal1.address);
+  //       accounts1.push(ex1);
+  //       addresses1.push(ex1.address);
+  //       // add change account to accounts and address arrays
+  //       accounts1.push(in1);
+  //       addresses1.push(in1.address);
+  //     }
 
-      // remove input from the arrays if it was a change address
-      if (transaction1.changeInputUsed.length > 0) {
-        transaction1.changeInputUsed.forEach((tran: any) => {
-          addresses1 = addresses1.filter((item: any) => {
-            if (item === tran.address) return false;
-            return true;
-          });
-          accounts1 = accounts1.filter((item: any) => {
-            if (item.address === tran.address) return false;
-            return true;
-          });
-        });
-      }
-    };
-  });
+  //     // add external account to address and accounts arrays
+  //     accounts1.push(external1);
+  //     addresses1.push(external1.address);
+  //     // add change account to accounts and address arrays
+  //     accounts1.push(internal1);
+  //     addresses1.push(internal1.address);
+
+  //     const UTXOS1 = await btc.getUTXOs(addresses1, 'REGTEST'); // get utxos account1
+  //     const transaction1 = await btc.createRawTx(
+  //       accounts1, [internal1.address], UTXOS1, wallet1, external2.address, 0.03, 38,
+  //     );// create transaction 1
+  //     console.log('transaction1.hexTx :', transaction1.hexTx);
+  //     const pushTx1 = await btc.broadcastTx(transaction1.hexTx, 'REGTEST');// broadcast transaction
+  //     console.log('tx :', pushTx1);
+  //     // next change address
+  //     changeIndex1 += 1;
+  //     externalIndex2 += 1;
+
+
+  //     // remove input from the arrays if it was a change address
+  //     if (transaction1.changeInputUsed.length > 0) {
+  //       transaction1.changeInputUsed.forEach((tran: any) => {
+  //         addresses1 = addresses1.filter((item: any) => {
+  //           if (item === tran.address) return false;
+  //           return true;
+  //         });
+  //         accounts1 = accounts1.filter((item: any) => {
+  //           if (item.address === tran.address) return false;
+  //           return true;
+  //         });
+  //       });
+  //     }
+
+
+  //     accounts2.push(external2);
+  //     addresses2.push(external2.address);
+  //     accounts1.push(internal2);
+  //     addresses1.push(internal2.address);
+
+  //     const UTXOS2 = await btc.getUTXOs(addresses2, 'REGTEST');
+  //     const transaction2 = await btc.createRawTx(
+  //       accounts2, [internal2.address], UTXOS2, wallet2, external1.address, 0.01, 38,
+  //     );
+  //     const pushTx2 = await btc.broadcastTx(transaction2.hexTx, 'REGTEST');
+
+  //     console.log('tx :', pushTx2);
+  //     changeIndex2 += 1;
+  //     externalIndex1 += 1;
+
+
+  //     if (transaction2.changeInputUsed.length > 0) {
+  //       transaction2.changeInputUsed.forEach((tran: any) => {
+  //         addresses2 = addresses2.filter((item: any) => {
+  //           if (item === tran.address) return false;
+  //           return true;
+  //         });
+  //         accounts2 = accounts2.filter((item: any) => {
+  //           if (item.address === tran.address) return false;
+  //           return true;
+  //         });
+  //       });
+  //     }
+
+  //     resolve();
+  //   });
+
+  //   const promises: any = [];
+  //   for (let i = 0; i < 10; i += 1) {
+  //     promises.push(async (callback: any) => { await sendTransaction(); callback(); });
+  //   }
+
+  //   await series(promises, () => console.log('finished'));
+  // });
 
 
   //   const transaction = btc.createRawTx();

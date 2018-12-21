@@ -58,23 +58,34 @@ namespace CryptoWallet.SDKS.Bitcoin {
      * @param key3
      * @param key4
      */
-    // generateSegWit3of4MultiSigAddress(
-    // key1: string, key2: string, key3: string, key4: string): Object {
-    //   const pubkeys: Array<any> = [key1, key2, key3, key4].map((hex) => Buffer.from(hex, 'hex'));
-    //   return this.bitcoinlib.payments.p2wsh({
-    //     redeem: this.bitcoinlib.payments.p2ms({ pubkeys, m: 3 }),
-    //   });
-    // }
+    generateSegWit3of4MultiSigAddress(
+      key1: string, key2: string, key3: string, key4: string, network: string,
+    ): Object {
+      const pubkeys: Array<any> = [key1, key2, key3, key4].map(hex => Buffer.from(hex, 'hex'));
+      return this.bitcoinlib.payments.p2wsh({
+        redeem: this.bitcoinlib.payments.p2ms({
+          pubkeys,
+          m: 3,
+          network: this.networks[network].connect,
+        }),
+        network: this.networks[network].connect,
+      });
+    }
 
 
     /**
      *
      * @param keys
      */
-    gernerateP2SHMultiSig(keys: string[]): Object {
+    gernerateP2SHMultiSig(keys: string[], network: string): Object {
       const pubkeys: any[] = keys.map(hex => Buffer.from(hex, 'hex'));
       return this.bitcoinlib.payments.p2sh({
-        redeem: this.bitcoinlib.payments.p2ms({ pubkeys, m: pubkeys.length }),
+        redeem: this.bitcoinlib.payments.p2ms({
+          pubkeys,
+          m: pubkeys.length,
+          network: this.networks[network].connect,
+        }),
+        network: this.networks[network].connect,
       });
     }
 

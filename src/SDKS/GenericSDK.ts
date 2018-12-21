@@ -220,18 +220,22 @@ export namespace CryptoWallet.SDKS {
               if (error) {
                 return resolve(new Error(`Transaction failed: ${error}`));
               }
-
-              const res = JSON.parse(result);
-              const { txid } = res;
-              return resolve(txid);
+              console.log('result :', result);
+              try {
+                const res = JSON.parse(result);
+                const { txid } = res;
+                return resolve(txid);
+              } catch (err) {
+                return reject(new Error(result));
+              }
             });
         }
       });
     }
 
-    validateAddress(address: string, wallet: any): boolean {
+    validateAddress(address: string, network: string): boolean {
       try {
-        this.bitcoinlib.address.toOutputScript(address, wallet.network.connect);
+        this.bitcoinlib.address.toOutputScript(address, this.networks[network].connect);
       } catch (e) {
         return false;
       }
@@ -271,7 +275,7 @@ export namespace CryptoWallet.SDKS {
       if (!wallet.network.connect) {
         throw new Error('Invalid wallet type');
       }
-      if (!this.validateAddress(toAddress, wallet)) {
+      if (!this.validateAddress(toAddress, wallet.network.name)) {
         throw new Error('Invalid to address');
       }
 
@@ -530,8 +534,11 @@ export namespace CryptoWallet.SDKS {
       if (!this.networks[network].connect) {
         throw new Error('Invalid network type');
       }
+      const validAddress = (address: string) => this.validateAddress(address, network);
+      if (!addresses.every(validAddress)) {
+        throw new Error('Invalid address used');
+      }
       const apiUrl = this.networks[network].discovery;
-      const returnAmount = 10;
       const URL = `${apiUrl}/addrs/${addresses.toString()}/txs?from=${from}&to=${to}`;
 
       return new Promise((resolve, reject) => {
@@ -610,8 +617,15 @@ export namespace CryptoWallet.SDKS {
     }
 
     getBalance(addresses: string[], network: string): Object {
+      if (!this.networks[network]) {
+        throw new Error('Invalid network');
+      }
       if (!this.networks[network].connect) {
         throw new Error('Invalid network type');
+      }
+      const validAddress = (address: string) => this.validateAddress(address, network);
+      if (!addresses.every(validAddress)) {
+        throw new Error('Invalid address used');
       }
 
       return new Promise((resolve, reject) => {
