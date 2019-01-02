@@ -52,7 +52,7 @@ export namespace CryptoWallet.SDKS {
         externalNode = root.derive(`m/49'/${cointype}'/0'/0`);
         internalNode = root.derive(`m/49'/${cointype}'/0'/1`); // for change addresses
         bip = 49;
-      } else if (this.networks[network].name === 'Regtest') {
+      } else if (this.networks[network].name === 'REGTEST') {
         externalNode = root.derive('m/0');
         internalNode = root.derive('m/1');
       } else {
