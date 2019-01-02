@@ -75,7 +75,7 @@ export const DASH = {
 };
 
 export const DASH_TESTNET = {
-  name: 'Dash Testnet',
+  name: 'DASH_TESTNET',
   bip: 1,
   segwit: false,
   discovery: 'https://testnet-insight.dashevo.org/insight-api',
@@ -180,7 +180,7 @@ export const ETHEREUM_ROPSTEN = {
 };
 
 export const BITCOIN_TESTNET = {
-  name: 'Bitcoin Testnet',
+  name: 'BITCOIN_TESTNET',
   type: 'testnet',
   bip: 1,
   segwit: true,
@@ -205,7 +205,7 @@ export const BITCOIN_TESTNET = {
 };
 
 export const REGTEST = {
-  name: 'Regtest',
+  name: 'REGTEST',
   type: 'test',
   discovery: 'http://192.168.1.195:3001/api',
   segwit: false,
