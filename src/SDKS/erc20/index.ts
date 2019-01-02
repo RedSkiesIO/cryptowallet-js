@@ -5,7 +5,7 @@ import * as Web3 from 'web3';
 import * as Axios from 'axios';
 import * as IERC20SDK from './IERC20SDK';
 import Ethereum from '../ethereum';
-import * as ERC20JSON from './erc20.ts';
+import * as ERC20JSON from './erc20';
 import * as Networks from '../networks';
 
 export namespace CryptoWallet.SDKS.ERC20 {
