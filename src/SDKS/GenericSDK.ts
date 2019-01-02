@@ -212,7 +212,7 @@ export namespace CryptoWallet.SDKS {
             },
             (error: any, body: any, result: any) => {
               if (error) {
-                return resolve(new Error(`Transaction failed: ${error}`));
+                return reject(new Error(`Transaction failed: ${error}`));
               }
               console.log('result :', result);
               const output = JSON.parse(result);

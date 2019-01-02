@@ -15,6 +15,9 @@ export namespace CryptoWallet {
       case 'Ethereum':
         return new EthereumSDK();
 
+      case 'ERC20':
+        return new ERC20SDK();
+
       default:
         return new BitcoinSDK();
     }
