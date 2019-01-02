@@ -20,7 +20,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
 
 
     /**
-     *
+     * generates a segwit address
      * @param keyPair
      */
     generateSegWitAddress(keyPair: any): Object {
@@ -35,7 +35,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
     }
 
     /**
-     *
+     * generates a segwit P2SH address
      * @param keyPair
      */
     generateSegWitP2SH(keyPair: any): Object {
@@ -52,20 +52,21 @@ namespace CryptoWallet.SDKS.Bitcoin {
     }
 
     /**
-     *
+     * generates a 3 0f 4 multisig segwit address
      * @param key1
      * @param key2
      * @param key3
      * @param key4
+     * @param network
      */
     generateSegWit3of4MultiSigAddress(
       key1: string, key2: string, key3: string, key4: string, network: string,
     ): Object {
-      const pubkeys: Array<any> = [key1, key2, key3, key4].map(hex => Buffer.from(hex, 'hex'));
+      const pubkeys: any = [key1, key2, key3, key4].map(hex => Buffer.from(hex, 'hex'));
       return this.bitcoinlib.payments.p2wsh({
         redeem: this.bitcoinlib.payments.p2ms({
-          pubkeys,
           m: 3,
+          pubkeys,
           network: this.networks[network].connect,
         }),
         network: this.networks[network].connect,
@@ -74,21 +75,30 @@ namespace CryptoWallet.SDKS.Bitcoin {
 
 
     /**
-     *
+     *  generates a P2SH multisig keypair
      * @param keys
+     * @param network
      */
     gernerateP2SHMultiSig(keys: string[], network: string): Object {
       const pubkeys: any[] = keys.map(hex => Buffer.from(hex, 'hex'));
       return this.bitcoinlib.payments.p2sh({
-        redeem: this.bitcoinlib.payments.p2ms({
-          pubkeys,
-          m: pubkeys.length,
+        redeem: this.bitcoinlib.payments.p2wsh({
+          redeem: this.bitcoinlib.payments.p2ms({
+            pubkeys,
+            m: pubkeys.length,
+            network: this.networks[network].connect,
+          }),
           network: this.networks[network].connect,
         }),
         network: this.networks[network].connect,
       });
     }
 
+    /**
+     *  gets the unspent transactions for an array of addresses
+     * @param addresses
+     * @param network
+     */
     getUTXOs(addresses: string[], network: string): Object {
       return new Promise((resolve, reject) => {
         const apiUrl = this.networks[network].discovery;
@@ -112,6 +122,177 @@ namespace CryptoWallet.SDKS.Bitcoin {
 
             return resolve(result);
           });
+      });
+    }
+
+    /**
+     * creates a transaction with multiple receivers
+     * @param accounts
+     * @param change
+     * @param utxos
+     * @param wallet
+     * @param toAddresses
+     * @param amounts
+     * @param minerRate
+     */
+    createTxToMany(
+      accounts: object[],
+      change: string[],
+      utxos: any,
+      wallet: any,
+      toAddresses: string[],
+      amounts: number[],
+      minerRate: number,
+    ): Object {
+      if (!wallet.network.connect) {
+        throw new Error('Invalid wallet type');
+      }
+
+      // if (!this.validateAddress(toAddress, wallet.network.name)) {
+      //   throw new Error('Invalid to address');
+      // }
+
+      const reducer = (accumulator: number, currentValue: number) => accumulator + currentValue;
+      const feeRate = minerRate;
+      const amount = amounts.reduce(reducer);
+      const transactionAmount = Math.floor((amount * 100000000));
+      const net = wallet.network;
+      let rawTx: any;
+
+      return new Promise(async (resolve, reject) => {
+        if (utxos.length === 0) {
+          // if no transactions have happened, there is no balance on the address.
+          return reject(new Error("You don't have enough balance to cover transaction"));
+        }
+
+        // get balance
+        let balance = 0;
+
+        for (let i = 0; i < utxos.length; i += 1) {
+          balance += utxos[i].value;
+        }
+
+        // check whether the balance of the address covers the miner fee
+        if ((balance - transactionAmount - feeRate) > 0) {
+          const targets: any = [];
+          const createTargets = (address: string, index: number) => {
+            const target: any = {
+              address,
+              value: Math.floor(amounts[index] * 100000000),
+            };
+            targets.push(target);
+          };
+          toAddresses.forEach(createTargets);
+          console.log('targets :', targets);
+          // const targets: any = [{
+          //   address: toAddress,
+          //   value: transactionAmount,
+          // },
+          // ];
+
+          let result = Coinselect(utxos, targets, feeRate);
+          if (change.length > 1) {
+            change.forEach((c) => {
+              const tar = {
+                address: c,
+              };
+              targets.push(tar);
+            });
+            const { inputs } = result;
+            result = CoinSelectSplit(inputs, targets, feeRate);
+          }
+
+          const { inputs, outputs } = result;
+          let { fee } = result;
+          console.log('inputs, outputs, fee :', inputs, outputs, fee);
+          const accountsUsed: any = [];
+          const p2shUsed: any = [];
+          const changeInputUsed: any = [];
+
+          inputs.forEach((input: any) => {
+            accounts.forEach((account: any) => {
+              let key: any;
+              if (input.address === account.address) {
+                if (account.change) {
+                  key = this.generateKeyPair(wallet, account.index, true);
+                  changeInputUsed.push(account);
+                } else {
+                  key = this.generateKeyPair(wallet, account.index);
+                }
+
+                const keyPair = this.bitcoinlib.ECPair.fromWIF(key.privateKey, net.connect);
+
+                const p2wpkh = this.bitcoinlib.payments.p2wpkh(
+                  { pubkey: keyPair.publicKey, network: net.connect },
+                );
+                const p2sh = this.bitcoinlib.payments.p2sh(
+                  { redeem: p2wpkh, network: net.connect },
+                );
+                accountsUsed.push(keyPair);
+                p2shUsed.push(p2sh);
+              }
+            });
+          });
+
+          const txb = new this.bitcoinlib.TransactionBuilder(net.connect);
+
+          txb.setVersion(1);
+
+          inputs.forEach((input: any) => {
+            txb.addInput(input.txid, input.vout);
+          });
+
+          outputs.forEach((output: any) => {
+            let { address } = output;
+            if (!output.address) {
+              ([address] = change);
+            }
+            txb.addOutput(address, output.value);
+          });
+          let i = 0;
+          inputs.forEach((input: any) => {
+            if (wallet.network.segwit) {
+              txb.sign(i, accountsUsed[i], p2shUsed[i].redeem.output, undefined, inputs[i].value);
+            } else {
+              txb.sign(i, accountsUsed[i]);
+            }
+            i += 1;
+          });
+          rawTx = txb.build().toHex();
+
+          const senders: any = [];
+          inputs.forEach((input: any) => {
+            senders.push(input.address);
+          });
+          fee /= 100000000;
+
+          const transaction = {
+            fee,
+            change,
+            receiver: [toAddresses],
+            confirmed: false,
+            confirmations: 0,
+            hash: txb.build().getId(),
+            blockHeight: -1,
+            sent: true,
+            value: amount,
+            sender: senders,
+            receivedTime: new Date().getTime() / 1000,
+            confirmedTime: undefined,
+
+          };
+
+          const spentInput = inputs;
+
+          return resolve({
+            changeInputUsed,
+            transaction,
+            hexTx: rawTx,
+            utxo: spentInput,
+
+          });
+        }
+        return reject(new Error("You don't have enough Satoshis to cover the miner fee."));
       });
     }
 
@@ -180,6 +361,11 @@ namespace CryptoWallet.SDKS.Bitcoin {
 
     /**
      *
+     * @param keypair
+     * @param txHash
+     * @param txNumber
+     * @param address
+     * @param amount
      */
     create1t1tx(
       keypair: any, txHash: string, txNumber: number, address: string, amount: number,
@@ -196,6 +382,7 @@ namespace CryptoWallet.SDKS.Bitcoin {
 
     /**
      *
+     * @param txparams
      */
     create2t2tx(txparams: any): String {
       const txb = new this.bitcoinlib.TransactionBuilder();

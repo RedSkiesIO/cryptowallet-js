@@ -20,7 +20,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
     VerifyTx: any;
 
     /**
-     *
+     * generate an ethereum keypair using a HD wallet object
      * @param wallet
      * @param index
      */
@@ -40,10 +40,10 @@ export namespace CryptoWallet.SDKS.Ethereum {
     }
 
     /**
-         *
-         * @param wallet
-         * @param index
-         */
+    * generates an etherum address using a HD wallet object
+    * @param wallet
+    * @param index
+    */
     generateAddress(wallet: any, index: number): Object {
       const addrNode = this.Bip.fromExtendedKey(
         wallet.externalNode.privateExtendedKey,
@@ -56,14 +56,20 @@ export namespace CryptoWallet.SDKS.Ethereum {
       return address;
     }
 
+    /**
+     * A method that checks if an address is a valid Ethereum address
+     * @param address
+     * @param network
+     */
     validateAddress(address: string, network: string): boolean {
       const web3 = new this.Web3(new Web3.providers.HttpProvider(this.networks[network].provider));
       return web3.utils.isAddress(address);
     }
 
     /**
-     *
+     * Restore an ethereum keypair using a private key
      * @param wif
+     * @param network
      */
     importWIF(wif: string, network: string): Object {
       const rawKey = Buffer.from(wif, 'hex');
@@ -78,12 +84,12 @@ export namespace CryptoWallet.SDKS.Ethereum {
     }
 
     /**
-     *
+     *  Create an Ethereum raw transaction
      * @param keypair
      * @param toAddress
      * @param amount
      */
-    createEthTx(keypair: any, toAddress: String, amount: number): Object {
+    createEthTx(keypair: any, toAddress: String, amount: number, gasPrice: number): Object {
       const privateKey = Buffer.from(keypair.privateKey.substr(2), 'hex');
 
       const web3 = new this.Web3(new Web3.providers.HttpProvider(keypair.network.provider));
@@ -95,7 +101,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
           const sendAmount = amount.toString();
           const tx = new EthereumTx({
             nonce,
-            gasPrice: web3.utils.toHex(web3.utils.toWei('20', 'gwei')),
+            gasPrice: web3.utils.toHex(web3.utils.toWei(gasPrice, 'gwei')),
             gasLimit: web3.utils.toHex(100000),
             to: toAddress,
             value: web3.utils.toHex(web3.utils.toWei(sendAmount)),
@@ -110,7 +116,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
     }
 
     /**
-     *
+     *  Broadcast an Ethereum transaction
      * @param rawTx
      * @param network
      */
@@ -126,7 +132,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
     }
 
     /**
-     *
+     *  Verify the signature of an Ethereum transaction object
      * @param tx
      */
     verifyTxSignature(tx: any): boolean {
@@ -138,6 +144,13 @@ export namespace CryptoWallet.SDKS.Ethereum {
       return false;
     }
 
+    /**
+     * Gets the transaction history for an array of addresses
+     * @param addresses
+     * @param network
+     * @param startBlock
+     * @param endBlock
+     */
     getTransactionHistory(
       addresses: string[],
       network: string,
@@ -211,6 +224,11 @@ export namespace CryptoWallet.SDKS.Ethereum {
       });
     }
 
+    /**
+     * Gets the total balance of an array of addresses
+     * @param addresses
+     * @param network
+     */
     getBalance(addresses: string[], network: string): Object {
       let balance = 0;
       const promises: any = [];
@@ -237,6 +255,12 @@ export namespace CryptoWallet.SDKS.Ethereum {
       });
     }
 
+    /**
+     * Generates the first 10 accounts of an ethereum wallet
+     * @param entropy
+     * @param network
+     * @param internal
+     */
     accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
       const wallet = this.generateHDWallet(entropy, network);
 

@@ -7,6 +7,7 @@ export declare const BITCOIN: {
     feeApi: string;
     connect: {
         messagePrefix: string;
+        bech32: string;
         bip32: {
             private: number;
             public: number;
@@ -147,6 +148,13 @@ export declare const ETHEREUM: {
     name: string;
     bip: number;
     sendTxApi: string;
+    chainId: number;
+};
+export declare const ETHEREUM_CLASSIC: {
+    name: string;
+    bip: number;
+    provider: string;
+    chainId: number;
 };
 export declare const ETHEREUM_ROPSTEN: {
     name: string;

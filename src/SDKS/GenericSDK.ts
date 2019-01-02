@@ -27,7 +27,11 @@ export namespace CryptoWallet.SDKS {
 
     axios: any = Axios;
 
-
+    /**
+     * generates an hierarchical determinitsic wallet for a given coin type
+     * @param entropy
+     * @param network
+     */
     generateHDWallet(entropy: string, network: string): Object {
       if (!this.bip39.validateMnemonic(entropy)) {
         throw new TypeError('Invalid entropy');
@@ -36,22 +40,24 @@ export namespace CryptoWallet.SDKS {
         throw new TypeError('Invalid network');
       }
       const cointype = this.networks[network].bip;
+      // root of node tree
       const root = Bip44hdkey.fromMasterSeed(
         this.bip39.mnemonicToSeed(entropy),
-      ); // root of node tree
+      );
       let externalNode;
       let internalNode;
       let bip;
+      // check if coin type supports segwit
       if (this.networks[network].segwit) {
         externalNode = root.derive(`m/49'/${cointype}'/0'/0`);
-        internalNode = root.derive(`m/49'/${cointype}'/0'/1`); // needed for bitcoin
+        internalNode = root.derive(`m/49'/${cointype}'/0'/1`); // for change addresses
         bip = 49;
       } else if (this.networks[network].name === 'Regtest') {
         externalNode = root.derive('m/0');
         internalNode = root.derive('m/1');
       } else {
         externalNode = root.derive(`m/44'/${cointype}'/0'/0`);
-        internalNode = root.derive(`m/44'/${cointype}'/0'/1`); // needed for bitcoin
+        internalNode = root.derive(`m/44'/${cointype}'/0'/1`); // for change addresses
         bip = 44;
       }
       const wallet: object = {
@@ -68,10 +74,10 @@ export namespace CryptoWallet.SDKS {
     }
 
     /**
-    *
+    * This method creates a keypair from a wallet object and a given index
     * @param wallet
     * @param index
-    * @param external
+    * @param internal
     */
     generateKeyPair(wallet: any, index: number, internal?: boolean): Object {
       if (!wallet.network.connect) {
@@ -90,7 +96,6 @@ export namespace CryptoWallet.SDKS {
         ),
         network: wallet.network.connect,
       });
-
 
       if (!wallet.network.segwit) {
         result = this.bitcoinlib.payments.p2pkh({
@@ -113,11 +118,11 @@ export namespace CryptoWallet.SDKS {
     }
 
     /**
-   *
-   * @param wallet
-   * @param index
-   * @param external
-   */
+    * This method generates an address from a wallet object and a given index.
+    * @param wallet
+    * @param index
+    * @param external
+    */
     generateAddress(wallet: any, index: number, internal?: boolean): Object {
       if (!wallet.network.connect) {
         throw new Error('Invalid wallet type');
@@ -155,7 +160,7 @@ export namespace CryptoWallet.SDKS {
     }
 
     /**
-     *
+     *  Restore  a keypair using a WIF
      * @param wif
      * @param network
      */
@@ -188,6 +193,11 @@ export namespace CryptoWallet.SDKS {
       };
     }
 
+    /**
+     * broadcasts a transaction
+     * @param tx
+     * @param network
+     */
     broadcastTx(tx: object, network: string): Object {
       return new Promise((resolve, reject) => {
         if (!this.networks[network].connect) {
@@ -233,6 +243,11 @@ export namespace CryptoWallet.SDKS {
       });
     }
 
+    /**
+     * validates an address
+     * @param address
+     * @param network
+     */
     validateAddress(address: string, network: string): boolean {
       try {
         this.bitcoinlib.address.toOutputScript(address, this.networks[network].connect);
@@ -242,6 +257,11 @@ export namespace CryptoWallet.SDKS {
       return true;
     }
 
+    /**
+     * gets the estimated cost of a transaction
+     * TODO: only works for bitcoin currently
+     * @param network
+     */
     getTransactionFee(network: string): Object {
       return new Promise((resolve, reject) => {
         if (!this.networks[network].connect) {
@@ -258,11 +278,11 @@ export namespace CryptoWallet.SDKS {
     }
 
     /**
- *
- * @param keypair
- * @param toAddress
- * @param amount
- */
+    * returns a transaction object that contains the raw transaction hex
+    * @param keypair
+    * @param toAddress
+    * @param amount
+    */
     createRawTx(
       accounts: object[],
       change: string[],
@@ -413,7 +433,7 @@ export namespace CryptoWallet.SDKS {
     }
 
     /**
-    *
+    * verifies the signatures of a transaction object
     * @param transaction
     */
     verifyTxSignature(transaction: any, network: string): boolean {
@@ -439,6 +459,12 @@ export namespace CryptoWallet.SDKS {
       return valid.every(item => item === true);
     }
 
+    /**
+     * This method discovers the addresses which have previously been used in a wallet
+     * @param entropy
+     * @param network
+     * @param internal
+     */
     accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
       if (!this.networks[network].connect) {
         throw new Error('Invalid network type');
@@ -523,8 +549,13 @@ export namespace CryptoWallet.SDKS {
       });
     }
 
-    // abstract getUTXOs(addresses: String[], network: string): Object;
-
+    /**
+     * gets the transaction history for an array of addresses
+     * @param addresses
+     * @param network
+     * @param from
+     * @param to
+     */
     getTransactionHistory(
       addresses: string[],
       network: string,
@@ -549,7 +580,6 @@ export namespace CryptoWallet.SDKS {
             if (r.data.totalItems > to) { more = true; }
             const results = r.data.items;
             const transactions: any = [];
-
 
             results.forEach((result: any) => {
               let confirmed = false;
@@ -600,7 +630,6 @@ export namespace CryptoWallet.SDKS {
               transactions.push(transaction);
             });
 
-
             const history = {
               more,
               from,
@@ -616,6 +645,11 @@ export namespace CryptoWallet.SDKS {
       });
     }
 
+    /**
+     * gets the total balance of an array of addresses
+     * @param addresses
+     * @param network
+     */
     getBalance(addresses: string[], network: string): Object {
       if (!this.networks[network]) {
         throw new Error('Invalid network');
@@ -647,53 +681,6 @@ export namespace CryptoWallet.SDKS {
             return resolve(balance);
           });
       });
-
-
-      // let balance = 0;
-      // const totalReceived = 0;
-      // const totalSent = 0;
-      // const unconfirmedBalance = 0;
-      // const txCount = 0;
-      // const unconfirmedTxCount = 0;
-      // let txids: any = [];
-      // const promises: any = [];
-      // const apiUrl = this.networks[network].discovery;
-
-      // function onlyUnique(value: any, index: any, self: any) {
-      //   return self.indexOf(value) === index;
-      // }
-
-      // const getAddrBalance = (addr: string) => {
-      //   const URL = `${apiUrl}/addr/${addr}`;
-
-      //   return new Promise((resolve, reject) => {
-      //     this.axios.get(URL)
-      //       .then((r: any) => {
-      //         const { transactions } = r.data;
-      //         balance += r.data.balance;
-      //         transactions.forEach((tx: string) => {
-      //           txids.push(tx);
-      //         });
-      //         resolve();
-      //       });
-      //   });
-      // };
-      // return new Promise(async (resolve, reject) => {
-      //   addresses.forEach((addr) => {
-      //     promises.push(
-      //       new Promise(async (res, rej) => res(getAddrBalance(addr))),
-      //     );
-      //   });
-      //   await Promise.all(promises);
-      //   txids = txids.filter(onlyUnique);
-      //   return resolve(
-      //     {
-      //       balance,
-      //       txCount: txids.length,
-
-      //     },
-      //   );
-      // });
     }
   }
 

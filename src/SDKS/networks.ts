@@ -8,6 +8,7 @@ export const BITCOIN = {
   feeApi: 'https://api.blockcypher.com/v1/btc/main',
   connect: {
     messagePrefix: '\x18Bitcoin Signed Message:\n',
+    bech32: 'bc',
     bip32: {
       private: 0x0488ade4,
       public: 0x0488b21e,

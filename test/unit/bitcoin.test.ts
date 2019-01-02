@@ -128,6 +128,24 @@ describe('bitcoinSDK (wallet)', () => {
     assert.equal(keypair.address, 'yWxRFULbGzvNuFafp1jUFNenXbiGrdoNWr');
   });
 
+  it('can create a 3 of 4 multisig address', () => {
+    const address: any = btc.generateSegWit3of4MultiSigAddress(
+      '026477115981fe981a6918a6297d9803c4dc04f328f22041bedff886bbc2962e01',
+      '02c96db2302d19b43d4c69368babace7854cc84eb9e061cde51cfa77ca4a22b8b9',
+      '023e4740d0ba639e28963f3476157b7cf2fb7c6fdf4254f97099cf8670b505ea59',
+      '03c6103b3b83e4a24a0e33a4df246ef11772f9992663db0c35759a5e2ebf68d8e9', 'BITCOIN',
+    );
+    assert.strictEqual(address.address, 'bc1q75f6dv4q8ug7zhujrsp5t0hzf33lllnr3fe7e2pra3v24mzl8rrqtp3qul');
+  });
+
+  it('can create a P2SH multisig address', () => {
+    const address: any = btc.gernerateP2SHMultiSig(
+      ['026477115981fe981a6918a6297d9803c4dc04f328f22041bedff886bbc2962e01',
+        '02c96db2302d19b43d4c69368babace7854cc84eb9e061cde51cfa77ca4a22b8b9'], 'BITCOIN',
+    );
+    assert.strictEqual(address.address, '3P4mrxQfmExfhxqjLnR2Ah4WES5EB1KBrN');
+  });
+
   it('can detect an invalid wallet type when creating a keypair', () => {
     const wallet: any = btc.generateHDWallet(entropy, 'ETHEREUM');
     const badFn = () => btc.generateKeyPair(wallet, 0);
@@ -210,7 +228,7 @@ describe('bitcoinSDK (wallet)', () => {
     const addresses = [
       '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf', '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM'];
     const tData: any = await btc.getUTXOs(addresses, 'BITCOIN_TESTNET');
-    expect(tData.length).to.equal(10);
+    expect(tData.length).to.equal(11);
   });
 
   // it('can get the unspent transactions of a litecoin testnet wallet', async () => {
@@ -338,7 +356,8 @@ describe('bitcoinSDK (wallet)', () => {
   //     'capable banner bubble rather wet pull diary produce you grace document ridge', 'REGTEST',
   //   );
   //   const internalAccountDiscovery: any = await btc.accountDiscovery(
-  //     'capable banner bubble rather wet pull diary produce you grace document ridge', 'REGTEST', true,
+  //     'capable banner bubble rather wet pull diary produce you grace document ridge',
+  // 'REGTEST', true,
   //   );
   //   console.log(externalAccountDiscovery);
   //   console.log(internalAccountDiscovery);
@@ -427,7 +446,7 @@ describe('bitcoinSDK (wallet)', () => {
 
 
   //   const tData: any = await btc.createRawTx(
-  //     accounts, change, utxos, wallet, 'n3Kg6BFh31LtaaTQeLPAXHZCRG6gHJDDRg', 1, 30,
+  //     accounts, change, utxos, wallet, 'n1Fbz1krLPDWNNwRHeFCDBjWcwfpf6TA74', 5, 30,
   //   );
   //   console.log(tData);
 
@@ -436,9 +455,25 @@ describe('bitcoinSDK (wallet)', () => {
   //   console.log('txid :', pushTx);
   // });
 
+  // it('can send a transaction to many addresses', async () => {
+  //   const wallet = btc.generateHDWallet(regtest, 'REGTEST');
+  //   const sendWallet = btc.generateHDWallet(entropy, 'REGTEST');
+  //   const account = btc.generateAddress(wallet, 0, false);
+  //   const one = 'n1Fbz1krLPDWNNwRHeFCDBjWcwfpf6TA74';
+  //   const two = 'mxqH9hZvsS7Pi9KyjkibF9Gesgykaywu8a';
+
+  //   const { address } = account;
+  //   const utxos: any = await btc.getUTXOs([address], 'REGTEST');
+  //   const tx = await btc.createTxToMany(
+  //  [account], [address], utxos, wallet, [one, two], [4, 2], 30);
+  //   console.log('tx :', tx);
+  // });
+
   // it('can simulate 1000 transactions on a wallet', async () => {
-  //   const mnemonic1 = 'capable banner bubble rather wet pull diary produce you grace document ridge';
-  //   const mnemonic2 = 'humor clarify mesh curious slow inject envelope mutual express fox once family';
+  //   const mnemonic1 =
+  // 'capable banner bubble rather wet pull diary produce you grace document ridge';
+  //   const mnemonic2 =
+  // 'humor clarify mesh curious slow inject envelope mutual express fox once family';
   //   const wallet1 = btc.generateHDWallet(mnemonic1, 'REGTEST');
   //   const wallet2 = btc.generateHDWallet(mnemonic2, 'REGTEST');
   //   let accounts1: any = [];
@@ -481,7 +516,8 @@ describe('bitcoinSDK (wallet)', () => {
   //       accounts1, [internal1.address], UTXOS1, wallet1, external2.address, 0.03, 38,
   //     );// create transaction 1
   //     console.log('transaction1.hexTx :', transaction1.hexTx);
-  //     const pushTx1 = await btc.broadcastTx(transaction1.hexTx, 'REGTEST');// broadcast transaction
+  //     const pushTx1 = await btc.broadcastTx(transaction1.hexTx,
+  //  'REGTEST');// broadcast transaction
   //     console.log('tx :', pushTx1);
   //     // next change address
   //     changeIndex1 += 1;
