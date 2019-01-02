@@ -38,7 +38,7 @@ export const LITECOIN = {
 };
 
 export const LITECOIN_TESTNET = {
-  name: 'Litecoin Testnet',
+  name: 'LITECOIN_TESTNET',
   type: 'litecoin testnet',
   bip: 1,
   segwit: true,
