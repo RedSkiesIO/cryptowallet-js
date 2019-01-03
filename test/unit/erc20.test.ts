@@ -27,5 +27,11 @@ describe('ERC20SDK (wallet)', () => {
     const transferERC20 = await erc20.transferERC20(erc20Wallet, sendAddress, 0.001, gasPrice.low);
     expect(eth.verifyTxSignature(transferERC20)).to.equal(true);
   });
+
+  it('can create the transaction history', async () => {
+    const erc20Wallet = erc20.generateERC20Wallet(ethAccount, 'Atlas Token', 'ACT', tokenContract, decimals);
+    const history = await erc20.getERC20TransactionHistory(erc20Wallet);
+    console.log('history :', history);
+  });
 });
 

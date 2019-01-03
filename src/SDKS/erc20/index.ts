@@ -94,7 +94,6 @@ export namespace CryptoWallet.SDKS.ERC20 {
      */
     transferERC20(erc20Wallet: any, to: string, amount: number, gasPrice: number): Object {
       const sendAmount = (amount * (10 ** erc20Wallet.decimals)).toString();
-      console.log('sendAmount :', sendAmount);
       const method = erc20Wallet.contractInstance.methods.transfer(to, sendAmount).encodeABI();
       return this.createTx(erc20Wallet, method, gasPrice);
     }
@@ -200,7 +199,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
                 blockHeight: r.blockNumber,
                 fee: r.cumulativeGasUsed,
                 sent,
-                value: r.value,
+                value: r.value / (10 ** erc20Wallet.decimals),
                 sender: r.from,
                 receiver,
                 confirmed,
