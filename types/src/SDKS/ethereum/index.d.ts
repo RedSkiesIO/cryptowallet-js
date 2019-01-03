@@ -26,6 +26,12 @@ export declare namespace CryptoWallet.SDKS.Ethereum {
          */
         validateAddress(address: string, network: string): boolean;
         /**
+        * gets the estimated cost of a transaction
+        * TODO: only works for bitcoin currently
+        * @param network
+        */
+        getTransactionFee(network: string): Object;
+        /**
          * Restore an ethereum keypair using a private key
          * @param wif
          * @param network

@@ -8,11 +8,12 @@ export namespace CryptoWallet.SDKS.Erc20 {
       contractAddress: string,
       decimals: number): Object;
 
-    transferERC20(erc20Wallet: any, to: string, amount: number): Object;
+    transferERC20(erc20Wallet: any, to: string, amount: number, gasPrice: number): Object;
 
-    approveAccountERC20(erc20Wallet: any, to: string, amount: number): Object;
+    approveAccountERC20(erc20Wallet: any, to: string, amount: number, gasPrice: number): Object;
 
-    transferAllowanceERC20(erc20Wallet: any, from: string, amount: number): Object;
+    transferAllowanceERC20(
+      erc20Wallet: any, from: string, amount: number, gasPrice: number): Object;
 
     checkAllowanceERC20(erc20Wallet: any, from: string, amount: number): Object;
 

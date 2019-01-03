@@ -56,20 +56,21 @@ export namespace CryptoWallet.SDKS.ERC20 {
     }
 
     /**
-     * Only used internally to create a transaction object
+     * Only used internally to create a raw transaction
      * @param erc20Wallet
      * @param method
      */
-    createTx(erc20Wallet: any, method: any) {
+    createTx(erc20Wallet: any, method: any, gasPrice: number): Object {
       return new Promise((resolve, reject) => {
         erc20Wallet.web3.eth.getTransactionCount(
           erc20Wallet.address, (err: any, nonce: any) => {
             if (err) {
               return reject(err);
             }
+            const gas = gasPrice.toString();
             const tx = new this.Tx({
               nonce,
-              gasPrice: erc20Wallet.web3.utils.toHex(erc20Wallet.web3.utils.toWei('20', 'gwei')),
+              gasPrice: erc20Wallet.web3.utils.toHex(gas),
               gasLimit: erc20Wallet.web3.utils.toHex(100000),
               to: erc20Wallet.contract,
               value: 0,
@@ -91,10 +92,10 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param to
      * @param amount
      */
-    transferERC20(erc20Wallet: any, to: string, amount: number): Object {
+    transferERC20(erc20Wallet: any, to: string, amount: number, gasPrice: number): Object {
       const sendAmount = amount.toString();
       const method = erc20Wallet.contractInstance.methods.transfer(to, sendAmount).encodeABI();
-      return this.createTx(erc20Wallet, method);
+      return this.createTx(erc20Wallet, method, gasPrice);
     }
 
     /**
@@ -103,10 +104,10 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param to
      * @param amount
      */
-    approveAccountERC20(erc20Wallet: any, to: string, amount: number): Object {
+    approveAccountERC20(erc20Wallet: any, to: string, amount: number, gasPrice: number): Object {
       const sendAmount = amount.toString();
       const method = erc20Wallet.contractInstance.methods.approve(to, sendAmount).encodeABI();
-      return this.createTx(erc20Wallet, method);
+      return this.createTx(erc20Wallet, method, gasPrice);
     }
 
     /**
@@ -115,7 +116,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param from
      * @param amount
      */
-    transferAllowanceERC20(erc20Wallet: any, from: string, amount: number): Object {
+    transferAllowanceERC20(erc20Wallet: any, from: string, amount: number, gasPrice: number): Object {
       return new Promise(async (resolve, reject) => {
         const check = await this.checkAllowanceERC20(erc20Wallet, from);
 
@@ -124,7 +125,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
           const method = erc20Wallet.contractInstance.methods.transferFrom(
             from, erc20Wallet.address, sendAmount,
           ).encodeABI();
-          const tx = this.createTx(erc20Wallet, method);
+          const tx = this.createTx(erc20Wallet, method, gasPrice);
           return resolve(tx);
         }
 

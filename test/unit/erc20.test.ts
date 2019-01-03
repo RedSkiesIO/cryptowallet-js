@@ -1,0 +1,30 @@
+/* eslint-disable import/no-unresolved */
+import * as Mocha from 'mocha';
+import * as Chai from 'chai';
+import { CryptoWallet } from '../../src/SDKFactory';
+
+const { assert } = Chai;
+const { expect } = Chai;
+const eth: any = CryptoWallet.createSDK('Ethereum');
+const erc20: any = CryptoWallet.createSDK('ERC20');
+const entropy = 'nut mixture license bean page mimic iron spice rail uncover then warfare';
+const network = 'ETHEREUM_ROPSTEN';
+const tokenContract = '0x26705403968A8C73656a2fEd0f89245698718F3F';
+const decimals = '3';
+const ethWallet = eth.generateHDWallet(entropy, network);
+const ethAccount = eth.generateKeyPair(ethWallet, 0);
+const sendAddress = '0x156AE1c2797494353C143070D01D5E4903bE2EB3';
+
+describe('ERC20SDK (wallet)', () => {
+  it('can create an ERC20 wallet', () => {
+    const erc20Wallet = erc20.generateERC20Wallet(ethAccount, 'Atlas Token', 'ACT', tokenContract, decimals);
+    expect(Object.keys(erc20Wallet).length).to.equal(10);
+  });
+
+  //   it('can create a raw erc20 token transfer transaction', () => {
+  //     const erc20Wallet = erc20.generateERC20Wallet(ethAccount, 'Atlas Token', 'ACT', tokenContract, decimals);
+  //     const transferERC20 = erc20.transferERC20(erc20Wallet, sendAddress, 0.1, );
+  //     expect(Object.keys(erc20Wallet).length).to.equal(10);
+  //   });
+});
+

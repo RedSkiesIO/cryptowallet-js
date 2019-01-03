@@ -1,8 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import * as Mocha from 'mocha';
 import * as Chai from 'chai';
-import { generateKeyPair } from 'crypto';
-import { AssertionError } from 'assert';
 import { CryptoWallet } from '../../src/SDKFactory';
 import ERC20 from '../../src/SDKS/erc20';
 
@@ -97,6 +95,9 @@ describe('ethereumSDK (wallet)', () => {
   it('can get the latest gas price for ethereum', async () => {
     const gasPrice = await eth.getTransactionFee('ETHEREUM_ROPSTEN');
     expect(Object.keys(gasPrice).length).to.equal(3);
+    expect(gasPrice).to.have.property('high');
+    expect(gasPrice).to.have.property('medium');
+    expect(gasPrice).to.have.property('low');
   });
 
   it('can create a transaction', async () => {
@@ -112,6 +113,11 @@ describe('ethereumSDK (wallet)', () => {
   it('can verify a transaction', async () => {
     const rawTx = '0xf86c068504a817c800830186a0946b92382dedd2bb7650eb388c553568552206b102872386f26fc10000802aa0837567fed905d394cc2989a123a9f1eba323686aa57998bb7cc494ca9b7a0257a04f9c73182687d917152f78c2be4652d71ea73b045e9932ffa93936b27b316a58';
     expect(eth.verifyTxSignature(rawTx)).to.equal(true);
+  });
+
+  it('can get the balance of an account', async () => {
+    const balance = await eth.getBalance(['0x156AE1c2797494353C143070D01D5E4903bE2EB3'], network);
+    console.log('balance :', balance);
   });
 
   //   it('can get the transaction history of an ERC20 wallet', async () => {

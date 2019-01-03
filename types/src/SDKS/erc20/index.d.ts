@@ -17,32 +17,32 @@ export declare namespace CryptoWallet.SDKS.ERC20 {
          */
         generateERC20Wallet(keypair: any, tokenName: string, tokenSymbol: string, contractAddress: string, decimals: number): Object;
         /**
-         * Only used internally to create a transaction object
+         * Only used internally to create a raw transaction
          * @param erc20Wallet
          * @param method
          */
-        createTx(erc20Wallet: any, method: any): Promise<{}>;
+        createTx(erc20Wallet: any, method: any, gasPrice: number): Object;
         /**
          * Create a transaction that transafers ERC20 tokens to a give address
          * @param erc20Wallet
          * @param to
          * @param amount
          */
-        transferERC20(erc20Wallet: any, to: string, amount: number): Object;
+        transferERC20(erc20Wallet: any, to: string, amount: number, gasPrice: number): Object;
         /**
          * Create a transaction that approves another account to transafer ERC20 tokens
          * @param erc20Wallet
          * @param to
          * @param amount
          */
-        approveAccountERC20(erc20Wallet: any, to: string, amount: number): Object;
+        approveAccountERC20(erc20Wallet: any, to: string, amount: number, gasPrice: number): Object;
         /**
          * Create a transaction that transfers money from another account
          * @param erc20Wallet
          * @param from
          * @param amount
          */
-        transferAllowanceERC20(erc20Wallet: any, from: string, amount: number): Object;
+        transferAllowanceERC20(erc20Wallet: any, from: string, amount: number, gasPrice: number): Object;
         /**
          * Checks how much can be transfered from another account
          * @param erc20Wallet

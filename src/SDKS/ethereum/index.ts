@@ -254,11 +254,10 @@ export namespace CryptoWallet.SDKS.Ethereum {
       let balance = 0;
       const promises: any = [];
 
+
       const getAddrBalance = (addr: string) => new Promise(async (resolve, reject) => {
-        await this.axios.get(
-          `${this.networks[network].getBalanceApi + addr}
-    &tag=latest&apikey=${this.networks.ethToken}`,
-        )
+        const URL = `${this.networks[network].getBalanceApi + addr}&tag=latest&apikey=${this.networks.ethToken}`;
+        await this.axios.get(URL)
           .then((bal: any) => {
             balance += bal.data.result;
             resolve();
@@ -272,7 +271,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
           );
         });
         await Promise.all(promises);
-        return balance;
+        return resolve(balance / 1000000000000000000);
       });
     }
 

@@ -5,6 +5,8 @@ export const BITCOIN = {
   name: 'BITCOIN',
   bip: 0,
   segwit: true,
+  discovery: 'https://insight.bitpay.com/api',
+  broadcastUrl: 'https://chain.so/api/v2/send_tx/BTC',
   feeApi: 'https://api.blockcypher.com/v1/btc/main',
   connect: {
     messagePrefix: '\x18Bitcoin Signed Message:\n',
@@ -19,11 +21,38 @@ export const BITCOIN = {
   },
 };
 
+export const BITCOIN_TESTNET = {
+  name: 'BITCOIN_TESTNET',
+  type: 'testnet',
+  bip: 1,
+  segwit: true,
+  discovery: 'https://test-insight.bitpay.com/api',
+  broadcastUrl: 'https://chain.so/api/v2/send_tx/BTCTEST',
+  sendTxApi: 'https://api.blockcypher.com/v1/btc/test3/txs/push',
+  getTranApi: 'https://api.blockcypher.com/v1/btc/test3/addrs/',
+  decodeTxApi: 'https://api.blockcypher.com/v1/btc/test3/txs/decode',
+  feeApi: 'https://api.blockcypher.com/v1/btc/main',
+  connect: {
+
+    messagePrefix: '\x18Bitcoin Signed Message:\n',
+    bech32: 'tb',
+    bip32: {
+      public: 0x043587cf,
+      private: 0x04358394,
+    },
+    pubKeyHash: 0x6f,
+    scriptHash: 0xc4,
+    wif: 0xef,
+  },
+};
+
 
 export const LITECOIN = {
   name: 'LITECOIN',
   bip: 2,
   segwit: true,
+  discovery: 'https://insight.litecore.io/api',
+  broadcastUrl: 'https://chain.so/api/v2/send_tx/LTC',
   feeApi: 'https://api.blockcypher.com/v1/ltc/main',
   connect: {
     messagePrefix: '\x19Litecoin Signed Message:\n',
@@ -61,6 +90,7 @@ export const DASH = {
   name: 'DASH',
   bip: 5,
   segwit: false,
+  discovery: 'https://insight.dash.org/api',
   feeApi: 'https://api.blockcypher.com/v1/dash/main',
   connect: {
     messagePrefix: 'unused',
@@ -79,7 +109,6 @@ export const DASH_TESTNET = {
   bip: 1,
   segwit: false,
   discovery: 'https://testnet-insight.dashevo.org/insight-api',
-  broadcastUrl: 'https://chain.so/api/v2/send_tx/DASHTEST',
   feeApi: 'https://api.blockcypher.com/v1/dash/main',
   connect: {
     messagePrefix: 'unused',
@@ -158,6 +187,7 @@ export const ETHEREUM = {
   bip: 60,
   sendTxApi: 'https://api.blockcypher.com/v1/eth/main/txs/push',
   feeApi: 'https://api.blockcypher.com/v1/btc/main',
+  provider: 'https://mainnet.infura.io/v3/352fc30cd8364caabaea4a3d67da773f',
   chainId: 1,
 };
 
@@ -172,7 +202,6 @@ export const ETHEREUM_ROPSTEN = {
   name: 'ETHEREUM_ROPSTEN',
   networkName: 'ropsten',
   bip: 60,
-  sendTxApi: 'https://api.blockcypher.com/v1/eth/main/txs/push',
   getTranApi: 'http://api-ropsten.etherscan.io/api?module=account&action=txlist&address=',
   getBalanceApi: 'https://api-ropsten.etherscan.io/api?module=account&action=balance&address=',
   getErc20TranApi: 'http://api-ropsten.etherscan.io/api?module=account&action=tokentx&contractaddress=',
@@ -181,29 +210,28 @@ export const ETHEREUM_ROPSTEN = {
   chainId: 3,
 };
 
-export const BITCOIN_TESTNET = {
-  name: 'BITCOIN_TESTNET',
-  type: 'testnet',
-  bip: 1,
-  segwit: true,
-  discovery: 'https://test-insight.bitpay.com/api',
-  broadcastUrl: 'https://chain.so/api/v2/send_tx/BTCTEST',
-  sendTxApi: 'https://api.blockcypher.com/v1/btc/test3/txs/push',
-  getTranApi: 'https://api.blockcypher.com/v1/btc/test3/addrs/',
-  decodeTxApi: 'https://api.blockcypher.com/v1/btc/test3/txs/decode',
-  feeApi: 'https://api.blockcypher.com/v1/btc/main',
-  connect: {
+export const ETHEREUM_RINKEBY = {
+  name: 'ETHEREUM_RINKEBY',
+  networkName: 'rinkeby',
+  bip: 60,
+  getTranApi: 'http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=',
+  getBalanceApi: 'https://api-rinkeby.etherscan.io/api?module=account&action=balance&address=',
+  getErc20TranApi: 'http://api-rinkeby.etherscan.io/api?module=account&action=tokentx&contractaddress=',
+  provider: 'https://rinkeby.infura.io/v3/352fc30cd8364caabaea4a3d67da773f',
+  feeApi: 'https://api.blockcypher.com/v1/eth/main',
+  chainId: 4,
+};
 
-    messagePrefix: '\x18Bitcoin Signed Message:\n',
-    bech32: 'tb',
-    bip32: {
-      public: 0x043587cf,
-      private: 0x04358394,
-    },
-    pubKeyHash: 0x6f,
-    scriptHash: 0xc4,
-    wif: 0xef,
-  },
+export const ETHEREUM_KOVAN = {
+  name: 'ETHEREUM_KOVAN',
+  networkName: 'kovan',
+  bip: 60,
+  getTranApi: 'http://api-kovan.etherscan.io/api?module=account&action=txlist&address=',
+  getBalanceApi: 'https://api-kovan.etherscan.io/api?module=account&action=balance&address=',
+  getErc20TranApi: 'http://api-kovan.etherscan.io/api?module=account&action=tokentx&contractaddress=',
+  provider: 'https://kovan.infura.io/v3/352fc30cd8364caabaea4a3d67da773f',
+  feeApi: 'https://api.blockcypher.com/v1/eth/main',
+  chainId: 42,
 };
 
 export const REGTEST = {
