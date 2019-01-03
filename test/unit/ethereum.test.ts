@@ -94,12 +94,17 @@ describe('ethereumSDK (wallet)', () => {
     expect(history.txs.length).to.equal(13);
   });
 
+  it('can get the latest gas price for ethereum', async () => {
+    const gasPrice = await eth.getTransactionFee('ETHEREUM_ROPSTEN');
+    expect(Object.keys(gasPrice).length).to.equal(3);
+  });
+
   it('can create a transaction', async () => {
     const wallet: any = eth.generateHDWallet(entropy, network);
     const keypair: any = eth.generateKeyPair(wallet, 0);
     const receiver: any = eth.generateAddress(wallet, 1);
 
-    const rawTx = await eth.createEthTx(keypair, receiver.address, 0.01);
+    const rawTx = await eth.createEthTx(keypair, receiver.address, 0.01, 20);
     const verify = eth.verifyTxSignature(rawTx);
     assert.strictEqual(verify, true);
   });

@@ -89,7 +89,7 @@ describe('bitcoinSDK (wallet)', () => {
     assert.strictEqual(
       keypair.privateKey, 'cNJiShRC1rQqQ8MZDtvGWqHJq2sDgErcnq897jq1YMnpCm8JRFXr',
     );
-    assert.equal(keypair.type, 'Bitcoin Testnet');
+    assert.equal(keypair.type, 'BITCOIN_TESTNET');
   });
 
   it('can create a litecoin key pair', () => {
@@ -281,9 +281,9 @@ describe('bitcoinSDK (wallet)', () => {
   // it('can create a litecoin testnet raw transaction', async () => {
   //   const wallet = btc.generateHDWallet(entropy, 'LITECOIN_TESTNET');
   //   const receiverWallet = btc.generateHDWallet(entropy2, 'LITECOIN_TESTNET');
-
+  //   const change1: any = btc.generateKeyPair(wallet, 0, true);
   //   const addresses = [
-  //     'QSc9ybA8G55zU5eSGrw32hFBe3R88gkLWc'];
+  //     'QSc9ybA8G55zU5eSGrw32hFBe3R88gkLWc', change1.address];
   //   const utxos: any = await btc.getUTXOs(addresses, 'LITECOIN_TESTNET');
 
 
@@ -291,13 +291,18 @@ describe('bitcoinSDK (wallet)', () => {
   //     address: 'QSc9ybA8G55zU5eSGrw32hFBe3R88gkLWc',
   //     index: 0,
   //     change: false,
+  //   },
+  //   {
+  //     address: change1.address,
+  //     index: 0,
+  //     change: true,
   //   }];
 
-  //   const change1: any = btc.generateKeyPair(wallet, 0, true);
+
   //   const change2: any = btc.generateKeyPair(wallet, 1, true);
 
   //   const change = [
-  //     change1.address];
+  //     'QSc9ybA8G55zU5eSGrw32hFBe3R88gkLWc'];
 
   //   const testAddress: any = btc.generateKeyPair(receiverWallet, 0);
   //   console.log(`To: ${testAddress.address}`);

@@ -67,6 +67,26 @@ export namespace CryptoWallet.SDKS.Ethereum {
     }
 
     /**
+    * gets the estimated cost of a transaction
+    * TODO: only works for bitcoin currently
+    * @param network
+    */
+    getTransactionFee(network: string): Object {
+      return new Promise((resolve, reject) => {
+        if (this.networks[network].connect) {
+          throw new Error('Invalid network type');
+        }
+        const URL = this.networks[network].feeApi;
+        this.axios.get(URL)
+          .then((r: any) => resolve({
+            high: r.data.high_gas_price,
+            medium: r.data.medium_gas_price,
+            low: r.data.low_gas_price,
+          }));
+      });
+    }
+
+    /**
      * Restore an ethereum keypair using a private key
      * @param wif
      * @param network
@@ -99,9 +119,10 @@ export namespace CryptoWallet.SDKS.Ethereum {
             return reject(err);
           }
           const sendAmount = amount.toString();
+          const gasAmount = gasPrice.toString();
           const tx = new EthereumTx({
             nonce,
-            gasPrice: web3.utils.toHex(web3.utils.toWei(gasPrice, 'gwei')),
+            gasPrice: web3.utils.toHex(web3.utils.toWei(gasAmount, 'gwei')),
             gasLimit: web3.utils.toHex(100000),
             to: toAddress,
             value: web3.utils.toHex(web3.utils.toWei(sendAmount)),
@@ -124,7 +145,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
       const web3 = new Web3(new Web3.providers.HttpProvider(this.networks[network].provider));
       return new Promise((resolve, reject) => {
         web3.eth.sendSignedTransaction(rawTx, (err: any, result: any) => {
-          if (err) return console.log('error', err);
+          if (err) return reject(err);
           console.log('sent', result);
           return resolve(result);
         });

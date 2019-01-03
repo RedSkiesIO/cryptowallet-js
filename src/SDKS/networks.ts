@@ -2,7 +2,7 @@ export const token = 'token=f4d997113b76452393a65216e046ab77';
 export const ethToken = '2JAADVNZG512YIZSCF7S6JDXS8QI7PSUFY';
 
 export const BITCOIN = {
-  name: 'Bitcoin',
+  name: 'BITCOIN',
   bip: 0,
   segwit: true,
   feeApi: 'https://api.blockcypher.com/v1/btc/main',
@@ -21,7 +21,7 @@ export const BITCOIN = {
 
 
 export const LITECOIN = {
-  name: 'Litecoin',
+  name: 'LITECOIN',
   bip: 2,
   segwit: true,
   feeApi: 'https://api.blockcypher.com/v1/ltc/main',
@@ -58,7 +58,7 @@ export const LITECOIN_TESTNET = {
 };
 
 export const DASH = {
-  name: 'Dash',
+  name: 'DASH',
   bip: 5,
   segwit: false,
   feeApi: 'https://api.blockcypher.com/v1/dash/main',
@@ -94,7 +94,7 @@ export const DASH_TESTNET = {
 };
 
 export const DOGECOIN = {
-  name: 'Dogecoin',
+  name: 'DOGECOIN',
   bip: 3,
   segwit: false,
   connect: {
@@ -110,7 +110,7 @@ export const DOGECOIN = {
 };
 
 export const DOGECOIN_TESTNET = {
-  name: 'Dogecoin Testnet',
+  name: 'DOGECOIN_TESTNET',
   bip: 1,
   segwit: false,
   connect: {
@@ -125,7 +125,7 @@ export const DOGECOIN_TESTNET = {
   },
 };
 export const VIACOIN = {
-  name: 'Viacoin',
+  name: 'VIACOIN',
   segwit: false,
   connect: {
     messagePrefix: '\x18Viacoin Signed Message:\n',
@@ -139,7 +139,7 @@ export const VIACOIN = {
   },
 };
 export const VIACOIN_TESTNET = {
-  name: 'Viacoin Testnet',
+  name: 'VIACOIN_TESTNET',
   segwit: false,
   connect: {
     messagePrefix: '\x18Viacoin Signed Message:\n',
@@ -154,21 +154,22 @@ export const VIACOIN_TESTNET = {
 };
 
 export const ETHEREUM = {
-  name: 'Ethereum',
+  name: 'ETHEREUM',
   bip: 60,
   sendTxApi: 'https://api.blockcypher.com/v1/eth/main/txs/push',
+  feeApi: 'https://api.blockcypher.com/v1/btc/main',
   chainId: 1,
 };
 
 export const ETHEREUM_CLASSIC = {
-  name: 'Ethereum Classic',
+  name: 'ETHEREUM_CLASSIC',
   bip: 61,
   provider: 'https://ethereumclassic.network',
   chainId: 1,
 };
 
 export const ETHEREUM_ROPSTEN = {
-  name: 'Ethereum Ropsten',
+  name: 'ETHEREUM_ROPSTEN',
   networkName: 'ropsten',
   bip: 60,
   sendTxApi: 'https://api.blockcypher.com/v1/eth/main/txs/push',
@@ -176,6 +177,7 @@ export const ETHEREUM_ROPSTEN = {
   getBalanceApi: 'https://api-ropsten.etherscan.io/api?module=account&action=balance&address=',
   getErc20TranApi: 'http://api-ropsten.etherscan.io/api?module=account&action=tokentx&contractaddress=',
   provider: 'https://ropsten.infura.io/v3/352fc30cd8364caabaea4a3d67da773f',
+  feeApi: 'https://api.blockcypher.com/v1/eth/main',
   chainId: 3,
 };
 
