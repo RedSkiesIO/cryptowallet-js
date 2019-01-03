@@ -93,7 +93,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param amount
      */
     transferERC20(erc20Wallet: any, to: string, amount: number, gasPrice: number): Object {
-      const sendAmount = Math.floor((amount * (10 ** erc20Wallet.decimals))).toString();
+      const sendAmount = (amount * (10 ** erc20Wallet.decimals)).toString();
       console.log('sendAmount :', sendAmount);
       const method = erc20Wallet.contractInstance.methods.transfer(to, sendAmount).encodeABI();
       return this.createTx(erc20Wallet, method, gasPrice);
@@ -106,7 +106,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param amount
      */
     approveAccountERC20(erc20Wallet: any, to: string, amount: number, gasPrice: number): Object {
-      const sendAmount = Math.floor((amount * (10 ** erc20Wallet.decimals))).toString();
+      const sendAmount = (amount * (10 ** erc20Wallet.decimals)).toString();
       const method = erc20Wallet.contractInstance.methods.approve(to, sendAmount).encodeABI();
       return this.createTx(erc20Wallet, method, gasPrice);
     }
@@ -124,7 +124,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
         const check = await this.checkAllowanceERC20(erc20Wallet, from);
 
         if (check >= amount) {
-          const sendAmount = Math.floor((amount * (10 ** erc20Wallet.decimals))).toString();
+          const sendAmount = (amount * (10 ** erc20Wallet.decimals)).toString();
           const method = erc20Wallet.contractInstance.methods.transferFrom(
             from, erc20Wallet.address, sendAmount,
           ).encodeABI();
