@@ -21,10 +21,11 @@ describe('ERC20SDK (wallet)', () => {
     expect(Object.keys(erc20Wallet).length).to.equal(10);
   });
 
-  //   it('can create a raw erc20 token transfer transaction', () => {
-  //     const erc20Wallet = erc20.generateERC20Wallet(ethAccount, 'Atlas Token', 'ACT', tokenContract, decimals);
-  //     const transferERC20 = erc20.transferERC20(erc20Wallet, sendAddress, 0.1, );
-  //     expect(Object.keys(erc20Wallet).length).to.equal(10);
-  //   });
+  it('can create a erc20 token transfer raw transaction', async () => {
+    const erc20Wallet = erc20.generateERC20Wallet(ethAccount, 'Atlas Token', 'ACT', tokenContract, decimals);
+    const gasPrice = await eth.getTransactionFee(network);
+    const transferERC20 = await erc20.transferERC20(erc20Wallet, sendAddress, 1, gasPrice.low);
+    console.log('transferERC20 :', transferERC20);
+  });
 });
 

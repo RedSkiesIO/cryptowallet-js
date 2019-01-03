@@ -122,7 +122,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
           const gasAmount = gasPrice.toString();
           const tx = new EthereumTx({
             nonce,
-            gasPrice: web3.utils.toHex(web3.utils.toWei(gasAmount, 'gwei')),
+            gasPrice: web3.utils.toHex(gasAmount),
             gasLimit: web3.utils.toHex(100000),
             to: toAddress,
             value: web3.utils.toHex(web3.utils.toWei(sendAmount)),
