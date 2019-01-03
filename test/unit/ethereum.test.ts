@@ -62,18 +62,6 @@ describe('ethereumSDK (wallet)', () => {
     );
   });
 
-  // it('can transfer an erc20 token', async () => {
-  //   const contract = '0x26705403968a8c73656a2fed0f89245698718f3f';
-  //   const wallet: any = eth.generateHDWallet(entropy, network);
-  //   const keypair: any = eth.generateKeyPair(wallet, 0);
-  //   const erc20Wallet: any = erc20.generateERC20Wallet(
-  // keypair, 'Atlas City Token', 'ACT', contract, 3);
-  //   const balance = await erc20.getERC20Balance(erc20Wallet);
-  //   // const sendTx = await erc20.transferAllowanceERC20(
-  //   // erc20Wallet, '0x6B92382DEdd2bb7650eB388C553568552206b102', 10000)
-  //   console.log(balance);
-  // });
-
   it('can restore a wallet from the mnemonic', async () => {
     const accounts: any = await eth.accountDiscovery(entropy, 'ETHEREUM_ROPSTEN');
     expect(accounts.length).to.equal(10);
@@ -89,7 +77,7 @@ describe('ethereumSDK (wallet)', () => {
     }
 
     const history = await eth.getTransactionHistory(addresses, 'ETHEREUM_ROPSTEN', 0);
-    expect(history.txs.length).to.equal(13);
+    expect(history.txs.length).to.equal(14);
   });
 
   it('can get the latest gas price for ethereum', async () => {

@@ -146,7 +146,6 @@ export namespace CryptoWallet.SDKS.Ethereum {
       return new Promise((resolve, reject) => {
         web3.eth.sendSignedTransaction(rawTx, (err: any, result: any) => {
           if (err) return reject(err);
-          console.log('sent', result);
           return resolve(result);
         });
       });
@@ -218,6 +217,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
                 value: r.value,
                 sender: r.from,
                 confirmedTime: r.timeStamp,
+                confirmations: r.confirmations,
               };
 
               transactions.push(transaction);
