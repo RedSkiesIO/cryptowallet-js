@@ -93,7 +93,7 @@ describe('ethereumSDK (wallet)', () => {
     const keypair: any = eth.generateKeyPair(wallet, 0);
     const receiver: any = eth.generateAddress(wallet, 1);
 
-    const rawTx = await eth.createEthTx(keypair, receiver.address, 0.01, 20);
+    const rawTx = await eth.createEthTx(keypair, receiver.address, 0.01, 20000);
     const verify = eth.verifyTxSignature(rawTx);
     assert.strictEqual(verify, true);
   });
@@ -103,10 +103,10 @@ describe('ethereumSDK (wallet)', () => {
     expect(eth.verifyTxSignature(rawTx)).to.equal(true);
   });
 
-  it('can get the balance of an account', async () => {
-    const balance = await eth.getBalance(['0x156AE1c2797494353C143070D01D5E4903bE2EB3'], network);
-    console.log('balance :', balance);
-  });
+  // it('can get the balance of an account', async () => {
+  //   const balance = await eth.getBalance(['0x156AE1c2797494353C143070D01D5E4903bE2EB3'], network);
+  //   console.log('balance :', balance);
+  // });
 
   //   it('can get the transaction history of an ERC20 wallet', async () => {
   //     const wallet = eth.generateHDWallet(entropy, 'ETHEREUM_ROPSTEN');

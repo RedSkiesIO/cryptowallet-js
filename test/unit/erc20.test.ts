@@ -21,17 +21,24 @@ describe('ERC20SDK (wallet)', () => {
     expect(Object.keys(erc20Wallet).length).to.equal(10);
   });
 
+  it('can get the balance of a wallet', async () => {
+    const erc20Wallet = erc20.generateERC20Wallet(ethAccount, 'Atlas Token', 'ACT', tokenContract, decimals);
+    const balance = await erc20.getBalance(erc20Wallet);
+    console.log('balance :', balance);
+  });
+
   it('can create a erc20 token transfer raw transaction', async () => {
     const erc20Wallet = erc20.generateERC20Wallet(ethAccount, 'Atlas Token', 'ACT', tokenContract, decimals);
     const gasPrice = await eth.getTransactionFee(network);
-    const transferERC20 = await erc20.transferERC20(erc20Wallet, sendAddress, 0.001, gasPrice.low);
+    const transferERC20 = await erc20.transfer(erc20Wallet, sendAddress, 0.001, gasPrice.low);
     expect(eth.verifyTxSignature(transferERC20)).to.equal(true);
   });
 
-  it('can create the transaction history', async () => {
-    const erc20Wallet = erc20.generateERC20Wallet(ethAccount, 'Atlas Token', 'ACT', tokenContract, decimals);
-    const history = await erc20.getERC20TransactionHistory(erc20Wallet);
-    console.log('history :', history);
-  });
+
+  //   it('can create the transaction history', async () => {
+  //     const erc20Wallet = erc20.generateERC20Wallet(ethAccount, 'Atlas Token', 'ACT', tokenContract, decimals);
+  //     const history = await erc20.getERC20TransactionHistory(erc20Wallet);
+  //     console.log('history :', history);
+  //   });
 });
 
