@@ -136,7 +136,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
 
           const transaction = {
             hash: web3.utils.sha3(raw),
-            fee: web3.utils.fromWei((gasPrice * 21000).toString(), 'gwei'),
+            fee: web3.utils.fromWei((gasPrice * 21000).toString(), 'ether'),
             receiver: toAddress,
             confirmed: false,
             confirmations: 0,
