@@ -104,7 +104,8 @@ describe('ethereumSDK (wallet)', () => {
   });
 
   // it('can get the balance of an account', async () => {
-  //   const balance = await eth.getBalance(['0x156AE1c2797494353C143070D01D5E4903bE2EB3'], network);
+  //   const balance = await eth.getBalance(
+  // ['0x156AE1c2797494353C143070D01D5E4903bE2EB3'], network);
   //   console.log('balance :', balance);
   // });
 
