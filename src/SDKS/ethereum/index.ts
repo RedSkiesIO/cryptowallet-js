@@ -236,7 +236,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
                 confirmed,
                 hash: r.hash,
                 blockHeight: r.blockNumber,
-                fee: r.cumulativeGasUsed,
+                fee: r.cumulativeGasUsed / 1000000000,
                 value: r.value / 1000000000000000000,
                 sender: r.from,
                 confirmedTime: r.timeStamp,
