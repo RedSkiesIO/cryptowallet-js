@@ -72,7 +72,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
             const tx = new this.Tx({
               nonce,
               gasPrice: erc20Wallet.web3.utils.toHex(gas),
-              gasLimit: erc20Wallet.web3.utils.toHex(100000),
+              gasLimit: erc20Wallet.web3.utils.toHex(21000),
               to: erc20Wallet.contract,
               value: 0,
               data: method,

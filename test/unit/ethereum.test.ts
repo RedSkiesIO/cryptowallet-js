@@ -82,7 +82,8 @@ describe('ethereumSDK (wallet)', () => {
 
   it('can get the latest gas price for ethereum', async () => {
     const gasPrice = await eth.getTransactionFee('ETHEREUM_ROPSTEN');
-    expect(Object.keys(gasPrice).length).to.equal(3);
+    console.log('gasPrice :', gasPrice);
+    expect(Object.keys(gasPrice).length).to.equal(6);
     expect(gasPrice).to.have.property('high');
     expect(gasPrice).to.have.property('medium');
     expect(gasPrice).to.have.property('low');
@@ -93,7 +94,7 @@ describe('ethereumSDK (wallet)', () => {
     const keypair: any = eth.generateKeyPair(wallet, 0);
     const receiver: any = eth.generateAddress(wallet, 1);
 
-    const rawTx = await eth.createEthTx(keypair, receiver.address, 0.01, 20000);
+    const rawTx = await eth.createEthTx(keypair, receiver.address, 0.01, 15750062047);
     console.log('rawTx :', rawTx);
     const verify = eth.verifyTxSignature(rawTx.hexTx);
     assert.strictEqual(verify, true);

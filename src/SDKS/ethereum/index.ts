@@ -82,6 +82,9 @@ export namespace CryptoWallet.SDKS.Ethereum {
             high: r.data.high_gas_price,
             medium: r.data.medium_gas_price,
             low: r.data.low_gas_price,
+            txHigh: (r.data.high_gas_price * 21000) / 1000000000000000000,
+            txMedium: (r.data.medium_gas_price * 21000) / 1000000000000000000,
+            txLow: (r.data.low_gas_price * 21000) / 1000000000000000000,
           }));
       });
     }
@@ -123,19 +126,17 @@ export namespace CryptoWallet.SDKS.Ethereum {
           const tx = new EthereumTx({
             nonce,
             gasPrice: web3.utils.toHex(gasAmount),
-            gasLimit: web3.utils.toHex(100000),
+            gasLimit: web3.utils.toHex(21000),
             to: toAddress,
             value: web3.utils.toHex(web3.utils.toWei(sendAmount)),
             chainId: keypair.network.chainId,
           });
           tx.sign(privateKey);
           const raw: any = `0x${tx.serialize().toString('hex')}`;
-          const serialize = tx.serialize();
-          const { hash } = tx.hash;
 
           const transaction = {
             hash: web3.utils.sha3(raw),
-            fee: (gasPrice * 21000).toString(),
+            fee: web3.utils.fromWei((gasPrice * 21000).toString(), 'gwei'),
             receiver: toAddress,
             confirmed: false,
             confirmations: 0,
