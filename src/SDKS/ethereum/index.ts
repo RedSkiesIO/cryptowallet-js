@@ -129,9 +129,29 @@ export namespace CryptoWallet.SDKS.Ethereum {
             chainId: keypair.network.chainId,
           });
           tx.sign(privateKey);
-          const raw = `0x${tx.serialize().toString('hex')}`;
+          const raw: any = `0x${tx.serialize().toString('hex')}`;
+          const serialize = tx.serialize();
+          const { hash } = tx.hash;
 
-          return resolve(raw);
+          const transaction = {
+            hash: web3.utils.sha3(raw),
+            fee: web3.utils.fromWei((gasPrice * 21000).toString()),
+            receiver: toAddress,
+            confirmed: false,
+            confirmations: 0,
+            blockHeight: -1,
+            sent: true,
+            value: amount,
+            sender: keypair.address,
+            receivedTime: new Date().getTime() / 1000,
+            confirmedTime: undefined,
+
+          };
+
+          return resolve({
+            transaction,
+            hexTx: raw,
+          });
         });
       });
     }
@@ -144,9 +164,11 @@ export namespace CryptoWallet.SDKS.Ethereum {
     broadcastTx(rawTx: object, network: string): Object {
       const web3 = new Web3(new Web3.providers.HttpProvider(this.networks[network].provider));
       return new Promise((resolve, reject) => {
-        web3.eth.sendSignedTransaction(rawTx, (err: any, result: any) => {
+        web3.eth.sendSignedTransaction(rawTx, (err: any, hash: any) => {
           if (err) return reject(err);
-          return resolve(result);
+          return resolve({
+            hash,
+          });
         });
       });
     }

@@ -94,7 +94,8 @@ describe('ethereumSDK (wallet)', () => {
     const receiver: any = eth.generateAddress(wallet, 1);
 
     const rawTx = await eth.createEthTx(keypair, receiver.address, 0.01, 20000);
-    const verify = eth.verifyTxSignature(rawTx);
+    console.log('rawTx :', rawTx);
+    const verify = eth.verifyTxSignature(rawTx.hexTx);
     assert.strictEqual(verify, true);
   });
 
