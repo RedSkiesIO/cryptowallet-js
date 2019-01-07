@@ -682,6 +682,26 @@ export namespace CryptoWallet.SDKS {
           });
       });
     }
+
+    getPriceFeed(coins: string[], currencies: string[]): Object {
+      const URL = `https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coins.toString()}&tsyms=${currencies.toString()}&api_key=${this.networks.cryptocompare}`;
+      return new Promise((resolve, reject) => {
+        this.axios.get(URL)
+          .then((r: any) => resolve(r.data))
+          .catch((error: any) => reject(new Error(error)));
+      });
+    }
+
+    getHistoricalData(coin: string, currency: string, period?: string): Object {
+      let URL = `https://min-api.cryptocompare.com/data/histohour?fsym=${coin}&tsym=${currency}&limit=24`;
+      if (period === 'week') { URL = `https://min-api.cryptocompare.com/data/histohour?fsym=${coin}&tsym=${currency}&limit=168`; }
+      if (period === 'month') { URL = `https://min-api.cryptocompare.com/data/histohour?fsym=${coin}&tsym=${currency}&limit=31`; }
+      return new Promise((resolve, reject) => {
+        this.axios.get(URL)
+          .then((r: any) => resolve(r.data.Data))
+          .catch((error: any) => reject(new Error(error)));
+      });
+    }
   }
 
 }

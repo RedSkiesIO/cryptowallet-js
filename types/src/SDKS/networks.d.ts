@@ -1,5 +1,6 @@
 export declare const token = "token=f4d997113b76452393a65216e046ab77";
 export declare const ethToken = "2JAADVNZG512YIZSCF7S6JDXS8QI7PSUFY";
+export declare const cryptocompare = "59e79cbecb93c903d32e1c5d5a5414863bf890a6636b0b6e2fd8c2b86c505df5";
 export declare const BITCOIN: {
     name: string;
     bip: number;

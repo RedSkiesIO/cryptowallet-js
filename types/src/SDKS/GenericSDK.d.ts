@@ -86,6 +86,8 @@ export declare namespace CryptoWallet.SDKS {
          * @param network
          */
         getBalance(addresses: string[], network: string): Object;
+        getPriceFeed(coins: string[], currencies: string[]): Object;
+        getHistoricalData(coin: string, currency: string, period?: string): Object;
     }
 }
 declare const _default: typeof CryptoWallet.SDKS.GenericSDK;
