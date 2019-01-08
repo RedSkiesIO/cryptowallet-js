@@ -599,6 +599,7 @@ describe('bitcoinSDK (wallet)', () => {
   //   const prices = await btc.getPriceFeed(['BTC', 'ETH', 'LTC', 'DASH', 'DOGE'], ['GBP', 'EUR', 'USD']);
   //   console.log('prices :', prices);
   // });
+
   // it('can get the historical price data', async () => {
   //   const prices = await btc.getHistoricalData('BTC', 'GBP', 'month');
   //   console.log('prices :', prices);

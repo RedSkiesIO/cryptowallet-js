@@ -684,10 +684,10 @@ export namespace CryptoWallet.SDKS {
     }
 
     getPriceFeed(coins: string[], currencies: string[]): Object {
-      const URL = `https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coins.toString()}&tsyms=${currencies.toString()}&api_key=${this.networks.cryptocompare}`;
+      const URL = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${coins.toString()}&tsyms=${currencies.toString()}&api_key=${this.networks.cryptocompare}`;
       return new Promise((resolve, reject) => {
         this.axios.get(URL)
-          .then((r: any) => resolve(r.data))
+          .then((r: any) => resolve(r.data.DISPLAY))
           .catch((error: any) => reject(new Error(error)));
       });
     }
