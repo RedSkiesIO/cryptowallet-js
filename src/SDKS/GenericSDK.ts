@@ -698,7 +698,14 @@ export namespace CryptoWallet.SDKS {
       if (period === 'month') { URL = `https://min-api.cryptocompare.com/data/histohour?fsym=${coin}&tsym=${currency}&limit=31`; }
       return new Promise((resolve, reject) => {
         this.axios.get(URL)
-          .then((r: any) => resolve(r.data.Data))
+          .then((r: any) => {
+            const data = r.data.Data;
+            const dataset = data.map((x: any) => ({
+              t: x.time * 1000,
+              y: x.close,
+            }));
+            return resolve(dataset);
+          })
           .catch((error: any) => reject(new Error(error)));
       });
     }
