@@ -695,7 +695,7 @@ export namespace CryptoWallet.SDKS {
     getHistoricalData(coin: string, currency: string, period?: string): Object {
       let URL = `https://min-api.cryptocompare.com/data/histohour?fsym=${coin}&tsym=${currency}&limit=24`;
       if (period === 'week') { URL = `https://min-api.cryptocompare.com/data/histohour?fsym=${coin}&tsym=${currency}&limit=168`; }
-      if (period === 'month') { URL = `https://min-api.cryptocompare.com/data/histohour?fsym=${coin}&tsym=${currency}&limit=31`; }
+      if (period === 'month') { URL = `https://min-api.cryptocompare.com/data/histoday?fsym=${coin}&tsym=${currency}&limit=31`; }
       return new Promise((resolve, reject) => {
         this.axios.get(URL)
           .then((r: any) => {
