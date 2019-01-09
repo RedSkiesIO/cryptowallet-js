@@ -18,8 +18,8 @@ const invalidEntropy = 'nut mixture license bean page mimic iron spice rail unco
 const entropy2 = 'calm steel soccer pulse polar depend bar bargain give pave ancient member';
 const testEntropy = 'nest orient spare seek crawl maze must pause grape bird quarter shrimp';
 const regtest = 'myth like bonus scare over problem client lizard pioneer submit female collect';
-const testWallet1 = 'sorry, stage, resource, neglect, boat, kind, size, spike, vanish, what, begin, often';
-const testWallet2 = 'garage, grunt, armor, reflect, exchange, success, old, undo, chef, glimpse, vanish, syrup';
+const testWallet1 = 'sorry stage resource neglect boat kind size spike vanish what begin often';
+const testWallet2 = 'garage grunt armor reflect exchange success old undo chef glimpse vanish syrup';
 
 const entro = 'input fancy dilemma valley master body witness actual hat today ceiling idea';
 
@@ -358,19 +358,19 @@ describe('bitcoinSDK (wallet)', () => {
   // });
 
 
-  // it('can discover an account', async (done) => {
-  //   const externalAccountDiscovery: any = await btc.accountDiscovery(
-  //     'capable banner bubble rather wet pull diary produce you grace document ridge', 'REGTEST',
-  //   );
-  //   const internalAccountDiscovery: any = await btc.accountDiscovery(
-  //     'capable banner bubble rather wet pull diary produce you grace document ridge',
-  // 'REGTEST', true,
-  //   );
-  //   console.log(externalAccountDiscovery);
-  //   console.log(internalAccountDiscovery);
+  it('can discover an account', async (done) => {
+    const externalAccountDiscovery: any = await btc.accountDiscovery(
+      testWallet1, 'REGTEST',
+    );
+    const internalAccountDiscovery: any = await btc.accountDiscovery(
+      testWallet1,
+      'REGTEST', true,
+    );
+    console.log(externalAccountDiscovery);
+    console.log(internalAccountDiscovery);
 
-  //   // expect(externalAccountDiscovery.used.length).to.equal(1);
-  // });
+    // expect(externalAccountDiscovery.used.length).to.equal(1);
+  });
 
   // it('can create a raw transaction', async () => {
   //   const wallet = btc.generateHDWallet(regtest, 'REGTEST');
@@ -600,14 +600,14 @@ describe('bitcoinSDK (wallet)', () => {
   //   console.log('prices :', prices);
   // });
 
-  it('can get the historical price data', async () => {
-    const prices = await btc.getHistoricalData('BTC', 'GBP', 'day');
-    const times = prices.map((x: any) => ({
-      t: x.time * 1000,
-      y: x.close,
-    }));
-    console.log('times :', prices);
-  });
+  // it('can get the historical price data', async () => {
+  //   const prices = await btc.getHistoricalData('BTC', 'GBP', 'day');
+  //   const times = prices.map((x: any) => ({
+  //     t: x.time * 1000,
+  //     y: x.close,
+  //   }));
+  //   console.log('times :', prices);
+  // });
 });
 
 
