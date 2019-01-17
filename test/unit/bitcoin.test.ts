@@ -453,7 +453,7 @@ describe('bitcoinSDK (wallet)', () => {
 
 
   //   const tData: any = await btc.createRawTx(
-  //     accounts, change, utxos, wallet, 'mjdmyU6zzBThpC9z5K7eh53aURUyRM2yY5', 0.01, 30,
+  //     accounts, change, utxos, wallet, '2N9bSDMEiD68PXWcprfZKGdoNeKCNZ45bCN', 0.5, 30,
   //   );
   //   console.log(tData);
 
@@ -600,14 +600,14 @@ describe('bitcoinSDK (wallet)', () => {
   //   console.log('prices :', prices);
   // });
 
-  it('can get the historical price data', async () => {
-    const prices = await btc.getHistoricalData('BTC', 'GBP', 'day');
-    const times = prices.map((x: any) => ({
-      t: x.time * 1000,
-      y: x.close,
-    }));
-    console.log('times :', prices);
-  });
+  // it('can get the historical price data', async () => {
+  //   const prices = await btc.getHistoricalData('BTC', 'GBP', 'day');
+  //   const times = prices.map((x: any) => ({
+  //     t: x.time * 1000,
+  //     y: x.close,
+  //   }));
+  //   console.log('times :', prices);
+  // });
 });
 
 
