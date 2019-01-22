@@ -145,7 +145,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
             value: amount,
             sender: keypair.address,
             receivedTime: new Date().getTime() / 1000,
-            confirmedTime: undefined,
+            confirmedTime: new Date().getTime() / 1000,
 
           };
 

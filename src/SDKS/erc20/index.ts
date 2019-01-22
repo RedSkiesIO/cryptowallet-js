@@ -186,9 +186,9 @@ export namespace CryptoWallet.SDKS.ERC20 {
      */
     getTransactionHistory(erc20Wallet: any, startBlock?: number): Object {
       return new Promise(async (resolve, reject) => {
-        let URL = `${erc20Wallet.network.getErc20TranApi + erc20Wallet.contract}&address=${erc20Wallet.address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
+        let URL = `${this.networks[erc20Wallet.network].getErc20TranApi + erc20Wallet.contract}&address=${erc20Wallet.address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
         if (typeof startBlock === 'undefined') {
-          URL = `${erc20Wallet.network.getErc20TranApi + erc20Wallet.contract}&address=${erc20Wallet.address}&sort=desc&apikey=${this.networks.ethToken}`;
+          URL = `${this.networks[erc20Wallet.network].getErc20TranApi + erc20Wallet.contract}&address=${erc20Wallet.address}&sort=desc&apikey=${this.networks.ethToken}`;
           console.log(URL);
         }
         await this.axios.get(URL)
