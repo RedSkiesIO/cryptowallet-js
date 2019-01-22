@@ -35,11 +35,12 @@ describe('ERC20SDK (wallet)', () => {
   });
 
 
-  //   it('can geet the transaction history', async () => {
-  //     const erc20Wallet = erc20.generateERC20Wallet(
-  // ethAccount, 'Atlas Token', 'ACT', tokenContract, decimals);
-  //     const history = await erc20.getERC20TransactionHistory(erc20Wallet);
-  //     console.log('history :', history);
-  //   });
+  it('can geet the transaction history', async () => {
+    const erc20Wallet = erc20.generateERC20Wallet(
+      ethAccount, 'Atlas Token', 'ACT', tokenContract, decimals,
+    );
+    const history = await erc20.getTransactionHistory(erc20Wallet);
+    console.log('history :', history);
+  });
 });
 
