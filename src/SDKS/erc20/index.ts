@@ -196,7 +196,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
             if (!res.data.result) {
               return resolve();
             }
-
+            console.log('r.data.result :', res.data.result);
             const transactions: any = [];
 
             // const nextBlock: number = 0//res.data.result[0].blockNumber
@@ -213,13 +213,14 @@ export namespace CryptoWallet.SDKS.ERC20 {
               const transaction = {
                 hash: r.hash,
                 blockHeight: r.blockNumber,
-                fee: r.cumulativeGasUsed,
+                fee: r.cumulativeGasUsed / 1000000000,
                 sent,
                 value: r.value / (10 ** erc20Wallet.decimals),
                 sender: r.from,
                 receiver,
                 confirmed,
                 confirmedTime: r.timeStamp,
+                confirmations: r.confirmations,
 
               };
 
