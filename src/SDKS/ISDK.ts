@@ -15,7 +15,9 @@ export namespace CryptoWallet.SDKS {
       wallet: any,
       toAddress: string,
       amount: number,
-      feeRate: number): Object;
+      feeRate: number,
+      max?: boolean): Object;
+
 
     broadcastTx(rawTx: object, network: string): Object;
 

@@ -291,6 +291,7 @@ export namespace CryptoWallet.SDKS {
       toAddress: string,
       amount: number,
       minerRate: number,
+      max?: boolean,
     ): Object {
       if (!wallet.network.connect) {
         throw new Error('Invalid wallet type');
@@ -320,13 +321,20 @@ export namespace CryptoWallet.SDKS {
 
         // check whether the balance of the address covers the miner fee
         if ((balance - transactionAmount - feeRate) > 0) {
-          const targets: any = [{
+          let targets: any = [{
             address: toAddress,
             value: transactionAmount,
           },
           ];
+          if (max) {
+            targets = [{
+              address: toAddress,
+            },
+            ];
+          }
 
           let result = Coinselect(utxos, targets, feeRate);
+
           if (change.length > 1) {
             change.forEach((c) => {
               const tar = {
@@ -334,6 +342,10 @@ export namespace CryptoWallet.SDKS {
               };
               targets.push(tar);
             });
+            const { inputs } = result;
+            result = CoinSelectSplit(inputs, targets, feeRate);
+          }
+          if (max) {
             const { inputs } = result;
             result = CoinSelectSplit(inputs, targets, feeRate);
           }

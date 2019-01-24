@@ -3,7 +3,7 @@ export declare namespace CryptoWallet.SDKS {
         generateHDWallet(entropy: string, network: string): Object;
         generateKeyPair(wallet: object, index: number, internal?: boolean): Object;
         importWIF(wif: string, network: string): Object;
-        createRawTx(accounts: object[], change: string[], utxos: any, wallet: any, toAddress: string, amount: number, feeRate: number): Object;
+        createRawTx(accounts: object[], change: string[], utxos: any, wallet: any, toAddress: string, amount: number, feeRate: number, max?: boolean): Object;
         broadcastTx(rawTx: object, network: string): Object;
         verifyTxSignature(transaction: object, network: string): boolean;
         accountDiscovery(entropy: string, netork: string, internal?: boolean): Object;

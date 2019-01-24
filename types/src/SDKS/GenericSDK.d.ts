@@ -59,7 +59,7 @@ export declare namespace CryptoWallet.SDKS {
         * @param toAddress
         * @param amount
         */
-        createRawTx(accounts: object[], change: string[], utxos: any, wallet: any, toAddress: string, amount: number, minerRate: number): Object;
+        createRawTx(accounts: object[], change: string[], utxos: any, wallet: any, toAddress: string, amount: number, minerRate: number, max?: boolean): Object;
         /**
         * verifies the signatures of a transaction object
         * @param transaction
