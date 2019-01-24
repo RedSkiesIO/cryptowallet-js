@@ -61,7 +61,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param erc20Wallet
      * @param method
      */
-    createTx(erc20Wallet: any, method: any, gasPrice: number): Object {
+    createTx(erc20Wallet: any, method: any, gasPrice: number, to?: string, amount?: number): Object {
       return new Promise((resolve, reject) => {
         erc20Wallet.web3.eth.getTransactionCount(
           erc20Wallet.address, (err: any, nonce: any) => {
@@ -81,7 +81,25 @@ export namespace CryptoWallet.SDKS.ERC20 {
 
             tx.sign(erc20Wallet.privateKey);
             const raw = `0x${tx.serialize().toString('hex')}`;
-            return resolve(raw);
+
+            const transaction = {
+              hash: erc20Wallet.web3.utils.sha3(raw),
+              fee: erc20Wallet.web3.utils.fromWei((gasPrice * 21000).toString(), 'ether'),
+              receiver: to,
+              confirmed: false,
+              confirmations: 0,
+              blockHeight: -1,
+              sent: true,
+              value: amount,
+              sender: erc20Wallet.address,
+              receivedTime: new Date().getTime() / 1000,
+              confirmedTime: new Date().getTime() / 1000,
+            };
+
+            return resolve({
+              hexTx: raw,
+              transaction,
+            });
           },
         );
       });
@@ -111,7 +129,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
     transfer(erc20Wallet: any, to: string, amount: number, gasPrice: number): Object {
       const sendAmount = (amount * (10 ** erc20Wallet.decimals)).toString();
       const method = erc20Wallet.contractInstance.methods.transfer(to, sendAmount).encodeABI();
-      return this.createTx(erc20Wallet, method, gasPrice);
+      return this.createTx(erc20Wallet, method, gasPrice, to, amount);
     }
 
     /**

@@ -22,7 +22,7 @@ export declare namespace CryptoWallet.SDKS.ERC20 {
          * @param erc20Wallet
          * @param method
          */
-        createTx(erc20Wallet: any, method: any, gasPrice: number): Object;
+        createTx(erc20Wallet: any, method: any, gasPrice: number, to?: string, amount?: number): Object;
         /**
         *  Broadcast an Ethereum transaction
         * @param rawTx
