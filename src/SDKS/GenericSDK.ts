@@ -428,7 +428,7 @@ export namespace CryptoWallet.SDKS {
 
           };
           if (max) {
-            transaction.value = outputs[0].value;
+            transaction.value = outputs[0].value / 100000000;
           }
 
 
