@@ -354,6 +354,7 @@ export namespace CryptoWallet.SDKS {
           const p2shUsed: any = [];
           const changeInputUsed: any = [];
 
+
           inputs.forEach((input: any) => {
             accounts.forEach((account: any) => {
               let key: any;
@@ -426,6 +427,10 @@ export namespace CryptoWallet.SDKS {
             confirmedTime: undefined,
 
           };
+          if (max) {
+            transaction.value = outputs[0].value;
+          }
+
 
           const spentInput = inputs;
 
