@@ -326,12 +326,6 @@ export namespace CryptoWallet.SDKS {
             value: transactionAmount,
           },
           ];
-          if (max) {
-            targets = [{
-              address: toAddress,
-            },
-            ];
-          }
 
           let result = Coinselect(utxos, targets, feeRate);
 
@@ -347,6 +341,9 @@ export namespace CryptoWallet.SDKS {
           }
           if (max) {
             const { inputs } = result;
+            targets = [{
+              address: toAddress,
+            }];
             result = CoinSelectSplit(inputs, targets, feeRate);
           }
 
