@@ -294,6 +294,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
           );
         });
         await Promise.all(promises);
+        if (balance < 1000000000000) return resolve(0);
         return resolve(balance / 1000000000000000000);
       });
     }

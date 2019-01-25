@@ -84,7 +84,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
 
             const transaction = {
               hash: erc20Wallet.web3.utils.sha3(raw),
-              fee: erc20Wallet.web3.utils.fromWei((gasPrice * 21000).toString(), 'ether'),
+              fee: gas,
               receiver: to,
               confirmed: false,
               confirmations: 0,
