@@ -7,6 +7,7 @@ export declare namespace CryptoWallet.SDKS.ERC20 {
         axios: any;
         Tx: any;
         Wallet: any;
+        Contract: any;
         /**
          * Creates an object containg all the information relating to a ERC20 token
          *  and the account it's stored on
@@ -61,6 +62,7 @@ export declare namespace CryptoWallet.SDKS.ERC20 {
          * @param erc20Wallet
          */
         getBalance(erc20Wallet: any): Object;
+        getTokenData(address: string, network: string): Object;
         /**
          * gets the transaction histroy of the ERC20 token on a users Ethereum account
          * @param erc20Wallet

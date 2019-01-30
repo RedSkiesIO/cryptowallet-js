@@ -21,6 +21,8 @@ export namespace CryptoWallet.SDKS.ERC20 {
 
     Wallet: any
 
+    Contract: any
+
     /**
      * Creates an object containg all the information relating to a ERC20 token
      *  and the account it's stored on
@@ -194,6 +196,22 @@ export namespace CryptoWallet.SDKS.ERC20 {
             const balance = result / (10 ** erc20Wallet.decimals);
             return resolve(balance);
           });
+      });
+    }
+
+    getTokenData(address: string, network: string): Object {
+      return new Promise(async (resolve, reject) => {
+        const web3 = new Web3(new Web3.providers.HttpProvider(this.networks[network].provider));
+        const abiArray = this.json.contract;
+        const contract = new web3.eth.Contract(abiArray, address);
+        const decimals = await contract.methods.decimals().call();
+        const name = await contract.methods.name().call();
+        const symbol = await contract.methods.symbol().call();
+        return resolve({
+          name,
+          symbol,
+          decimals,
+        });
       });
     }
 
