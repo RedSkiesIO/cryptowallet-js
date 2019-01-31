@@ -63,7 +63,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
      */
     validateAddress(address: string, network: string): boolean {
       const web3 = new this.Web3(new Web3.providers.HttpProvider(this.networks[network].provider));
-      return web3.utils.isAddress(address);
+      return web3.utils.isAddress(address.toLowerCase());
     }
 
     /**

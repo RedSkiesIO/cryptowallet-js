@@ -74,7 +74,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
             const tx = new this.Tx({
               nonce,
               gasPrice: erc20Wallet.web3.utils.toHex(gas),
-              gasLimit: erc20Wallet.web3.utils.toHex(21000),
+              gasLimit: erc20Wallet.web3.utils.toHex(100000),
               to: erc20Wallet.contract,
               value: 0,
               data: method,
@@ -204,7 +204,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
         const web3 = new Web3(new Web3.providers.HttpProvider(this.networks[network].provider));
         const abiArray = this.json.contract;
 
-        const contract = new web3.eth.Contract(abiArray, address);
+        const contract = new web3.eth.Contract(abiArray, address).catch((error: any) => reject(new Error('Not a valid address')));
         const valid = await web3.eth.getCode(address);
         if (valid === '0x') {
           return reject(new Error('This is not a valid ERC20 contract address'));
