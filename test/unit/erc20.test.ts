@@ -44,8 +44,9 @@ describe('ERC20SDK (wallet)', () => {
   // });
 
   it('can get the token data from an address', async () => {
-    const data = await erc20.getTokenData('0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', 'ETHEREUM');
+    const data = await erc20.getTokenData('0x999999C60566e0a78DF17F71886333E1dACE0BAE', 'ETHEREUM');
     console.log('data :', data);
   });
 });
+
 
