@@ -73,9 +73,9 @@ export namespace CryptoWallet.SDKS.Ethereum {
     */
     getTransactionFee(network: string): Object {
       return new Promise((resolve, reject) => {
-        if (this.networks[network].connect) {
-          throw new Error('Invalid network type');
-        }
+        // if (this.networks[network].connect) {
+        //   throw new Error('Invalid network type');
+        // }
         const URL = this.networks[network].feeApi;
         this.axios.get(URL)
           .then((r: any) => resolve({

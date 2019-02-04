@@ -340,11 +340,10 @@ export namespace CryptoWallet.SDKS {
             result = CoinSelectSplit(inputs, targets, feeRate);
           }
           if (max) {
-            const { inputs } = result;
             targets = [{
               address: toAddress,
             }];
-            result = CoinSelectSplit(inputs, targets, feeRate);
+            result = CoinSelectSplit(utxos, targets, feeRate);
           }
 
           const { inputs, outputs } = result;
@@ -714,6 +713,9 @@ export namespace CryptoWallet.SDKS {
         this.axios.get(URL)
           .then((r: any) => {
             const data = r.data.Data;
+            if (!data) {
+              return reject(new Error('No price data found'));
+            }
             const dataset = data.map((x: any) => ({
               t: x.time * 1000,
               y: x.close,
