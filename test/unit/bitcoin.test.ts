@@ -372,95 +372,57 @@ describe('bitcoinSDK (wallet)', () => {
   //   // expect(externalAccountDiscovery.used.length).to.equal(1);
   // });
 
-  // it('can create a raw transaction', async () => {
-  //   const wallet = btc.generateHDWallet(regtest, 'REGTEST');
-  //   const receiverWallet = btc.generateHDWallet(entropy2, 'REGTEST');
+  it('can create a raw transaction', async () => {
+    const wallet = btc.generateHDWallet(testWallet1, 'REGTEST');
+    const receiverWallet = btc.generateHDWallet(entropy2, 'REGTEST');
 
-  //   const addresses = [
-  //     'mnJQyeDFmGjNoxyxKQC6MMFdpx77rYV3Bo', 'mzdF3oEx8mKrpGb5rVnTE7MhQfL8N8oSnW',
-  //     'mtdVMhiWWmegkkBhzYDrz84yfgofPNLNmb',
-  //     'mqNnZTyFxhB6EzF1iDEAp9enrT84fwd1X5',
-  //     'mnk2URqujBqMEfhALMby1WZHoBRauW37Kg'];
-  //   const utxos: any = await btc.getUTXOs(addresses, 'REGTEST');
+    const addresses = [
+      'n4eiacZAaphoe3vbyhPSJEKvnuutXM2dF2', 'mjdmyU6zzBThpC9z5K7eh53aURUyRM2yY5', 'my5i7nyM4n33og1KCX5eor7pZYvt5JTXEQ', 'mz5ojTWiLoTVwLdUJ5s7v86mwCtYhYYUmf', 'n1zHNzNQuXdwLXhnsrsepcHVDyRmjRtvBC'];
+    const utxos: any = await btc.getUTXOs(addresses, 'REGTEST');
 
 
-  //   const accounts = [{
-  //     address: 'mnJQyeDFmGjNoxyxKQC6MMFdpx77rYV3Bo',
-  //     index: 0,
-  //     change: false,
-  //   },
-  //   {
-  //     address: 'mzdF3oEx8mKrpGb5rVnTE7MhQfL8N8oSnW',
-  //     index: 1,
-  //     change: false,
-  //   },
-  //   {
-  //     address: 'mtdVMhiWWmegkkBhzYDrz84yfgofPNLNmb',
-  //     index: 2,
-  //     change: false,
-  //   },
-  //   {
-  //     address: 'mqNnZTyFxhB6EzF1iDEAp9enrT84fwd1X5',
-  //     index: 3,
-  //     change: false,
-  //   },
-  //   {
-  //     address: 'mnk2URqujBqMEfhALMby1WZHoBRauW37Kg',
-  //     index: 4,
-  //     change: false,
-  //   },
-  //   {
-  //     address: 'mnJQyeDFmGjNoxyxKQC6MMFdpx77rYV3Bo',
-  //     received: 131.39085,
-  //     balance: 131.39085,
-  //     index: 0,
-  //     change: true,
-  //   },
-  //   {
-  //     address: 'mzdF3oEx8mKrpGb5rVnTE7MhQfL8N8oSnW',
-  //     received: 37.8582,
-  //     balance: 12.447,
-  //     index: 1,
-  //     change: true,
-  //   },
-  //   {
-  //     address: 'mtdVMhiWWmegkkBhzYDrz84yfgofPNLNmb',
-  //     received: 69.7722,
-  //     balance: 69.7722,
-  //     index: 2,
-  //     change: true,
-  //   },
-  //   {
-  //     address: 'mqNnZTyFxhB6EzF1iDEAp9enrT84fwd1X5',
-  //     received: 37.4912,
-  //     balance: 6.2567,
-  //     index: 3,
-  //     change: true,
-  //   },
-  //   {
-  //     address: 'mnk2URqujBqMEfhALMby1WZHoBRauW37Kg',
-  //     received: 15.2567,
-  //     balance: 1.123,
-  //     index: 4,
-  //     change: true,
-  //   }];
+    const accounts = [{
+      address: 'n4eiacZAaphoe3vbyhPSJEKvnuutXM2dF2',
+      change: false,
+      index: 1,
+    },
+    {
+      address: 'mjdmyU6zzBThpC9z5K7eh53aURUyRM2yY5',
+      change: false,
+      index: 0,
+    },
+    {
+      address: 'my5i7nyM4n33og1KCX5eor7pZYvt5JTXEQ',
+      change: true,
+      index: 0,
+    },
+    {
+      address: 'mz5ojTWiLoTVwLdUJ5s7v86mwCtYhYYUmf',
+      change: true,
+      index: 1,
+    },
+    {
+      address: 'n1zHNzNQuXdwLXhnsrsepcHVDyRmjRtvBC',
+      change: true,
+      index: 2,
+    }];
 
-  //   const change1: any = btc.generateKeyPair(wallet, 0);
-  //   // const change2: any = btc.generateKeyPair(wallet, 1, true);
+    const change1: any = btc.generateKeyPair(wallet, 0);
+    // const change2: any = btc.generateKeyPair(wallet, 1, true);
 
-  //   const change = [
-  //     change1.address];
+    const change = [
+      change1.address];
 
 
-  //   const tData: any = await btc.createRawTx(
-  //     accounts, change, utxos, wallet, '2N9bSDMEiD68PXWcprfZKGdoNeKCNZ45bCN', 0.5, 30,
-  //   );
-  //   console.log(tData);
+    const tData: any = await btc.createRawTx(
+      accounts, change, utxos, wallet, '2N9bSDMEiD68PXWcprfZKGdoNeKCNZ45bCN', 0, 30, true,
+    );
+    console.log(tData);
 
 
-  //   const pushTx = await btc.broadcastTx(tData.hexTx, 'REGTEST');
-  //   console.log('txid :', pushTx);
-  // });
+    // const pushTx = await btc.broadcastTx(tData.hexTx, 'REGTEST');
+    // console.log('txid :', pushTx);
+  });
 
   // it('can send a transaction to many addresses', async () => {
   //   const wallet = btc.generateHDWallet(regtest, 'REGTEST');

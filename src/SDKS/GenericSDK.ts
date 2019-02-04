@@ -320,7 +320,7 @@ export namespace CryptoWallet.SDKS {
         }
 
         // check whether the balance of the address covers the miner fee
-        if ((balance - transactionAmount - feeRate) > 0) {
+        if ((balance - transactionAmount) > 0) {
           let targets: any = [{
             address: toAddress,
             value: transactionAmount,
@@ -343,12 +343,13 @@ export namespace CryptoWallet.SDKS {
             targets = [{
               address: toAddress,
             }];
+            console.log(targets);
             result = CoinSelectSplit(utxos, targets, feeRate);
           }
-
+          console.log('targets: ', targets);
           const { inputs, outputs } = result;
           let { fee } = result;
-
+          console.log(result);
           const accountsUsed: any = [];
           const p2shUsed: any = [];
           const changeInputUsed: any = [];
@@ -387,13 +388,22 @@ export namespace CryptoWallet.SDKS {
             txb.addInput(input.txid, input.vout);
           });
 
-          outputs.forEach((output: any) => {
-            let { address } = output;
-            if (!output.address) {
-              ([address] = change);
-            }
-            txb.addOutput(address, output.value);
-          });
+          let maxValue = 0;
+          if (max) {
+            outputs.forEach((output: any) => {
+              maxValue += output.value;
+            });
+            txb.addOutput(toAddress, maxValue);
+          } else {
+            outputs.forEach((output: any) => {
+              let { address } = output;
+              if (!output.address) {
+                ([address] = change);
+              }
+              txb.addOutput(address, output.value);
+            });
+          }
+
           let i = 0;
           inputs.forEach((input: any) => {
             if (wallet.network.segwit) {
@@ -427,9 +437,9 @@ export namespace CryptoWallet.SDKS {
 
           };
           if (max) {
-            transaction.value = outputs[0].value / 100000000;
+            transaction.value = maxValue / 100000000;
           }
-
+          console.log(outputs);
 
           const spentInput = inputs;
 
