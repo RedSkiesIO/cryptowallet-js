@@ -228,7 +228,7 @@ export namespace CryptoWallet.SDKS {
             },
             (error: any, body: any, result: any) => {
               if (error) {
-                return resolve(new Error(`Transaction failed: ${error}`));
+                return reject(new Error(`Transaction failed: ${error}`));
               }
               console.log('result :', result);
               try {
@@ -273,7 +273,8 @@ export namespace CryptoWallet.SDKS {
             high: r.data.high_fee_per_kb / 1000,
             medium: r.data.medium_fee_per_kb / 1000,
             low: r.data.low_fee_per_kb / 1000,
-          }));
+          }))
+          .catch((error: any) => reject(new Error(error)));
       });
     }
 
@@ -489,9 +490,6 @@ export namespace CryptoWallet.SDKS {
      * @param internal
      */
     accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
-      if (!this.networks[network].connect) {
-        throw new Error('Invalid network type');
-      }
       const wallet: any = this.generateHDWallet(entropy, network);
       const apiUrl = wallet.network.discovery;
       let usedAddresses: any = [];
@@ -527,6 +525,9 @@ export namespace CryptoWallet.SDKS {
       };
 
       return new Promise(async (resolve, reject) => {
+        if (!this.networks[network].connect) {
+          return reject(new Error('Invalid network type'));
+        }
         let startIndex = 0;
 
         const discover = async () => {
@@ -585,17 +586,16 @@ export namespace CryptoWallet.SDKS {
       from: number,
       to: number,
     ): Object {
-      if (!this.networks[network].connect) {
-        throw new Error('Invalid network type');
-      }
-      const validAddress = (address: string) => this.validateAddress(address, network);
-      if (!addresses.every(validAddress)) {
-        throw new Error('Invalid address used');
-      }
-      const apiUrl = this.networks[network].discovery;
-      const URL = `${apiUrl}/addrs/${addresses.toString()}/txs?from=${from}&to=${to}`;
-
       return new Promise((resolve, reject) => {
+        if (!this.networks[network].connect) {
+          return reject(new Error('Invalid network type'));
+        }
+        const validAddress = (address: string) => this.validateAddress(address, network);
+        if (!addresses.every(validAddress)) {
+          return reject(new Error('Invalid address used'));
+        }
+        const apiUrl = this.networks[network].discovery;
+        const URL = `${apiUrl}/addrs/${addresses.toString()}/txs?from=${from}&to=${to}`;
         this.axios.get(URL)
           .then((r: any) => {
             if (r.data.totalItems === 0) { return resolve(); }
@@ -674,18 +674,17 @@ export namespace CryptoWallet.SDKS {
      * @param network
      */
     getBalance(addresses: string[], network: string): Object {
-      if (!this.networks[network]) {
-        throw new Error('Invalid network');
-      }
-      if (!this.networks[network].connect) {
-        throw new Error('Invalid network type');
-      }
-      const validAddress = (address: string) => this.validateAddress(address, network);
-      if (!addresses.every(validAddress)) {
-        throw new Error('Invalid address used');
-      }
-
       return new Promise((resolve, reject) => {
+        if (!this.networks[network]) {
+          return reject(new Error('Invalid network'));
+        }
+        if (!this.networks[network].connect) {
+          return reject(new Error('Invalid network type'));
+        }
+        const validAddress = (address: string) => this.validateAddress(address, network);
+        if (!addresses.every(validAddress)) {
+          return reject(new Error('Invalid address used'));
+        }
         let balance = 0;
         const apiUrl = this.networks[network].discovery;
         const URL = `${apiUrl}/addrs/${addresses.toString()}/utxo`;
@@ -702,7 +701,8 @@ export namespace CryptoWallet.SDKS {
             });
 
             return resolve(balance);
-          });
+          })
+          .catch((error: any) => reject(new Error(error)));
       });
     }
 
@@ -716,10 +716,10 @@ export namespace CryptoWallet.SDKS {
     }
 
     getHistoricalData(coin: string, currency: string, period?: string): Object {
-      let URL = `https://min-api.cryptocompare.com/data/histohour?fsym=${coin}&tsym=${currency}&limit=24&api_key=${this.networks.cryptocompare}`;
-      if (period === 'week') { URL = `https://min-api.cryptocompare.com/data/histohour?fsym=${coin}&tsym=${currency}&limit=168&api_key=${this.networks.cryptocompare}`; }
-      if (period === 'month') { URL = `https://min-api.cryptocompare.com/data/histoday?fsym=${coin}&tsym=${currency}&limit=31&api_key=${this.networks.cryptocompare}`; }
       return new Promise((resolve, reject) => {
+        let time;
+        if (period === 'day') { time = 24; } else if (period === 'week') { time = 168; } else if (period === 'month') { time = 31; } else { return reject(new Error('Invalid Period')); }
+        const URL = `https://min-api.cryptocompare.com/data/histohour?fsym=${coin}&tsym=${currency}&limit=${time}&api_key=${this.networks.cryptocompare}`;
         this.axios.get(URL)
           .then((r: any) => {
             const data = r.data.Data;

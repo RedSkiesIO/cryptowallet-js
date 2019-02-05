@@ -121,7 +121,8 @@ namespace CryptoWallet.SDKS.Bitcoin {
 
 
             return resolve(result);
-          });
+          })
+          .catch((error: any) => reject(error));
       });
     }
 
