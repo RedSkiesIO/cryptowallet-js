@@ -63,12 +63,18 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param erc20Wallet
      * @param method
      */
-    createTx(erc20Wallet: any, method: any, gasPrice: number, to?: string, amount?: number): Object {
+    createTx(
+      erc20Wallet: any,
+      method: any,
+      gasPrice: number,
+      to?: string,
+      amount?: number,
+    ): Object {
       return new Promise((resolve, reject) => {
         erc20Wallet.web3.eth.getTransactionCount(
           erc20Wallet.address, (err: any, nonce: any) => {
             if (err) {
-              return reject(err);
+              return reject(new Error(err));
             }
             const gas = gasPrice.toString();
             const tx = new this.Tx({
@@ -103,7 +109,8 @@ export namespace CryptoWallet.SDKS.ERC20 {
               transaction,
             });
           },
-        );
+        )
+          .catch((e: any) => reject(new Error(e)));
       });
     }
 
@@ -116,9 +123,10 @@ export namespace CryptoWallet.SDKS.ERC20 {
       const web3 = new Web3(new Web3.providers.HttpProvider(this.networks[network].provider));
       return new Promise((resolve, reject) => {
         web3.eth.sendSignedTransaction(rawTx, (err: any, result: any) => {
-          if (err) return reject(err);
+          if (err) return reject(new Error(err));
           return resolve(result);
-        });
+        })
+          .catch((e: any) => reject(new Error(e)));
       });
     }
 
@@ -195,7 +203,8 @@ export namespace CryptoWallet.SDKS.ERC20 {
           .then((result: any) => {
             const balance = result / (10 ** erc20Wallet.decimals);
             return resolve(balance);
-          });
+          })
+          .catch((e: any) => reject(new Error(e)));
       });
     }
 
@@ -204,12 +213,12 @@ export namespace CryptoWallet.SDKS.ERC20 {
         const web3 = new Web3(new Web3.providers.HttpProvider(this.networks[network].provider));
         const abiArray = this.json.contract;
 
-        const contract = new web3.eth.Contract(abiArray, address).catch((error: any) => reject(new Error('Not a valid address')));
+        const contract = new web3.eth.Contract(abiArray, address).catch((error: any) => reject(new Error(`"${address}" is Not a valid address`)));
         const valid = await web3.eth.getCode(address);
         if (valid === '0x') {
           return reject(new Error('This is not a valid ERC20 contract address'));
         }
-        const validERC20 = await contract.methods.balanceOf('0xcc345035D14458B3C012977f96fA1E116760D60a').call()
+        await contract.methods.balanceOf('0xcc345035D14458B3C012977f96fA1E116760D60a').call()
           .catch((error: any) => reject(new Error('Not a valid ERC20 contract address')));
 
         try {
@@ -250,7 +259,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
             // const nextBlock: number = 0//res.data.result[0].blockNumber
             res.data.result.forEach((r: any) => {
               const receiver = r.to; let sent = false; let confirmed = false;
-              const contractCall = false;
+
               if (r.from === erc20Wallet.address.toLowerCase()) {
                 sent = true;
               }
@@ -275,7 +284,8 @@ export namespace CryptoWallet.SDKS.ERC20 {
               transactions.push(transaction);
             });
             return resolve(transactions);
-          });
+          })
+          .catch((e: any) => reject(new Error(e)));
       });
     }
   }

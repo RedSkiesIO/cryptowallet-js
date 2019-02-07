@@ -298,7 +298,7 @@ export namespace CryptoWallet.SDKS {
         throw new Error('Invalid wallet type');
       }
       if (!this.validateAddress(toAddress, wallet.network.name)) {
-        throw new Error('Invalid to address');
+        throw new Error(`Invalid to address "${toAddress}"`);
       }
 
 
@@ -526,7 +526,7 @@ export namespace CryptoWallet.SDKS {
 
       return new Promise(async (resolve, reject) => {
         if (!this.networks[network].connect) {
-          return reject(new Error('Invalid network type'));
+          return reject(new Error(`${network} is an invalid network`));
         }
         let startIndex = 0;
 
@@ -542,7 +542,9 @@ export namespace CryptoWallet.SDKS {
             );
           }
 
+
           await Promise.all(promises);
+
 
           if (emptyAddresses.length > 0) {
             const min = Math.min(...emptyAddresses);
@@ -552,8 +554,9 @@ export namespace CryptoWallet.SDKS {
             discover();
           }
         };
-
-        await discover();
+        try {
+          await discover();
+        } catch (e) { return reject(e); }
 
         const result: any = {
           change,
@@ -586,14 +589,14 @@ export namespace CryptoWallet.SDKS {
       from: number,
       to: number,
     ): Object {
+      if (!this.networks[network].connect) {
+        return new Error(`${network} is an invalid network`);
+      }
+      const validAddress = (address: string) => this.validateAddress(address, network);
+      if (!addresses.every(validAddress)) {
+        return new Error('Invalid address used');
+      }
       return new Promise((resolve, reject) => {
-        if (!this.networks[network].connect) {
-          return reject(new Error('Invalid network type'));
-        }
-        const validAddress = (address: string) => this.validateAddress(address, network);
-        if (!addresses.every(validAddress)) {
-          return reject(new Error('Invalid address used'));
-        }
         const apiUrl = this.networks[network].discovery;
         const URL = `${apiUrl}/addrs/${addresses.toString()}/txs?from=${from}&to=${to}`;
         this.axios.get(URL)
@@ -674,17 +677,18 @@ export namespace CryptoWallet.SDKS {
      * @param network
      */
     getBalance(addresses: string[], network: string): Object {
+      if (!this.networks[network]) {
+        return new Error(`${network} is an invalid network`);
+      }
+      if (!this.networks[network].connect) {
+        return new Error(`${network} is an invalid network`);
+      }
+      const validAddress = (address: string) => this.validateAddress(address, network);
+      if (!addresses.every(validAddress)) {
+        return new Error('Invalid address used');
+      }
+
       return new Promise((resolve, reject) => {
-        if (!this.networks[network]) {
-          return reject(new Error('Invalid network'));
-        }
-        if (!this.networks[network].connect) {
-          return reject(new Error('Invalid network type'));
-        }
-        const validAddress = (address: string) => this.validateAddress(address, network);
-        if (!addresses.every(validAddress)) {
-          return reject(new Error('Invalid address used'));
-        }
         let balance = 0;
         const apiUrl = this.networks[network].discovery;
         const URL = `${apiUrl}/addrs/${addresses.toString()}/utxo`;
@@ -711,20 +715,20 @@ export namespace CryptoWallet.SDKS {
       return new Promise((resolve, reject) => {
         this.axios.get(URL)
           .then((r: any) => resolve(r.data.DISPLAY))
-          .catch((error: any) => reject(new Error(error)));
+          .catch((error: any) => reject(new Error(`No price data for "${coins}"`)));
       });
     }
 
     getHistoricalData(coin: string, currency: string, period?: string): Object {
+      let time: number;
+      if (period === 'day') { time = 24; } else if (period === 'week') { time = 168; } else if (period === 'month') { time = 31; } else { return new Error(`"${period}" is not a valid time period`); }
       return new Promise((resolve, reject) => {
-        let time;
-        if (period === 'day') { time = 24; } else if (period === 'week') { time = 168; } else if (period === 'month') { time = 31; } else { return reject(new Error('Invalid Period')); }
         const URL = `https://min-api.cryptocompare.com/data/histohour?fsym=${coin}&tsym=${currency}&limit=${time}&api_key=${this.networks.cryptocompare}`;
         this.axios.get(URL)
           .then((r: any) => {
             const data = r.data.Data;
             if (!data) {
-              return reject(new Error('No price data found'));
+              return reject(new Error(`No price data for "${coin}" in "${currency}" found`));
             }
             const dataset = data.map((x: any) => ({
               t: x.time * 1000,

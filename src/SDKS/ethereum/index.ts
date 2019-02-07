@@ -85,7 +85,8 @@ export namespace CryptoWallet.SDKS.Ethereum {
             txHigh: (r.data.high_gas_price * 21000) / 1000000000000000000,
             txMedium: (r.data.medium_gas_price * 21000) / 1000000000000000000,
             txLow: (r.data.low_gas_price * 21000) / 1000000000000000000,
-          }));
+          }))
+          .catch((e: any) => reject(new Error(`Failed to get transaction fee: ${e}`)));
       });
     }
 
@@ -119,7 +120,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
       return new Promise((resolve, reject) => {
         web3.eth.getTransactionCount(keypair.address, (err: any, nonce: any) => {
           if (err) {
-            return reject(err);
+            return reject(new Error(err));
           }
           const sendAmount = amount.toString();
           const gasAmount = gasPrice.toString();
@@ -153,7 +154,8 @@ export namespace CryptoWallet.SDKS.Ethereum {
             transaction,
             hexTx: raw,
           });
-        });
+        })
+          .catch((e: any) => reject(new Error(e)));
       });
     }
 
@@ -170,7 +172,8 @@ export namespace CryptoWallet.SDKS.Ethereum {
           return resolve({
             hash,
           });
-        });
+        })
+          .catch((e: any) => reject(new Error(e)));
       });
     }
 
@@ -247,7 +250,8 @@ export namespace CryptoWallet.SDKS.Ethereum {
             });
 
             return resolve();
-          });
+          })
+          .catch((e: any) => reject(new Error(e)));
       });
       return new Promise(async (resolve, reject) => {
         const promises: Promise<Object>[] = [];
@@ -256,7 +260,10 @@ export namespace CryptoWallet.SDKS.Ethereum {
             new Promise(async (res, rej) => res(getHistory(address))),
           );
         });
-        await Promise.all(promises);
+        try {
+          await Promise.all(promises);
+        } catch (e) { return reject(new Error(e)); }
+
         const history = {
           addresses,
           totalTransactions: transactions.length,
@@ -284,7 +291,8 @@ export namespace CryptoWallet.SDKS.Ethereum {
           .then((bal: any) => {
             balance += bal.data.result;
             resolve();
-          });
+          })
+          .catch((e: any) => reject(new Error(e)));
       });
 
       return new Promise(async (resolve, reject) => {
@@ -293,7 +301,9 @@ export namespace CryptoWallet.SDKS.Ethereum {
             new Promise(async (res, rej) => res(getAddrBalance(addr))),
           );
         });
-        await Promise.all(promises);
+        try {
+          await Promise.all(promises);
+        } catch (e) { return reject(new Error(e)); }
         if (balance < 1000000000000) return resolve(0);
         return resolve(balance / 1000000000000000000);
       });
