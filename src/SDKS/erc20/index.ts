@@ -23,6 +23,8 @@ export namespace CryptoWallet.SDKS.ERC20 {
 
     Contract: any
 
+    Web3: any = Web3
+
     /**
      * Creates an object containg all the information relating to a ERC20 token
      *  and the account it's stored on
@@ -39,7 +41,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
       contractAddress: string,
       decimals: number,
     ): Object {
-      const web3 = new Web3(new Web3.providers.HttpProvider(keypair.network.provider));
+      const web3 = new this.Web3(keypair.network.provider);
       const abiArray = this.json.contract;
       const contract = new web3.eth.Contract(abiArray, contractAddress);
       const privateKey = Buffer.from(keypair.privateKey.substr(2), 'hex');
@@ -89,10 +91,10 @@ export namespace CryptoWallet.SDKS.ERC20 {
 
             tx.sign(erc20Wallet.privateKey);
             const raw = `0x${tx.serialize().toString('hex')}`;
-
+            const fee = (gasPrice * 100000).toString();
             const transaction = {
+              fee,
               hash: erc20Wallet.web3.utils.sha3(raw),
-              fee: gas,
               receiver: to,
               confirmed: false,
               confirmations: 0,
@@ -120,7 +122,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
     * @param network
     */
     broadcastTx(rawTx: object, network: string): Object {
-      const web3 = new Web3(new Web3.providers.HttpProvider(this.networks[network].provider));
+      const web3 = new this.Web3(this.networks[network].provider);
       return new Promise((resolve, reject) => {
         web3.eth.sendSignedTransaction(rawTx, (err: any, result: any) => {
           if (err) return reject(new Error(err));
@@ -210,7 +212,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
 
     getTokenData(address: string, network: string): Object {
       return new Promise(async (resolve, reject) => {
-        const web3 = new Web3(new Web3.providers.HttpProvider(this.networks[network].provider));
+        const web3 = new this.Web3(this.networks[network].provider);
         const abiArray = this.json.contract;
 
         const contract = new web3.eth.Contract(abiArray, address).catch((error: any) => reject(new Error(`"${address}" is Not a valid address`)));

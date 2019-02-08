@@ -62,7 +62,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
      * @param network
      */
     validateAddress(address: string, network: string): boolean {
-      const web3 = new this.Web3(new Web3.providers.HttpProvider(this.networks[network].provider));
+      const web3 = new this.Web3(this.networks[network].provider);
       return web3.utils.isAddress(address.toLowerCase());
     }
 
@@ -116,7 +116,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
     createEthTx(keypair: any, toAddress: String, amount: number, gasPrice: number): Object {
       const privateKey = Buffer.from(keypair.privateKey.substr(2), 'hex');
 
-      const web3 = new this.Web3(new Web3.providers.HttpProvider(keypair.network.provider));
+      const web3 = new this.Web3(keypair.network.provider);
       return new Promise((resolve, reject) => {
         web3.eth.getTransactionCount(keypair.address, (err: any, nonce: any) => {
           if (err) {
@@ -165,7 +165,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
      * @param network
      */
     broadcastTx(rawTx: object, network: string): Object {
-      const web3 = new Web3(new Web3.providers.HttpProvider(this.networks[network].provider));
+      const web3 = new this.Web3(this.networks[network].provider);
       return new Promise((resolve, reject) => {
         web3.eth.sendSignedTransaction(rawTx, (err: any, hash: any) => {
           if (err) return reject(err);

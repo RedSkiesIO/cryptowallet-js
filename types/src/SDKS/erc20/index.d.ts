@@ -8,6 +8,7 @@ export declare namespace CryptoWallet.SDKS.ERC20 {
         Tx: any;
         Wallet: any;
         Contract: any;
+        Web3: any;
         /**
          * Creates an object containg all the information relating to a ERC20 token
          *  and the account it's stored on
