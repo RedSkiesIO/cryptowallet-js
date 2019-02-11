@@ -727,7 +727,7 @@ export namespace CryptoWallet.SDKS {
         this.axios.get(URL)
           .then((r: any) => {
             const data = r.data.Data;
-            if (!data) {
+            if (!data.map) {
               return reject(new Error(`No price data for "${coin}" in "${currency}" found`));
             }
             const dataset = data.map((x: any) => ({
