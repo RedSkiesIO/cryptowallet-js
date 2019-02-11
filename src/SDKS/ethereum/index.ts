@@ -262,7 +262,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
         });
         try {
           await Promise.all(promises);
-        } catch (e) { return reject(new Error(e)); }
+        } catch (e) { return reject(e); }
 
         const history = {
           addresses,
@@ -303,7 +303,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
         });
         try {
           await Promise.all(promises);
-        } catch (e) { return reject(new Error(e)); }
+        } catch (e) { return reject(e); }
         if (balance < 1000000000000) return resolve(0);
         return resolve(balance / 1000000000000000000);
       });

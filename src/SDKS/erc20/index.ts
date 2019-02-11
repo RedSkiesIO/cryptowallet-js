@@ -112,7 +112,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
             });
           },
         )
-          .catch((e: any) => reject(new Error(e)));
+          .catch((e: any) => reject(e));
       });
     }
 
@@ -128,7 +128,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
           if (err) return reject(new Error(err));
           return resolve(result);
         })
-          .catch((e: any) => reject(new Error(e)));
+          .catch((e: any) => reject(e));
       });
     }
 
@@ -206,7 +206,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
             const balance = result / (10 ** erc20Wallet.decimals);
             return resolve(balance);
           })
-          .catch((e: any) => reject(new Error(e)));
+          .catch((e: any) => reject(e));
       });
     }
 
@@ -215,7 +215,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
         const web3 = new this.Web3(this.networks[network].provider);
         const abiArray = this.json.contract;
 
-        const contract = new web3.eth.Contract(abiArray, address).catch((error: any) => reject(new Error(`"${address}" is Not a valid address`)));
+        const contract = new web3.eth.Contract(abiArray, address);
         const valid = await web3.eth.getCode(address);
         if (valid === '0x') {
           return reject(new Error('This is not a valid ERC20 contract address'));
@@ -287,7 +287,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
             });
             return resolve(transactions);
           })
-          .catch((e: any) => reject(new Error(e)));
+          .catch((e: any) => reject(e));
       });
     }
   }
