@@ -721,9 +721,10 @@ export namespace CryptoWallet.SDKS {
 
     getHistoricalData(coin: string, currency: string, period?: string): Object {
       let time: number;
-      if (period === 'day') { time = 24; } else if (period === 'week') { time = 168; } else if (period === 'month') { time = 31; } else { return new Error(`"${period}" is not a valid time period`); }
+      let length: string;
+      if (period === 'day') { time = 24; length = 'hour'; } else if (period === 'week') { time = 168; length = 'hour'; } else if (period === 'month') { time = 31; length = 'day'; } else { return new Error(`"${period}" is not a valid time period`); }
       return new Promise((resolve, reject) => {
-        const URL = `https://min-api.cryptocompare.com/data/histohour?fsym=${coin}&tsym=${currency}&limit=${time}&api_key=${this.networks.cryptocompare}`;
+        const URL = `https://min-api.cryptocompare.com/data/histo${length}?fsym=${coin}&tsym=${currency}&limit=${time}&api_key=${this.networks.cryptocompare}`;
         this.axios.get(URL)
           .then((r: any) => {
             const data = r.data.Data;
