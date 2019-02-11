@@ -86,7 +86,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
             txMedium: (r.data.medium_gas_price * 21000) / 1000000000000000000,
             txLow: (r.data.low_gas_price * 21000) / 1000000000000000000,
           }))
-          .catch((e: any) => reject(new Error(`Failed to get transaction fee: ${e}`)));
+          .catch((e: any) => reject(new Error(`Failed to get transaction fee: ${e.message}`)));
       });
     }
 
@@ -155,7 +155,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
             hexTx: raw,
           });
         })
-          .catch((e: any) => reject(new Error(e)));
+          .catch((e: any) => reject(e));
       });
     }
 
@@ -173,7 +173,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
             hash,
           });
         })
-          .catch((e: any) => reject(new Error(e)));
+          .catch((e: any) => reject(e));
       });
     }
 
@@ -251,7 +251,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
 
             return resolve();
           })
-          .catch((e: any) => reject(new Error(e)));
+          .catch((e: any) => reject(e));
       });
       return new Promise(async (resolve, reject) => {
         const promises: Promise<Object>[] = [];
@@ -292,7 +292,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
             balance += bal.data.result;
             resolve();
           })
-          .catch((e: any) => reject(new Error(e)));
+          .catch((e: any) => reject(e));
       });
 
       return new Promise(async (resolve, reject) => {

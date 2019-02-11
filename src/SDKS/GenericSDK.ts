@@ -274,7 +274,7 @@ export namespace CryptoWallet.SDKS {
             medium: r.data.medium_fee_per_kb / 1000,
             low: r.data.low_fee_per_kb / 1000,
           }))
-          .catch((error: any) => reject(new Error(error)));
+          .catch((error: any) => reject(error));
       });
     }
 
@@ -520,7 +520,7 @@ export namespace CryptoWallet.SDKS {
               }
               return resolve(result);
             })
-            .catch((error: any) => reject(new Error(error)));
+            .catch((error: any) => reject(error));
         });
       };
 
@@ -706,7 +706,7 @@ export namespace CryptoWallet.SDKS {
 
             return resolve(balance);
           })
-          .catch((error: any) => reject(new Error(error)));
+          .catch((error: any) => reject(error));
       });
     }
 
@@ -736,7 +736,7 @@ export namespace CryptoWallet.SDKS {
             }));
             return resolve(dataset);
           })
-          .catch((error: any) => reject(new Error(error)));
+          .catch((error: any) => reject(error));
       });
     }
   }
