@@ -61,14 +61,17 @@ const testAddresses = ['2N3sy5gP2EmDJdxmTv8xBpW1vy6J3oHb6E8',
 
 
 describe('bitcoinSDK (wallet)', () => {
-  // it('can generate a BTC HD wallet', () => {
-  //   const wallet: any = btc.generateHDWallet(entropy, network);
+  it('can generate a BTC HD wallet', () => {
+    const wallet: any = btc.generateHDWallet(entropy, network);
 
-  //   expect(wallet.mnemonic).to.equal(entropy);
-  //   expect(wallet.privateKey).to.equal(rootKey);
-  //   expect(wallet.bip).to.equal(bip);
-  //   expect(wallet.type).to.equal(1);
-  // });
+    // expect(wallet.mnemonic).to.equal(entropy);
+    expect(wallet.external.xpriv).to.equal('xprvA1zR34Tm9KnyfTxTd9n7m7Q1gMauEKPNzdRL7nfF3cGYiwLYd9xmPJBdRGfL6tu4U46oQf4FhjG2ysih1e5Wfa7ia6W8ZhrLUEcKAjUqLNs');
+    expect(wallet.external.xpub).to.equal('xpub6EymSZzeyhMGsx2vjBK88FLkEPRPdn7EMrLvvB4rbwoXbjfhAhH1w6W7GY7MY2nMfp4ebihHWYh5wg2U4wQX3c9JUTndGAa2JjjrZY1f3dc');
+    expect(wallet.bip).to.equal(bip);
+    expect(wallet.type).to.equal(1);
+
+    console.log(wallet);
+  });
 
   // it('can detect an invalid entropy when generating a wallet', () => {
   //   const badFn = () => btc.generateHDWallet(invalidEntropy, network);
@@ -80,19 +83,19 @@ describe('bitcoinSDK (wallet)', () => {
   //   expect(badFn).to.throw('Invalid network');
   // });
 
-  // it('can create a key pair', () => {
-  //   const wallet: any = btc.generateHDWallet(entropy, network);
-  //   const keypair: any = btc.generateKeyPair(wallet, 0);
-  //   assert.strictEqual(keypair.derivationPath, derPath);
-  //   assert.strictEqual(keypair.address, '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf');
-  //   assert.strictEqual(
-  //     keypair.publicKey, '03f3ce9fafbcf2da98817a706e5d41272455df20b8f832f6700c1bb2652ac44de0',
-  //   );
-  //   assert.strictEqual(
-  //     keypair.privateKey, 'cNJiShRC1rQqQ8MZDtvGWqHJq2sDgErcnq897jq1YMnpCm8JRFXr',
-  //   );
-  //   assert.equal(keypair.type, 'BITCOIN_TESTNET');
-  // });
+  it('can create a key pair', () => {
+    const wallet: any = btc.generateHDWallet(entropy, network);
+    const keypair: any = btc.generateKeyPair(wallet, 0);
+    assert.strictEqual(keypair.derivationPath, derPath);
+    assert.strictEqual(keypair.address, '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf');
+    assert.strictEqual(
+      keypair.publicKey, '03f3ce9fafbcf2da98817a706e5d41272455df20b8f832f6700c1bb2652ac44de0',
+    );
+    assert.strictEqual(
+      keypair.privateKey, 'cNJiShRC1rQqQ8MZDtvGWqHJq2sDgErcnq897jq1YMnpCm8JRFXr',
+    );
+    assert.equal(keypair.type, 'BITCOIN_TESTNET');
+  });
 
   // it('can create a litecoin key pair', () => {
   //   const wallet: any = btc.generateHDWallet(entropy, 'LITECOIN');

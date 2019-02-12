@@ -75,7 +75,7 @@ export declare namespace CryptoWallet.SDKS.Ethereum {
          * @param network
          * @param internal
          */
-        accountDiscovery(entropy: string, network: string, internal?: boolean): Object;
+        accountDiscovery(wallet: any, network: string, internal?: boolean): Object;
     }
 }
 declare const _default: typeof CryptoWallet.SDKS.Ethereum.EthereumSDK;

@@ -61,11 +61,9 @@ export namespace CryptoWallet.SDKS {
         bip = 44;
       }
       const wallet: object = {
-        externalNode,
-        internalNode,
+        external: externalNode.toJSON(),
+        internal: internalNode.toJSON(),
         bip,
-        mnemonic: entropy,
-        privateKey: root.privateExtendedKey,
         type: cointype,
         network: this.networks[network],
       };
@@ -83,8 +81,8 @@ export namespace CryptoWallet.SDKS {
       if (!wallet.network.connect) {
         throw new Error('Invalid wallet type');
       }
-      let node = wallet.externalNode;
-      if (internal) { node = wallet.internalNode; }
+      let node = Bip44hdkey.fromJSON(wallet.external);
+      if (internal) { node = Bip44hdkey.fromJSON(wallet.external); }
       const addrNode = node.deriveChild(index);
 
       let result: any = this.bitcoinlib.payments.p2sh({
@@ -489,8 +487,8 @@ export namespace CryptoWallet.SDKS {
      * @param network
      * @param internal
      */
-    accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
-      const wallet: any = this.generateHDWallet(entropy, network);
+    accountDiscovery(wallet: any, network: string, internal?: boolean): Object {
+      // const wallet: any = this.generateHDWallet(entropy, network);
       const apiUrl = wallet.network.discovery;
       let usedAddresses: any = [];
       const emptyAddresses: any = [];

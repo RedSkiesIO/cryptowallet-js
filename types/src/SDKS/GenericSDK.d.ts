@@ -71,7 +71,7 @@ export declare namespace CryptoWallet.SDKS {
          * @param network
          * @param internal
          */
-        accountDiscovery(entropy: string, network: string, internal?: boolean): Object;
+        accountDiscovery(wallet: any, network: string, internal?: boolean): Object;
         /**
          * gets the transaction history for an array of addresses
          * @param addresses

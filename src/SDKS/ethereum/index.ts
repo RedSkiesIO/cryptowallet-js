@@ -26,7 +26,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
      */
     generateKeyPair(wallet: any, index: number): Object {
       const addrNode = this.Bip.fromExtendedKey(
-        wallet.externalNode.privateExtendedKey,
+        wallet.external.xpriv,
       ).deriveChild(index);
       const keypair = {
         publicKey: addrNode.getWallet().getPublicKeyString(),
@@ -46,7 +46,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
     */
     generateAddress(wallet: any, index: number): Object {
       const addrNode = this.Bip.fromExtendedKey(
-        wallet.externalNode.privateExtendedKey,
+        wallet.external.xpriv,
       ).deriveChild(index);
       const address = {
         index,
@@ -315,9 +315,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
      * @param network
      * @param internal
      */
-    accountDiscovery(entropy: string, network: string, internal?: boolean): Object {
-      const wallet = this.generateHDWallet(entropy, network);
-
+    accountDiscovery(wallet: any, network: string, internal?: boolean): Object {
       const accounts = [];
 
       for (let i: number = 0; i < 10; i += 1) {
