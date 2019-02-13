@@ -43,7 +43,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
     ): Object {
       const web3 = new this.Web3(keypair.network.provider);
       const abiArray = this.json.contract;
-      const contract = new web3.eth.Contract(abiArray, contractAddress);
+      const contract = new web3.eth.Contract(this.json.contract, contractAddress);
       // const privateKey = Buffer.from(keypair.privateKey.substr(2), 'hex');
 
       return {
@@ -141,8 +141,11 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param amount
      */
     transfer(erc20Wallet: any, keypair: any, to: string, amount: number, gasPrice: number): Object {
+      const web3 = new this.Web3(erc20Wallet.network.provider);
+      const contract = new web3.eth.Contract(this.json.contract, erc20Wallet.contract);
       const sendAmount = (amount * (10 ** erc20Wallet.decimals)).toString();
-      const method = erc20Wallet.contractInstance.methods.transfer(to, sendAmount).encodeABI();
+      const method = contract.methods.transfer(to, sendAmount).encodeABI();
+
       return this.createTx(erc20Wallet, keypair, method, gasPrice, to, amount);
     }
 
@@ -153,8 +156,10 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param amount
      */
     approveAccount(erc20Wallet: any, keypair: any, to: string, amount: number, gasPrice: number): Object {
+      const web3 = new this.Web3(erc20Wallet.network.provider);
+      const contract = new web3.eth.Contract(this.json.contract, erc20Wallet.contract);
       const sendAmount = (amount * (10 ** erc20Wallet.decimals)).toString();
-      const method = erc20Wallet.contractInstance.methods.approve(to, sendAmount).encodeABI();
+      const method = contract.methods.approve(to, sendAmount).encodeABI();
       return this.createTx(erc20Wallet, keypair, method, gasPrice);
     }
 
@@ -168,11 +173,13 @@ export namespace CryptoWallet.SDKS.ERC20 {
       erc20Wallet: any, keypair: any, from: string, amount: number, gasPrice: number,
     ): Object {
       return new Promise(async (resolve, reject) => {
+        const web3 = new this.Web3(erc20Wallet.network.provider);
+        const contract = new web3.eth.Contract(this.json.contract, erc20Wallet.contract);
         const check = await this.checkAllowance(erc20Wallet, from);
 
         if (check >= amount) {
           const sendAmount = (amount * (10 ** erc20Wallet.decimals)).toString();
-          const method = erc20Wallet.contractInstance.methods.transferFrom(
+          const method = contract.methods.transferFrom(
             from, erc20Wallet.address, sendAmount,
           ).encodeABI();
           const tx = this.createTx(erc20Wallet, keypair, method, gasPrice);
@@ -191,7 +198,9 @@ export namespace CryptoWallet.SDKS.ERC20 {
     checkAllowance(erc20Wallet: any, from: string): Object {
       this.Wallet = erc20Wallet;
       return new Promise(async (resolve, reject) => {
-        this.Wallet.contractInstance.methods.allowance(from, erc20Wallet.address).call()
+        const web3 = new this.Web3(erc20Wallet.network.provider);
+        const contract = new web3.eth.Contract(this.json.contract, erc20Wallet.contract);
+        contract.methods.allowance(from, erc20Wallet.address).call()
           .then((result: any) => resolve(result));
       });
     }
@@ -203,7 +212,9 @@ export namespace CryptoWallet.SDKS.ERC20 {
     getBalance(erc20Wallet: any): Object {
       this.Wallet = erc20Wallet;
       return new Promise(async (resolve, reject) => {
-        this.Wallet.contractInstance.methods.balanceOf(erc20Wallet.address).call()
+        const web3 = new this.Web3(erc20Wallet.network.provider);
+        const contract = new web3.eth.Contract(this.json.contract, erc20Wallet.contract);
+        contract.methods.balanceOf(erc20Wallet.address).call()
           .then((result: any) => {
             const balance = result / (10 ** erc20Wallet.decimals);
             return resolve(balance);

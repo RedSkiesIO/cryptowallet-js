@@ -1,4 +1,3 @@
-/// <reference path="../../module.d.ts" />
 import * as Bitcoinlib from 'bitcoinjs-lib';
 import * as ISDK from './ISDK';
 export declare namespace CryptoWallet.SDKS {

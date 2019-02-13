@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 // eslint-disable-next-line spaced-comment
-///<reference path="../../types/module.d.ts" />
+
 import * as BitcoinLib from 'bitcoinjs-lib';
 import * as Bitcoinaddress from 'bitcoin-address';
 import * as Coinselect from 'coinselect';

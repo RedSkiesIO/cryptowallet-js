@@ -1,4 +1,3 @@
-/// <reference path="../../../../src/types/module.d.ts" />
 import * as IBitcoinSDK from './IBitcoinSDK';
 import GenericSDK from '../GenericSDK';
 declare namespace CryptoWallet.SDKS.Bitcoin {
