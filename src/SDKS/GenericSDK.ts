@@ -82,7 +82,7 @@ export namespace CryptoWallet.SDKS {
         throw new Error('Invalid wallet type');
       }
       let node = Bip44hdkey.fromJSON(wallet.external);
-      if (internal) { node = Bip44hdkey.fromJSON(wallet.external); }
+      if (internal) { node = Bip44hdkey.fromJSON(wallet.internal); }
       const addrNode = node.deriveChild(index);
 
       let result: any = this.bitcoinlib.payments.p2sh({

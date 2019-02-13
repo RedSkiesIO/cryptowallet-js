@@ -362,12 +362,14 @@ describe('bitcoinSDK (wallet)', () => {
 
 
   // it('can discover an account', async (done) => {
+  //   const wallet = btc.generateHDWallet(testWallet1, 'LITECOIN_TESTNET');
+
   //   const externalAccountDiscovery: any = await btc.accountDiscovery(
-  //     testWallet1, 'REGTEST',
+  //     wallet, 'LITECOIN_TESTNET',
   //   );
   //   const internalAccountDiscovery: any = await btc.accountDiscovery(
-  //     testWallet1,
-  //     'REGTEST', true,
+  //     wallet,
+  //     'LITECOIN_TESTNET', true,
   //   );
   //   console.log(externalAccountDiscovery);
   //   console.log(internalAccountDiscovery);
@@ -375,57 +377,57 @@ describe('bitcoinSDK (wallet)', () => {
   //   // expect(externalAccountDiscovery.used.length).to.equal(1);
   // });
 
-  it('can create a raw transaction', async () => {
-    const wallet = btc.generateHDWallet(testWallet1, 'REGTEST');
-    const receiverWallet = btc.generateHDWallet(entropy2, 'REGTEST');
+  // it('can create a raw transaction', async () => {
+  //   const wallet = btc.generateHDWallet(testWallet1, 'REGTEST');
+  //   const receiverWallet = btc.generateHDWallet(entropy2, 'REGTEST');
 
-    const addresses = [
-      'n4eiacZAaphoe3vbyhPSJEKvnuutXM2dF2', 'mjdmyU6zzBThpC9z5K7eh53aURUyRM2yY5', 'my5i7nyM4n33og1KCX5eor7pZYvt5JTXEQ', 'mz5ojTWiLoTVwLdUJ5s7v86mwCtYhYYUmf', 'n1zHNzNQuXdwLXhnsrsepcHVDyRmjRtvBC'];
-    const utxos: any = await btc.getUTXOs(addresses, 'REGTEST');
-
-
-    const accounts = [{
-      address: 'n4eiacZAaphoe3vbyhPSJEKvnuutXM2dF2',
-      change: false,
-      index: 1,
-    },
-    {
-      address: 'mjdmyU6zzBThpC9z5K7eh53aURUyRM2yY5',
-      change: false,
-      index: 0,
-    },
-    {
-      address: 'my5i7nyM4n33og1KCX5eor7pZYvt5JTXEQ',
-      change: true,
-      index: 0,
-    },
-    {
-      address: 'mz5ojTWiLoTVwLdUJ5s7v86mwCtYhYYUmf',
-      change: true,
-      index: 1,
-    },
-    {
-      address: 'n1zHNzNQuXdwLXhnsrsepcHVDyRmjRtvBC',
-      change: true,
-      index: 2,
-    }];
-
-    const change1: any = btc.generateKeyPair(wallet, 0);
-    // const change2: any = btc.generateKeyPair(wallet, 1, true);
-
-    const change = [
-      change1.address];
+  //   const addresses = [
+  //     'n4eiacZAaphoe3vbyhPSJEKvnuutXM2dF2', 'mjdmyU6zzBThpC9z5K7eh53aURUyRM2yY5', 'my5i7nyM4n33og1KCX5eor7pZYvt5JTXEQ', 'mz5ojTWiLoTVwLdUJ5s7v86mwCtYhYYUmf', 'n1zHNzNQuXdwLXhnsrsepcHVDyRmjRtvBC'];
+  //   const utxos: any = await btc.getUTXOs(addresses, 'REGTEST');
 
 
-    const tData: any = await btc.createRawTx(
-      accounts, change, utxos, wallet, '2N9bSDMEiD68PXWcprfZKGdoNeKCNZ45bCN', 0, 30, true,
-    );
-    console.log(tData);
+  //   const accounts = [{
+  //     address: 'n4eiacZAaphoe3vbyhPSJEKvnuutXM2dF2',
+  //     change: false,
+  //     index: 1,
+  //   },
+  //   {
+  //     address: 'mjdmyU6zzBThpC9z5K7eh53aURUyRM2yY5',
+  //     change: false,
+  //     index: 0,
+  //   },
+  //   {
+  //     address: 'my5i7nyM4n33og1KCX5eor7pZYvt5JTXEQ',
+  //     change: true,
+  //     index: 0,
+  //   },
+  //   {
+  //     address: 'mz5ojTWiLoTVwLdUJ5s7v86mwCtYhYYUmf',
+  //     change: true,
+  //     index: 1,
+  //   },
+  //   {
+  //     address: 'n1zHNzNQuXdwLXhnsrsepcHVDyRmjRtvBC',
+  //     change: true,
+  //     index: 2,
+  //   }];
+
+  //   const change1: any = btc.generateKeyPair(wallet, 0);
+  //   // const change2: any = btc.generateKeyPair(wallet, 1, true);
+
+  //   const change = [
+  //     change1.address];
 
 
-    // const pushTx = await btc.broadcastTx(tData.hexTx, 'REGTEST');
-    // console.log('txid :', pushTx);
-  });
+  //   const tData: any = await btc.createRawTx(
+  //     accounts, change, utxos, wallet, '2N9bSDMEiD68PXWcprfZKGdoNeKCNZ45bCN', 0, 30, true,
+  //   );
+  //   console.log(tData);
+
+
+  //   // const pushTx = await btc.broadcastTx(tData.hexTx, 'REGTEST');
+  //   // console.log('txid :', pushTx);
+  // });
 
   // it('can send a transaction to many addresses', async () => {
   //   const wallet = btc.generateHDWallet(regtest, 'REGTEST');
