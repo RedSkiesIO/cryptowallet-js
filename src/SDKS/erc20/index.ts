@@ -54,7 +54,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
         symbol: tokenSymbol,
         contract: contractAddress,
         decimals,
-        web3,
+        // web3,
         contractInstance: contract,
         // privateKey,
       };
@@ -73,8 +73,9 @@ export namespace CryptoWallet.SDKS.ERC20 {
       to?: string,
       amount?: number,
     ): Object {
+      const web3 = new this.Web3(erc20Wallet.network.provider);
       return new Promise((resolve, reject) => {
-        erc20Wallet.web3.eth.getTransactionCount(
+        web3.eth.getTransactionCount(
           erc20Wallet.address, (err: any, nonce: any) => {
             if (err) {
               return reject(new Error(err));
@@ -82,8 +83,8 @@ export namespace CryptoWallet.SDKS.ERC20 {
             const gas = gasPrice.toString();
             const tx = new this.Tx({
               nonce,
-              gasPrice: erc20Wallet.web3.utils.toHex(gas),
-              gasLimit: erc20Wallet.web3.utils.toHex(100000),
+              gasPrice: web3.utils.toHex(gas),
+              gasLimit: web3.utils.toHex(100000),
               to: erc20Wallet.contract,
               value: 0,
               data: method,
@@ -95,7 +96,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
             const fee = (gasPrice * 100000).toString();
             const transaction = {
               fee,
-              hash: erc20Wallet.web3.utils.sha3(raw),
+              hash: web3.utils.sha3(raw),
               receiver: to,
               confirmed: false,
               confirmations: 0,
