@@ -24,7 +24,7 @@ export declare namespace CryptoWallet.SDKS.ERC20 {
          * @param erc20Wallet
          * @param method
          */
-        createTx(erc20Wallet: any, method: any, gasPrice: number, to?: string, amount?: number): Object;
+        createTx(erc20Wallet: any, keypair: any, method: any, gasPrice: number, to?: string, amount?: number): Object;
         /**
         *  Broadcast an Ethereum transaction
         * @param rawTx
@@ -37,21 +37,21 @@ export declare namespace CryptoWallet.SDKS.ERC20 {
          * @param to
          * @param amount
          */
-        transfer(erc20Wallet: any, to: string, amount: number, gasPrice: number): Object;
+        transfer(erc20Wallet: any, keypair: any, to: string, amount: number, gasPrice: number): Object;
         /**
          * Create a transaction that approves another account to transfer ERC20 tokens
          * @param erc20Wallet
          * @param to
          * @param amount
          */
-        approveAccount(erc20Wallet: any, to: string, amount: number, gasPrice: number): Object;
+        approveAccount(erc20Wallet: any, keypair: any, to: string, amount: number, gasPrice: number): Object;
         /**
          * Create a transaction that transfers money from another account
          * @param erc20Wallet
          * @param from
          * @param amount
          */
-        transferAllowance(erc20Wallet: any, from: string, amount: number, gasPrice: number): Object;
+        transferAllowance(erc20Wallet: any, keypair: any, from: string, amount: number, gasPrice: number): Object;
         /**
          * Checks how much can be transfered from another account
          * @param erc20Wallet
