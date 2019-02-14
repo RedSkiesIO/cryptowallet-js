@@ -1,27 +1,53 @@
+// eslint-disable-next-line import/no-unresolved
+import { KeyPair, Wallet } from 'GenericSDK';
+import { ECPair } from 'bitcoinjs-lib';
+
 export namespace CryptyoWallet.SDKS.Bitcoin {
   export interface IBitcoinSDK {
 
-    generateSegWitAddress(keypair: any): object;
+    generateSegWitAddress(
+      keypair: KeyPair,
+    ): string;
 
-    generateSegWitP2SH(keypair: any): object;
+    generateSegWitP2SH(
+      keypair: KeyPair,
+    ): string;
 
     generateSegWit3of4MultiSigAddress(
-      key1: string, key2: string, key3: string, key4: string, network: string): Object;
+      key1: string,
+      key2: string,
+      key3: string,
+      key4: string,
+      network: string
+    ): string;
 
     create1t1tx(
-      keypair: any, txHash: string, txNumber: number, address: string, amount: number): Object;
+      keypair: ECPair,
+      txHash: string,
+      txNumber: number,
+      address: string,
+      amount: number
+    ): String;
 
-    create2t2tx(txparams: any): Object;
+    create2t2tx(
+      txparams: any,
+    ): String;
 
-    gernerateP2SHMultiSig(keys: string[], network: string): Object;
+    gernerateP2SHMultiSig(
+      keys: string[],
+      network: string,
+    ): Object;
 
-    getUTXOs(addresses: string[], network: string): Object;
+    getUTXOs(
+      addresses: string[],
+      network: string,
+    ): Object;
 
     createTxToMany(
       accounts: object[],
       change: string[],
       utxos: any,
-      wallet: any,
+      wallet: Wallet,
       toAddresses: string[],
       amounts: number[],
       minerRate: number,

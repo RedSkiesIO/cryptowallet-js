@@ -1,4 +1,5 @@
 import * as Bitcoinlib from 'bitcoinjs-lib';
+import { KeyPair, Wallet, Address } from 'GenericSDK';
 import * as ISDK from './ISDK';
 export declare namespace CryptoWallet.SDKS {
     abstract class GenericSDK implements ISDK.CryptoWallet.SDKS.ISDK {
@@ -13,21 +14,21 @@ export declare namespace CryptoWallet.SDKS {
          * @param entropy
          * @param network
          */
-        generateHDWallet(entropy: string, network: string): Object;
+        generateHDWallet(entropy: string, network: string): Wallet;
         /**
         * This method creates a keypair from a wallet object and a given index
         * @param wallet
         * @param index
         * @param internal
         */
-        generateKeyPair(wallet: any, index: number, internal?: boolean): Object;
+        generateKeyPair(wallet: Wallet, index: number, internal?: boolean): KeyPair;
         /**
         * This method generates an address from a wallet object and a given index.
         * @param wallet
         * @param index
         * @param external
         */
-        generateAddress(wallet: any, index: number, internal?: boolean): Object;
+        generateAddress(wallet: Wallet, index: number, internal?: boolean): Address;
         /**
          *  Restore  a keypair using a WIF
          * @param wif
@@ -39,7 +40,7 @@ export declare namespace CryptoWallet.SDKS {
          * @param tx
          * @param network
          */
-        broadcastTx(tx: object, network: string): Object;
+        broadcastTx(tx: string, network: string): Object;
         /**
          * validates an address
          * @param address
@@ -58,7 +59,7 @@ export declare namespace CryptoWallet.SDKS {
         * @param toAddress
         * @param amount
         */
-        createRawTx(accounts: object[], change: string[], utxos: any, wallet: any, toAddress: string, amount: number, minerRate: number, max?: boolean): Object;
+        createRawTx(accounts: object[], change: string[], utxos: any, wallet: Wallet, toAddress: string, amount: number, minerRate: number, max?: boolean): Promise<Object>;
         /**
         * verifies the signatures of a transaction object
         * @param transaction
@@ -70,7 +71,7 @@ export declare namespace CryptoWallet.SDKS {
          * @param network
          * @param internal
          */
-        accountDiscovery(wallet: any, network: string, internal?: boolean): Object;
+        accountDiscovery(wallet: Wallet, network: string, internal?: boolean): Object;
         /**
          * gets the transaction history for an array of addresses
          * @param addresses
@@ -86,7 +87,7 @@ export declare namespace CryptoWallet.SDKS {
          */
         getBalance(addresses: string[], network: string): Object;
         getPriceFeed(coins: string[], currencies: string[]): Object;
-        getHistoricalData(coin: string, currency: string, period?: string): Object;
+        getHistoricalData(coin: string, currency: string, period: string): Object;
     }
 }
 declare const _default: typeof CryptoWallet.SDKS.GenericSDK;

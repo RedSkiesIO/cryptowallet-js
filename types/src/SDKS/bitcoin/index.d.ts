@@ -1,19 +1,22 @@
+import * as BitcoinLib from 'bitcoinjs-lib';
+import * as Request from 'request';
+import { KeyPair, Wallet } from 'GenericSDK';
 import * as IBitcoinSDK from './IBitcoinSDK';
 import GenericSDK from '../GenericSDK';
 declare namespace CryptoWallet.SDKS.Bitcoin {
     class BitcoinSDK extends GenericSDK implements IBitcoinSDK.CryptyoWallet.SDKS.Bitcoin.IBitcoinSDK {
         Explore: any;
-        Req: any;
+        Req: Request.RequestAPI<Request.Request, Request.CoreOptions, Request.RequiredUriUrl>;
         /**
          * generates a segwit address
          * @param keyPair
          */
-        generateSegWitAddress(keyPair: any): Object;
+        generateSegWitAddress(keyPair: KeyPair): string;
         /**
          * generates a segwit P2SH address
          * @param keyPair
          */
-        generateSegWitP2SH(keyPair: any): Object;
+        generateSegWitP2SH(keyPair: KeyPair): string;
         /**
          * generates a 3 0f 4 multisig segwit address
          * @param key1
@@ -22,13 +25,13 @@ declare namespace CryptoWallet.SDKS.Bitcoin {
          * @param key4
          * @param network
          */
-        generateSegWit3of4MultiSigAddress(key1: string, key2: string, key3: string, key4: string, network: string): Object;
+        generateSegWit3of4MultiSigAddress(key1: string, key2: string, key3: string, key4: string, network: string): string;
         /**
          *  generates a P2SH multisig keypair
          * @param keys
          * @param network
          */
-        gernerateP2SHMultiSig(keys: string[], network: string): Object;
+        gernerateP2SHMultiSig(keys: string[], network: string): string;
         /**
          *  gets the unspent transactions for an array of addresses
          * @param addresses
@@ -45,7 +48,7 @@ declare namespace CryptoWallet.SDKS.Bitcoin {
          * @param amounts
          * @param minerRate
          */
-        createTxToMany(accounts: object[], change: string[], utxos: any, wallet: any, toAddresses: string[], amounts: number[], minerRate: number): Object;
+        createTxToMany(accounts: object[], change: string[], utxos: any, wallet: Wallet, toAddresses: string[], amounts: number[], minerRate: number): Object;
         /**
          *
          * @param keypair
@@ -54,7 +57,7 @@ declare namespace CryptoWallet.SDKS.Bitcoin {
          * @param address
          * @param amount
          */
-        create1t1tx(keypair: any, txHash: string, txNumber: number, address: string, amount: number): String;
+        create1t1tx(keypair: BitcoinLib.ECPair, txHash: string, txNumber: number, address: string, amount: number): String;
         /**
          *
          * @param txparams

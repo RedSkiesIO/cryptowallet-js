@@ -9,9 +9,6 @@
     "lib": [
       "dom",
       "esnext"
-    ],
-    "types": [
-      "node"
     ]
   },
   "exclude": [

@@ -1,24 +1,26 @@
 /// <reference path="../../../../src/types/module.d.ts" />
+import Web3 from 'web3';
+import { KeyPair, Wallet, Address } from 'GenericSDK';
 import GenericSDK from '../GenericSDK';
 import * as IEthereumSDK from './IEthereumSDK';
 export declare namespace CryptoWallet.SDKS.Ethereum {
     class EthereumSDK extends GenericSDK implements IEthereumSDK.CryptyoWallet.SDKS.Ethereum.IEthereumSDK {
         Bip: any;
         ethereumlib: any;
-        Web3: any;
+        Web3: typeof Web3;
         VerifyTx: any;
         /**
          * generate an ethereum keypair using a HD wallet object
          * @param wallet
          * @param index
          */
-        generateKeyPair(wallet: any, index: number): Object;
+        generateKeyPair(wallet: Wallet, index: number): KeyPair;
         /**
         * generates an etherum address using a HD wallet object
         * @param wallet
         * @param index
         */
-        generateAddress(wallet: any, index: number): Object;
+        generateAddress(wallet: Wallet, index: number): Address;
         /**
          * A method that checks if an address is a valid Ethereum address
          * @param address
@@ -43,13 +45,13 @@ export declare namespace CryptoWallet.SDKS.Ethereum {
          * @param toAddress
          * @param amount
          */
-        createEthTx(keypair: any, toAddress: String, amount: number, gasPrice: number): Object;
+        createEthTx(keypair: KeyPair, toAddress: String, amount: number, gasPrice: number): Object;
         /**
          *  Broadcast an Ethereum transaction
          * @param rawTx
          * @param network
          */
-        broadcastTx(rawTx: object, network: string): Object;
+        broadcastTx(rawTx: string, network: string): Object;
         /**
          *  Verify the signature of an Ethereum transaction object
          * @param tx
@@ -75,7 +77,7 @@ export declare namespace CryptoWallet.SDKS.Ethereum {
          * @param network
          * @param internal
          */
-        accountDiscovery(wallet: any, network: string, internal?: boolean): Object;
+        accountDiscovery(wallet: Wallet, network: string, internal?: boolean): Object;
     }
 }
 declare const _default: typeof CryptoWallet.SDKS.Ethereum.EthereumSDK;
