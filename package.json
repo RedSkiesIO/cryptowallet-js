@@ -4,10 +4,10 @@
   "version": "0.0.1",
   "author": {
     "name": "James Kirkby",
-    "email": "jkirkby@protonmail.ch"
+    "email": "jkirkby@protonmail.com"
   },
   "bugs": {
-    "url": "https://github.com/nsh-core/cryptowallet-js/issues"
+    "url": "https://github.com/atlascity/cryptowallet-js/issues"
   },
   "dependencies": {
     "bitcoinjs-lib": "^4.0.2"
@@ -25,6 +25,7 @@
     "@types/power-assert": "^1.5.0",
     "@vue/babel-preset-app": "^3.0.1",
     "@vue/test-utils": "^1.0.0-beta.25",
+    "all-contributors-cli": "^6.1.1",
     "babel-eslint": "^9.0.0",
     "babel-loader": "^8.0.2",
     "babel-plugin-istanbul": "^5.0.1",
@@ -72,7 +73,7 @@
     "types",
     "src"
   ],
-  "homepage": "https://github.com/nsh-core/cryptowallet-js#readme",
+  "homepage": "https://github.com/atlascity/cryptowallet-js#readme",
   "main": "dist/cryptowallet-js.common.js",
   "module": "dist/cryptowallet-js.esm.js",
   "unpkg": "dist/cryptowallet-js.js",
@@ -88,7 +89,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nsh-core/cryptowallet-js.git"
+    "url": "git+https://github.com/atlascity/cryptowallet-js.git"
   },
   "scripts": {
     "build": "npm run build:ts && node config/build.js",

@@ -1,83 +1,64 @@
-# cryptowallet-js Contributing Guide
+# Contributing
 
+Thanks for being willing to contribute!
+
+- [Help Needed](#help-needed)
+- [Making Changes](#making-changes)
 - [Issue Reporting Guidelines](#issue-reporting-guidelines)
-- [Pull Request Guidelines](#pull-request-guidelines)
-- [Development Setup](#development-setup)
+- [Engineering Guidelines](#development-setup)
 
-## Issue Reporting Guidelines
+## [](https://github.com/atlascity/community/blob/master/CONTRIBUTING.md#help-needed)Help needed
 
-- The issue list of this repo is **exclusively** for bug reports and feature requests. Non-conforming issues will be closed immediately.
+Please checkout the  [ROADMAP](https://github.com/atlascity/community/blob/master/docs/ROADMAP.md)  and raise an issue to discuss any of the items
 
-  - For simple beginner questions, you can get quick answers from [The Gitter chat room](https://gitter.im/vuejs/vue).
+## [](https://github.com/atlascity/community/blob/master/CONTRIBUTING.md#making-changes)Making Changes
 
-  - For more complicated questions, you can use [the official forum](http://forum.vuejs.org/) or StackOverflow. Make sure to provide enough information when asking your questions - this makes it easier for others to help you!
+- All changes should follow the [pull request guidelines](https://github.com/atlascity/Community/blob/master/PULL_REQUEST_TEMPLATE.md)
 
-- Try to search for your issue, it may have already been answered or even fixed in the development branch.
+### [](https://github.com/atlascity/community/blob/master/CONTRIBUTING.md#committing-and-pushing-changes)Committing and Pushing changes
 
-- Check if the issue is reproducible with the latest stable version of Vue. If you are using a pre-release, please indicate the specific version you are using.
+Once you are ready to commit the changes, please use the below commands
 
-- It is **required** that you clearly describe the steps necessary to reproduce the issue you are running into. Issues with no clear repro steps will not be triaged. If an issue labeled "need repro" receives no further input from the issue author for more than 5 days, it will be closed.
+1.  `git add <files to be comitted>`
+2.  `git commit -m 'A meaningful message`
 
-- It is recommended that you make a JSFiddle/JSBin/Codepen to demonstrate your issue. You could start with [this template](http://jsfiddle.net/5sH6A/) that already includes the latest version of Vue.
+_Note: please use present tense in commit messages i.e.  `Add feature X`  and not_ `Added feature X`
 
-- For bugs that involves build setups, you can create a reproduction repository with steps in the README.
+### [](https://github.com/atlascity/community/blob/master/CONTRIBUTING.md#add-yourself-as-a-contributor)Add yourself as a contributor
 
-- If your issue is resolved but still open, don’t hesitate to close it. In case you found a solution by yourself, it could be helpful to explain how you fixed it.
+This project follows the  [all contributors](https://github.com/kentcdodds/all-contributors)  specification. To add yourself to the table of contributors on the README.md, please use the automated script as part of your PR:
 
-## Pull Request Guidelines
+npm run contributor <YOUR_GITHUB_USERNAME>
 
-- The `master` branch is basically just a snapshot of the latest stable release. All development should be done in dedicated branches. **Do not submit PRs against the `master` branch.**
+Follow the prompt. If you've already added yourself to the list and are making a new type of contribution, you can run it again and select the added contribution type. If you need to edit the  `.all-contributorsrc`  file by hand that's fine too, just run  `npm run contributor:generate`  to regenerate the table
 
-- Checkout a topic branch from the relevant branch, e.g. `develop`, and merge back against that branch.
+# Issue Reporting Guidelines
 
-- Work in the `src` folder and **DO NOT** checkin `dist` in the commits.
+File a single issue per problem and feature request.
 
-- It's OK to have multiple small commits as you work on the PR - we will let GitHub automatically squash it before merging.
+-   Do not enumerate multiple bugs or feature requests in the same issue.
+-   Do not add your issue as a comment to an existing issue unless it's for the identical input. Many issues look similar, but have different causes.
 
-- Make sure `npm test` passes. (see [development setup](#development-setup))
+The more information you can provide, the more likely someone will be successful reproducing the issue and finding a fix.
 
-- If adding new feature:
-  - Add accompanying test case.
-  - Provide convincing reason to add this feature. Ideally you should open a suggestion issue first and have it greenlighted before working on it.
+Please remember to do the following:
 
-- If fixing a bug:
-  - Provide detailed description of the bug in the PR. Live demo preferred.
-  - Add appropriate test coverage if applicable.
+-   Search the issue repository to see if there exists a duplicate.
+-   Simplify your code around the issue so we can better isolate the problem.
 
-### Work Step Example
-- Fork the repository from [nsh-core/cryptowallet-js](https://github.com/nsh-core/cryptowallet-js) !
-- Create your topic branch from `develop`: `git branch my-new-topic origin/develop`
-- Add codes and pass tests !
-- Commit your changes: `git commit -am 'Add some topic'`
-- Push to the branch: `git push origin my-new-topic`
-- Submit a pull request to `develop` branch of `nsh-core/cryptowallet-js` repository !
+### [](https://github.com/atlascity/community/submitting-bugs-and-suggestions.md#before-submitting-an-issue)Before Submitting an Issue
 
-## Development Setup
+First, please do a search for open issues in the issue tab to see if the issue or feature request has already been filed.
 
-You will need [Node.js](http://nodejs.org).
+If you find your issue already exists, make relevant comments and add your reaction. Use a reaction in place of a "+1" comment.
 
-After cloning the repo, run:
+👍 - upvote
 
-    $ npm install
+👎 - downvote
 
-### Commonly used NPM scripts
+If you cannot find an existing issue that describes your bug or feature, submit an issue using the [issue template](https://github.com/atlascity/Community/blob/master/ISSUE_TEMPLATE.md).
 
-    # watch and serve with hot reload unit test at localhost:8080
-    $ npm run dev
 
-    # lint source codes
-    $ npm run lint
+## [](https://github.com/atlascity/community/blob/master/CONTRIBUTING.md#engineering-guidelines)Engineering Guidelines
 
-    # run unit tests in browser (firefox/safari/chrome)
-    $ npm run test:unit
-
-    # build all dist files, including npm packages
-    $ npm run build
-
-    # run the full test suite, include linting
-    $ npm test
-
-There are some other scripts available in the `scripts` section of the `package.json` file.
-
-The default test script will do the following: lint with ESLint -> unit tests with coverage. **Please make sure to have this pass successfully before submitting a PR.** Although the same tests will be run against your PR on the CI server, it is better to have it working locally beforehand.
-
+1.  Follow the Atlas City Engineering Guidelines https://github.com/atlascity/Community/wiki/Engineering-Guidelines

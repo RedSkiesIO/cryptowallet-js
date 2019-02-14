@@ -1,7 +1,5 @@
 # cryptowallet-js
 
-
-
 [![npm](https://img.shields.io/npm/v/cryptowallet-js.svg)](https://www.npmjs.com/package/cryptowallet-js)
 [![vue2](https://img.shields.io/badge/vue-2.x-brightgreen.svg)](https://vuejs.org/)
 
