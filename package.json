@@ -48,6 +48,7 @@
     "karma-safari-launcher": "^1.0.0",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^3.0.5",
+    "lint-staged": "^8.1.4",
     "mocha": "^5.2.0",
     "mocha-loader": "^2.0.0",
     "power-assert": "^1.6.0",
@@ -63,7 +64,8 @@
     "vuepress": "^0.14.0",
     "webpack": "^4.19.1",
     "webpack-cli": "^3.1.1",
-    "webpack-dev-server": "^3.1.8"
+    "webpack-dev-server": "^3.1.8",
+    "yorkie": "^2.0.0"
   },
   "files": [
     "dist/cryptowallet-js.js",
@@ -104,6 +106,20 @@
     "lint": "eslint --fix --ext .ts src test",
     "test": "npm run lint && npm run test:cover",
     "test:cover": "cross-env BABEL_ENV=test karma start config/karma.cover.conf.js",
-    "test:unit": "cross-env BABEL_ENV=test karma start config/karma.unit.conf.js"
+    "test:unit": "cross-env BABEL_ENV=test karma start config/karma.unit.conf.js",
+    "security:audit": "npm audit"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged && npm run security:audit"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --ext .js,.vue src",
+      "git add"
+    ],
+    "*.vue": [
+      "eslint --ext .js,.vue src",
+      "git add"
+    ]
   }
 }
