@@ -2,6 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/cryptowallet-js.svg)](https://www.npmjs.com/package/@atlascity/cryptowallet-js)
 [![vue2](https://img.shields.io/badge/vue-2.x-brightgreen.svg)](https://vuejs.org/)
+[![Build Status](https://dev.azure.com/AtlasCityIO/cryptowallet-js/_apis/build/status/atlascity.cryptowallet-js?branchName=develop)](https://dev.azure.com/AtlasCityIO/cryptowallet-js/_build/latest?definitionId=13&branchName=develop)
 
 CryptoWallet-JS.
 
