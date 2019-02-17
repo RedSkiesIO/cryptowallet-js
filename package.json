@@ -83,7 +83,6 @@
     "uglify-js": "^2.7.5",
     "vue": "^2.5.17",
     "vue-template-compiler": "^2.5.17",
-    "vuepress": "^0.14.0",
     "webpack": "^4.19.1",
     "webpack-cli": "^3.1.1",
     "webpack-dev-server": "^3.1.8"
