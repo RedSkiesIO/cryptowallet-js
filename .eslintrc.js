@@ -11,7 +11,8 @@ module.exports = {
     'typescript'
   ],
   extends: [
-    'plugin:vue-libs/recommended'
+    'plugin:vue-libs/recommended',
+    'airbnb-base'
   ],
   rules: {
     'object-curly-spacing': ['error', 'always'],

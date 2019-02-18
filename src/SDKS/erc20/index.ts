@@ -1,9 +1,10 @@
 /* eslint-disable import/no-unresolved */
 // eslint-disable-next-line spaced-comment
 ///<reference path="../../types/module.d.ts" />
-import * as EthereumTx from 'ethereumjs-tx';
-import * as Web3 from 'web3';
+import EthereumTx from 'ethereumjs-tx';
+import Web3 from 'web3';
 import * as Axios from 'axios';
+import { KeyPair } from '../GenericSDK.d';
 import * as IERC20SDK from './IERC20SDK';
 import * as ERC20JSON from './erc20';
 import * as Networks from '../networks';
@@ -35,13 +36,13 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param decimals
      */
     generateERC20Wallet(
-      keypair: any,
+      keypair: KeyPair,
       tokenName: string,
       tokenSymbol: string,
       contractAddress: string,
       decimals: number,
     ): Object {
-      const web3 = new this.Web3(keypair.network.provider);
+      const web3: Web3 = new this.Web3(keypair.network.provider);
       const abiArray = this.json.contract;
       const contract = new web3.eth.Contract(this.json.contract, contractAddress);
       // const privateKey = Buffer.from(keypair.privateKey.substr(2), 'hex');
@@ -67,7 +68,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      */
     createTx(
       erc20Wallet: any,
-      keypair: any,
+      keypair: KeyPair,
       method: any,
       gasPrice: number,
       to?: string,
@@ -123,14 +124,17 @@ export namespace CryptoWallet.SDKS.ERC20 {
     * @param rawTx
     * @param network
     */
-    broadcastTx(rawTx: object, network: string): Object {
-      const web3 = new this.Web3(this.networks[network].provider);
+    broadcastTx(
+      rawTx: string,
+      network: string,
+    ): Object {
+      const web3: Web3 = new this.Web3(this.networks[network].provider);
       return new Promise((resolve, reject) => {
-        web3.eth.sendSignedTransaction(rawTx, (err: any, result: any) => {
-          if (err) return reject(new Error(err));
+        web3.eth.sendSignedTransaction(rawTx, (err: Error, result: string) => {
+          if (err) return reject(err);
           return resolve(result);
         })
-          .catch((e: any) => reject(e));
+          .catch((e: Error) => reject(e));
       });
     }
 
@@ -140,10 +144,16 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param to
      * @param amount
      */
-    transfer(erc20Wallet: any, keypair: any, to: string, amount: number, gasPrice: number): Object {
-      const web3 = new this.Web3(erc20Wallet.network.provider);
+    transfer(
+      erc20Wallet: any,
+      keypair: KeyPair,
+      to: string,
+      amount: number,
+      gasPrice: number,
+    ): Object {
+      const web3: Web3 = new this.Web3(erc20Wallet.network.provider);
       const contract = new web3.eth.Contract(this.json.contract, erc20Wallet.contract);
-      const sendAmount = (amount * (10 ** erc20Wallet.decimals)).toString();
+      const sendAmount: string = (amount * (10 ** erc20Wallet.decimals)).toString();
       const method = contract.methods.transfer(to, sendAmount).encodeABI();
 
       return this.createTx(erc20Wallet, keypair, method, gasPrice, to, amount);
@@ -155,10 +165,16 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param to
      * @param amount
      */
-    approveAccount(erc20Wallet: any, keypair: any, to: string, amount: number, gasPrice: number): Object {
-      const web3 = new this.Web3(erc20Wallet.network.provider);
+    approveAccount(
+      erc20Wallet: any,
+      keypair: KeyPair,
+      to: string,
+      amount: number,
+      gasPrice: number,
+    ): Object {
+      const web3: Web3 = new this.Web3(erc20Wallet.network.provider);
       const contract = new web3.eth.Contract(this.json.contract, erc20Wallet.contract);
-      const sendAmount = (amount * (10 ** erc20Wallet.decimals)).toString();
+      const sendAmount: string = (amount * (10 ** erc20Wallet.decimals)).toString();
       const method = contract.methods.approve(to, sendAmount).encodeABI();
       return this.createTx(erc20Wallet, keypair, method, gasPrice);
     }
@@ -170,15 +186,19 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param amount
      */
     transferAllowance(
-      erc20Wallet: any, keypair: any, from: string, amount: number, gasPrice: number,
+      erc20Wallet: any,
+      keypair: KeyPair,
+      from: string,
+      amount: number,
+      gasPrice: number,
     ): Object {
       return new Promise(async (resolve, reject) => {
-        const web3 = new this.Web3(erc20Wallet.network.provider);
+        const web3: Web3 = new this.Web3(erc20Wallet.network.provider);
         const contract = new web3.eth.Contract(this.json.contract, erc20Wallet.contract);
-        const check = await this.checkAllowance(erc20Wallet, from);
+        const check: number = await this.checkAllowance(erc20Wallet, from);
 
         if (check >= amount) {
-          const sendAmount = (amount * (10 ** erc20Wallet.decimals)).toString();
+          const sendAmount: string = (amount * (10 ** erc20Wallet.decimals)).toString();
           const method = contract.methods.transferFrom(
             from, erc20Wallet.address, sendAmount,
           ).encodeABI();
@@ -195,13 +215,16 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param erc20Wallet
      * @param from
      */
-    checkAllowance(erc20Wallet: any, from: string): Object {
+    checkAllowance(
+      erc20Wallet: any,
+      from: string,
+    ): Promise<number> {
       this.Wallet = erc20Wallet;
       return new Promise(async (resolve, reject) => {
-        const web3 = new this.Web3(erc20Wallet.network.provider);
+        const web3: Web3 = new this.Web3(erc20Wallet.network.provider);
         const contract = new web3.eth.Contract(this.json.contract, erc20Wallet.contract);
         contract.methods.allowance(from, erc20Wallet.address).call()
-          .then((result: any) => resolve(result));
+          .then((result: number) => resolve(result));
       });
     }
 
@@ -209,37 +232,42 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * Gets the balance of the ERC20 token on a users ethereum account
      * @param erc20Wallet
      */
-    getBalance(erc20Wallet: any): Object {
+    getBalance(
+      erc20Wallet: any,
+    ): Promise<number> {
       this.Wallet = erc20Wallet;
       return new Promise(async (resolve, reject) => {
-        const web3 = new this.Web3(erc20Wallet.network.provider);
+        const web3: Web3 = new this.Web3(erc20Wallet.network.provider);
         const contract = new web3.eth.Contract(this.json.contract, erc20Wallet.contract);
         contract.methods.balanceOf(erc20Wallet.address).call()
-          .then((result: any) => {
-            const balance = result / (10 ** erc20Wallet.decimals);
+          .then((result: number) => {
+            const balance: number = result / (10 ** erc20Wallet.decimals);
             return resolve(balance);
           })
-          .catch((e: any) => reject(e));
+          .catch((e: Error) => reject(e));
       });
     }
 
-    getTokenData(address: string, network: string): Object {
+    getTokenData(
+      address: string,
+      network: string,
+    ): Object {
       return new Promise(async (resolve, reject) => {
-        const web3 = new this.Web3(this.networks[network].provider);
+        const web3: Web3 = new this.Web3(this.networks[network].provider);
         const abiArray = this.json.contract;
 
         const contract = new web3.eth.Contract(abiArray, address);
-        const valid = await web3.eth.getCode(address);
+        const valid: string = await web3.eth.getCode(address);
         if (valid === '0x') {
           return reject(new Error('This is not a valid ERC20 contract address'));
         }
         await contract.methods.balanceOf('0xcc345035D14458B3C012977f96fA1E116760D60a').call()
-          .catch((error: any) => reject(new Error('Not a valid ERC20 contract address')));
+          .catch((error: Error) => reject(new Error('Not a valid ERC20 contract address')));
 
         try {
-          const decimals = await contract.methods.decimals().call();
-          const name = await contract.methods.name().call();
-          const symbol = await contract.methods.symbol().call();
+          const decimals: number = await contract.methods.decimals().call();
+          const name: string = await contract.methods.name().call();
+          const symbol: string = await contract.methods.symbol().call();
           return resolve({
             name,
             symbol,
@@ -256,24 +284,26 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param erc20Wallet
      * @param lastBlock
      */
-    getTransactionHistory(erc20Wallet: any, startBlock?: number): Object {
+    getTransactionHistory(
+      erc20Wallet: any,
+      startBlock?: number,
+    ): Object {
       return new Promise(async (resolve, reject) => {
-        let URL = `${erc20Wallet.network.getErc20TranApi + erc20Wallet.contract}&address=${erc20Wallet.address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
+        let URL: string = `${erc20Wallet.network.getErc20TranApi + erc20Wallet.contract}&address=${erc20Wallet.address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
         if (typeof startBlock === 'undefined') {
           URL = `${erc20Wallet.network.getErc20TranApi + erc20Wallet.contract}&address=${erc20Wallet.address}&sort=desc&apikey=${this.networks.ethToken}`;
-          console.log(URL);
         }
         await this.axios.get(URL)
           .then(async (res: any) => {
             if (!res.data.result) {
               return resolve();
             }
-            console.log('r.data.result :', res.data.result);
-            const transactions: any = [];
-
+            const transactions: object[] = [];
             // const nextBlock: number = 0//res.data.result[0].blockNumber
             res.data.result.forEach((r: any) => {
-              const receiver = r.to; let sent = false; let confirmed = false;
+              const receiver: string = r.to;
+              let sent: boolean = false;
+              let confirmed: boolean = false;
 
               if (r.from === erc20Wallet.address.toLowerCase()) {
                 sent = true;
@@ -282,7 +312,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
                 confirmed = true;
               }
 
-              const transaction = {
+              const transaction: object = {
                 hash: r.hash,
                 blockHeight: r.blockNumber,
                 fee: r.cumulativeGasUsed / 1000000000,
@@ -300,7 +330,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
             });
             return resolve(transactions);
           })
-          .catch((e: any) => reject(e));
+          .catch((e: Error) => reject(e));
       });
     }
   }

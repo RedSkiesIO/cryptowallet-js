@@ -1,2 +1,3 @@
-import CryptoWallet from './cryptoWallet';
+import CryptoWallet from './cryptoWallet.ts';
+
 export default CryptoWallet;

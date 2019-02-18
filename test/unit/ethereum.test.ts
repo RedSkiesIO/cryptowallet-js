@@ -21,87 +21,87 @@ const pubKey1 = '0x02201bde53932f1eae0c3108c26ac2de2d7662faeb59fd8ef552ec9d40310
 const derPath = 'm/44\'/60\'/0\'/0/0';
 
 describe('ethereumSDK (wallet)', () => {
-  it('can create a HD wallet', () => {
-    const wallet: any = eth.generateHDWallet(entropy, network);
+  // it('can create a HD wallet', () => {
+  //   const wallet: any = eth.generateHDWallet(entropy, network);
 
-    // expect(wallet.mnemonic).to.equal(entropy);
-    // expect(wallet.privateKey).to.equal(rootKey);
-    expect(wallet.bip).to.equal(bip);
-    expect(wallet.type).to.equal(60);
-  });
+  //   // expect(wallet.mnemonic).to.equal(entropy);
+  //   // expect(wallet.privateKey).to.equal(rootKey);
+  //   expect(wallet.bip).to.equal(bip);
+  //   expect(wallet.type).to.equal(60);
+  // });
 
-  it('can create a key pair', () => {
-    const wallet: any = eth.generateHDWallet(entropy, network);
-    const keypair: any = eth.generateKeyPair(wallet, 0);
-    assert.strictEqual(keypair.derivationPath, derPath);
-    assert.strictEqual(keypair.address, '0x8f97Bb9335747E4fCdDA8680F66ed96DcBe27F49');
-    assert.strictEqual(
-      keypair.privateKey, '0x42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73',
-    );
-    assert.strictEqual(keypair.type, 'Ethereum');
-  });
+  // it('can create a key pair', () => {
+  //   const wallet: any = eth.generateHDWallet(entropy, network);
+  //   const keypair: any = eth.generateKeyPair(wallet, 0);
+  //   assert.strictEqual(keypair.derivationPath, derPath);
+  //   assert.strictEqual(keypair.address, '0x8f97Bb9335747E4fCdDA8680F66ed96DcBe27F49');
+  //   assert.strictEqual(
+  //     keypair.privateKey, '0x42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73',
+  //   );
+  //   assert.strictEqual(keypair.type, 'Ethereum');
+  // });
 
-  it('can generate an address', () => {
-    const wallet: any = eth.generateHDWallet(entropy, network);
-    const account: any = eth.generateAddress(wallet, 0);
-    assert.strictEqual(account.address, '0x8f97Bb9335747E4fCdDA8680F66ed96DcBe27F49');
-  });
+  // it('can generate an address', () => {
+  //   const wallet: any = eth.generateHDWallet(entropy, network);
+  //   const account: any = eth.generateAddress(wallet, 0);
+  //   assert.strictEqual(account.address, '0x8f97Bb9335747E4fCdDA8680F66ed96DcBe27F49');
+  // });
 
-  it('can validate an address', () => {
-    assert.strictEqual(eth.validateAddress('0x8f97Bb9335747E4fCdDA8680F66ed96DcBe27F49', network), true);
-  });
+  // it('can validate an address', () => {
+  //   assert.strictEqual(eth.validateAddress('0x8f97Bb9335747E4fCdDA8680F66ed96DcBe27F49', network), true);
+  // });
 
-  it('can import key from WIF', () => {
-    const keypair: any = eth.importWIF(
-      '42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73', network,
-    );
+  // it('can import key from WIF', () => {
+  //   const keypair: any = eth.importWIF(
+  //     '42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73', network,
+  //   );
 
-    assert.strictEqual(keypair.address, '0x8f97Bb9335747E4fCdDA8680F66ed96DcBe27F49');
-    assert.strictEqual(
-      keypair.privateKey, '0x42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73',
-    );
-  });
+  //   assert.strictEqual(keypair.address, '0x8f97Bb9335747E4fCdDA8680F66ed96DcBe27F49');
+  //   assert.strictEqual(
+  //     keypair.privateKey, '0x42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73',
+  //   );
+  // });
 
-  it('can restore a wallet from the mnemonic', async () => {
-    const accounts: any = await eth.accountDiscovery(entropy, 'ETHEREUM_ROPSTEN');
-    expect(accounts.length).to.equal(10);
-  });
+  // it('can restore a wallet from the mnemonic', async () => {
+  //   const accounts: any = await eth.accountDiscovery(entropy, 'ETHEREUM_ROPSTEN');
+  //   expect(accounts.length).to.equal(10);
+  // });
 
-  it('can get the transaction history of a wallet', async () => {
-    const wallet = eth.generateHDWallet(entropy, 'ETHEREUM_ROPSTEN');
-    const addresses = [];
+  // it('can get the transaction history of a wallet', async () => {
+  //   const wallet = eth.generateHDWallet(entropy, 'ETHEREUM_ROPSTEN');
+  //   const addresses = [];
 
-    for (let i: number = 0; i < 10; i += 1) {
-      const key: any = eth.generateKeyPair(wallet, i);
-      addresses.push(key.address);
-    }
+  //   for (let i: number = 0; i < 10; i += 1) {
+  //     const key: any = eth.generateKeyPair(wallet, i);
+  //     addresses.push(key.address);
+  //   }
 
-    const history = await eth.getTransactionHistory(addresses, 'ETHEREUM_ROPSTEN', 0);
-    expect(history.txs.length).to.equal(14);
-  });
+  //   const history = await eth.getTransactionHistory(addresses, 'ETHEREUM_ROPSTEN', 0);
+  //   expect(history.txs.length).to.equal(14);
+  // });
 
-  it('can get the latest gas price for ethereum', async () => {
-    const gasPrice = await eth.getTransactionFee('ETHEREUM_ROPSTEN');
-    expect(Object.keys(gasPrice).length).to.equal(6);
-    expect(gasPrice).to.have.property('high');
-    expect(gasPrice).to.have.property('medium');
-    expect(gasPrice).to.have.property('low');
-  });
+  // it('can get the latest gas price for ethereum', async () => {
+  //   const gasPrice = await eth.getTransactionFee('ETHEREUM_ROPSTEN');
+  //   expect(Object.keys(gasPrice).length).to.equal(6);
+  //   expect(gasPrice).to.have.property('high');
+  //   expect(gasPrice).to.have.property('medium');
+  //   expect(gasPrice).to.have.property('low');
+  // });
 
-  it('can create a transaction', async () => {
-    const wallet: any = eth.generateHDWallet(entropy, network);
-    const keypair: any = eth.generateKeyPair(wallet, 0);
-    const receiver: any = eth.generateAddress(wallet, 1);
+  // it('can create a transaction', async () => {
+  //   const wallet: any = eth.generateHDWallet(entropy, network);
+  //   const keypair: any = eth.generateKeyPair(wallet, 0);
+  //   const receiver: any = eth.generateAddress(wallet, 1);
 
-    const rawTx = await eth.createEthTx(keypair, receiver.address, 0.01, 15750062047);
-    const verify = eth.verifyTxSignature(rawTx.hexTx);
-    assert.strictEqual(verify, true);
-  });
+  //   const rawTx = await eth.createEthTx(keypair, receiver.address, 0.01, 15750062047);
+  //   const verify = eth.verifyTxSignature(rawTx.hexTx);
+  //   assert.strictEqual(verify, true);
+  // });
 
-  it('can verify a transaction', async () => {
-    const rawTx = '0xf86c068504a817c800830186a0946b92382dedd2bb7650eb388c553568552206b102872386f26fc10000802aa0837567fed905d394cc2989a123a9f1eba323686aa57998bb7cc494ca9b7a0257a04f9c73182687d917152f78c2be4652d71ea73b045e9932ffa93936b27b316a58';
-    expect(eth.verifyTxSignature(rawTx)).to.equal(true);
-  });
+  // it('can verify a transaction', async () => {
+  //   const rawTx = '0xf86c068504a817c800830186a0946b92382dedd2bb7650eb388c553568552206b102872386f26fc10000802aa0837567fed905d394cc2989a123a9f1eba323686aa57998bb7cc494ca9b7a0257a04f9c73182687d917152f78c2be4652d71ea73b045e9932ffa93936b27b316a58';
+  //   expect(eth.verifyTxSignature(rawTx)).to.equal(true);
+  // });
 
   // it('can get the balance of an account', async () => {
   //   const balance = await eth.getBalance(

@@ -3,19 +3,24 @@
 ///<reference path="../../types/module.d.ts" />
 import * as bip44hdkey from 'ethereumjs-wallet/hdkey';
 import * as EthereumLib from 'ethereumjs-wallet';
-import * as EthereumTx from 'ethereumjs-tx';
-import * as Web3 from 'web3';
+import EthereumTx from 'ethereumjs-tx';
+import Web3 from 'web3';
+import {
+  KeyPair, Wallet, Address,
+} from '../GenericSDK.d';
+// import { Transaction } from './index.d';
 import GenericSDK from '../GenericSDK';
 import * as IEthereumSDK from './IEthereumSDK';
+import { Transaction } from './ethereumTypes';
 
 export namespace CryptoWallet.SDKS.Ethereum {
   export class EthereumSDK extends GenericSDK
-    implements IEthereumSDK.CryptyoWallet.SDKS.Ethereum.IEthereumSDK {
+    implements IEthereumSDK.CryptoWallet.SDKS.Ethereum.IEthereumSDK {
     Bip = bip44hdkey
 
     ethereumlib = EthereumLib;
 
-    Web3: any = Web3;
+    Web3 = Web3;
 
     VerifyTx: any;
 
@@ -24,11 +29,14 @@ export namespace CryptoWallet.SDKS.Ethereum {
      * @param wallet
      * @param index
      */
-    generateKeyPair(wallet: any, index: number): Object {
+    generateKeyPair(
+      wallet: Wallet,
+      index: number,
+    ): KeyPair {
       const addrNode = this.Bip.fromExtendedKey(
         wallet.external.xpriv,
       ).deriveChild(index);
-      const keypair = {
+      const keypair: KeyPair = {
         publicKey: addrNode.getWallet().getPublicKeyString(),
         address: addrNode.getWallet().getChecksumAddressString(),
         derivationPath: `m/44'/60'/0'/0/${index}`,
@@ -44,14 +52,17 @@ export namespace CryptoWallet.SDKS.Ethereum {
     * @param wallet
     * @param index
     */
-    generateAddress(wallet: any, index: number): Object {
+    generateAddress(
+      wallet: Wallet,
+      index: number,
+    ): Address {
       const addrNode = this.Bip.fromExtendedKey(
         wallet.external.xpriv,
       ).deriveChild(index);
-      const address = {
+      const address: Address = {
         index,
         address: addrNode.getWallet().getChecksumAddressString(),
-        type: wallet.name,
+        type: wallet.network.name,
       };
       return address;
     }
@@ -61,7 +72,10 @@ export namespace CryptoWallet.SDKS.Ethereum {
      * @param address
      * @param network
      */
-    validateAddress(address: string, network: string): boolean {
+    validateAddress(
+      address: string,
+      network: string,
+    ): boolean {
       const web3 = new this.Web3(this.networks[network].provider);
       return web3.utils.isAddress(address.toLowerCase());
     }
@@ -71,12 +85,14 @@ export namespace CryptoWallet.SDKS.Ethereum {
     * TODO: only works for bitcoin currently
     * @param network
     */
-    getTransactionFee(network: string): Object {
+    getTransactionFee(
+      network: string,
+    ): Object {
       return new Promise((resolve, reject) => {
         // if (this.networks[network].connect) {
         //   throw new Error('Invalid network type');
         // }
-        const URL = this.networks[network].feeApi;
+        const URL: string = this.networks[network].feeApi;
         this.axios.get(URL)
           .then((r: any) => resolve({
             high: r.data.high_gas_price,
@@ -86,7 +102,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
             txMedium: (r.data.medium_gas_price * 21000) / 1000000000000000000,
             txLow: (r.data.low_gas_price * 21000) / 1000000000000000000,
           }))
-          .catch((e: any) => reject(new Error(`Failed to get transaction fee: ${e.message}`)));
+          .catch((e: Error) => reject(new Error(`Failed to get transaction fee: ${e.message}`)));
       });
     }
 
@@ -95,8 +111,11 @@ export namespace CryptoWallet.SDKS.Ethereum {
      * @param wif
      * @param network
      */
-    importWIF(wif: string, network: string): Object {
-      const rawKey = Buffer.from(wif, 'hex');
+    importWIF(
+      wif: string,
+      network: string,
+    ): Object {
+      const rawKey: Buffer = Buffer.from(wif, 'hex');
       const keypair = this.ethereumlib.fromPrivateKey(rawKey);
       const result = {
         publicKey: `0x${keypair.getPublicKeyString()}`,
@@ -113,18 +132,22 @@ export namespace CryptoWallet.SDKS.Ethereum {
      * @param toAddress
      * @param amount
      */
-    createEthTx(keypair: any, toAddress: String, amount: number, gasPrice: number): Object {
-      const privateKey = Buffer.from(keypair.privateKey.substr(2), 'hex');
-
-      const web3 = new this.Web3(keypair.network.provider);
+    createEthTx(
+      keypair: KeyPair,
+      toAddress: string,
+      amount: number,
+      gasPrice: number,
+    ): Object {
+      const privateKey: Buffer = Buffer.from(keypair.privateKey.substr(2), 'hex');
+      const web3: Web3 = new this.Web3(keypair.network.provider);
       return new Promise((resolve, reject) => {
-        web3.eth.getTransactionCount(keypair.address, (err: any, nonce: any) => {
+        web3.eth.getTransactionCount(keypair.address, 'latest', (err: Error, nonce: number) => {
           if (err) {
-            return reject(new Error(err));
+            return reject(err);
           }
-          const sendAmount = amount.toString();
-          const gasAmount = gasPrice.toString();
-          const tx = new EthereumTx({
+          const sendAmount: string = amount.toString();
+          const gasAmount: string = gasPrice.toString();
+          const tx: EthereumTx = new EthereumTx({
             nonce,
             gasPrice: web3.utils.toHex(gasAmount),
             gasLimit: web3.utils.toHex(21000),
@@ -133,9 +156,9 @@ export namespace CryptoWallet.SDKS.Ethereum {
             chainId: keypair.network.chainId,
           });
           tx.sign(privateKey);
-          const raw: any = `0x${tx.serialize().toString('hex')}`;
+          const raw: string = `0x${tx.serialize().toString('hex')}`;
 
-          const transaction = {
+          const transaction: Transaction = {
             hash: web3.utils.sha3(raw),
             fee: web3.utils.fromWei((gasPrice * 21000).toString(), 'ether'),
             receiver: toAddress,
@@ -147,7 +170,6 @@ export namespace CryptoWallet.SDKS.Ethereum {
             sender: keypair.address,
             receivedTime: new Date().getTime() / 1000,
             confirmedTime: new Date().getTime() / 1000,
-
           };
 
           return resolve({
@@ -155,7 +177,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
             hexTx: raw,
           });
         })
-          .catch((e: any) => reject(e));
+          .catch((e: Error) => reject(e));
       });
     }
 
@@ -164,16 +186,19 @@ export namespace CryptoWallet.SDKS.Ethereum {
      * @param rawTx
      * @param network
      */
-    broadcastTx(rawTx: object, network: string): Object {
-      const web3 = new this.Web3(this.networks[network].provider);
+    broadcastTx(
+      rawTx: string,
+      network: string,
+    ): Object {
+      const web3: Web3 = new this.Web3(this.networks[network].provider);
       return new Promise((resolve, reject) => {
-        web3.eth.sendSignedTransaction(rawTx, (err: any, hash: any) => {
+        web3.eth.sendSignedTransaction(rawTx, (err: Error, hash: string) => {
           if (err) return reject(err);
           return resolve({
             hash,
           });
         })
-          .catch((e: any) => reject(e));
+          .catch((e: Error) => reject(e));
       });
     }
 
@@ -181,8 +206,10 @@ export namespace CryptoWallet.SDKS.Ethereum {
      *  Verify the signature of an Ethereum transaction object
      * @param tx
      */
-    verifyTxSignature(tx: any): boolean {
-      const transaction = new EthereumTx(tx);
+    verifyTxSignature(
+      tx: any,
+    ): boolean {
+      const transaction: EthereumTx = new EthereumTx(tx);
       this.VerifyTx = tx;
       if (transaction.verifySignature()) {
         return true;
@@ -204,9 +231,9 @@ export namespace CryptoWallet.SDKS.Ethereum {
       endBlock?: number,
     )
       : Object {
-      const transactions: any = [];
+      const transactions: Transaction[] = [];
       const getHistory = (address: string) => new Promise(async (resolve, reject) => {
-        const URL = `${this.networks[network].getTranApi
+        const URL: string = `${this.networks[network].getTranApi
           + address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
 
         await this.axios.get(URL)
@@ -216,10 +243,10 @@ export namespace CryptoWallet.SDKS.Ethereum {
             }
 
             res.data.result.forEach((r: any) => {
-              let receiver = r.to;
-              let sent = false;
-              let confirmed = false;
-              let contractCall = false;
+              let receiver: string = r.to;
+              let sent: boolean = false;
+              let confirmed: boolean = false;
+              let contractCall: boolean = false;
 
               if (r.from === addresses[0].toLowerCase()) {
                 sent = true;
@@ -232,16 +259,17 @@ export namespace CryptoWallet.SDKS.Ethereum {
                 contractCall = true;
               }
 
-              const transaction = {
+              const transaction: Transaction = {
                 sent,
                 receiver,
                 contractCall,
                 confirmed,
                 hash: r.hash,
                 blockHeight: r.blockNumber,
-                fee: r.cumulativeGasUsed / 1000000000,
+                fee: (r.cumulativeGasUsed / 1000000000).toString(),
                 value: r.value / 1000000000000000000,
                 sender: r.from,
+                receivedTime: r.timeStamp,
                 confirmedTime: r.timeStamp,
                 confirmations: r.confirmations,
               };
@@ -251,7 +279,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
 
             return resolve();
           })
-          .catch((e: any) => reject(e));
+          .catch((e: Error) => reject(e));
       });
       return new Promise(async (resolve, reject) => {
         const promises: Promise<Object>[] = [];
@@ -264,7 +292,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
           await Promise.all(promises);
         } catch (e) { return reject(e); }
 
-        const history = {
+        const history: object = {
           addresses,
           totalTransactions: transactions.length,
           txs: transactions,
@@ -280,19 +308,22 @@ export namespace CryptoWallet.SDKS.Ethereum {
      * @param addresses
      * @param network
      */
-    getBalance(addresses: string[], network: string): Object {
-      let balance = 0;
-      const promises: any = [];
+    getBalance(
+      addresses: string[],
+      network: string,
+    ): Object {
+      let balance: number = 0;
+      const promises: Promise<object>[] = [];
 
 
       const getAddrBalance = (addr: string) => new Promise(async (resolve, reject) => {
-        const URL = `${this.networks[network].getBalanceApi + addr}&tag=latest&apikey=${this.networks.ethToken}`;
+        const URL: string = `${this.networks[network].getBalanceApi + addr}&tag=latest&apikey=${this.networks.ethToken}`;
         await this.axios.get(URL)
           .then((bal: any) => {
             balance += bal.data.result;
             resolve();
           })
-          .catch((e: any) => reject(e));
+          .catch((e: Error) => reject(e));
       });
 
       return new Promise(async (resolve, reject) => {
@@ -315,18 +346,21 @@ export namespace CryptoWallet.SDKS.Ethereum {
      * @param network
      * @param internal
      */
-    accountDiscovery(wallet: any, network: string, internal?: boolean): Object {
-      const accounts = [];
-
+    accountDiscovery(
+      wallet: Wallet,
+      network: string,
+      internal?: boolean,
+    ): Object {
+      const accounts: Address[] = [];
       for (let i: number = 0; i < 10; i += 1) {
-        const key: any = this.generateKeyPair(wallet, i);
-        const account = {
+        const key: KeyPair = this.generateKeyPair(wallet, i);
+        const account: Address = {
           address: key.address,
           index: i,
+          type: wallet.network.name,
         };
         accounts.push(account);
       }
-
       return accounts;
     }
   }

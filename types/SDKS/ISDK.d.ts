@@ -1,11 +1,20 @@
+import { Wallet, KeyPair, Address } from './GenericSDK.d';
+
 export declare namespace CryptoWallet.SDKS {
     interface ISDK {
-        generateHDWallet(entropy: string, cointype: number): Object;
-        generateKeyPair(wallet: object, index: number): Object;
-        importWIF(wif: string): Object;
-        gernerateP2SHMultiSig(keys: Array<string>): Object;
-        create1t1tx(keypair: any, txHash: string, txNumber: number, address: string, amount: number): Object;
-        create2t2tx(txparams: any): Object;
-        verifyTxSignature(transaction: object): boolean;
+        generateHDWallet(entropy: string, network: string): Wallet;
+        generateKeyPair(wallet: object, index: number, internal?: boolean): KeyPair;
+        generateAddress(wallet: Wallet, index: number, internal?: boolean): Address;
+        importWIF(wif: string, network: string): Object;
+        createRawTx(accounts: object[], change: string[], utxos: any, wallet: Wallet, toAddress: string, amount: number, feeRate: number, max?: boolean): Object;
+        broadcastTx(rawTx: string, network: string): Object;
+        validateAddress(address: string, network: string): boolean;
+        getTransactionFee(network: string): Object;
+        verifyTxSignature(transaction: object, network: string): boolean;
+        accountDiscovery(wallet: Wallet, netork: string, internal?: boolean): Object;
+        getTransactionHistory(addresses: string[], network: string, from: number, to: number): Object;
+        getBalance(addresses: string[], network: string): Object;
+        getPriceFeed(coins: string[], currencies: string[]): Object;
+        getHistoricalData(coin: string, currency: string, period: string): Object;
     }
 }
