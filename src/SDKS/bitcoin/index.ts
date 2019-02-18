@@ -1,20 +1,23 @@
 /* eslint-disable import/no-unresolved */
-// eslint-disable-next-line spaced-comment
+/* eslint-disable spaced-comment */
 
+
+// eslint-disable-next-line spaced-comment
+///<reference path="../../types/module.d.ts" />
 import * as BitcoinLib from 'bitcoinjs-lib';
 import * as Bitcoinaddress from 'bitcoin-address';
 import * as Coinselect from 'coinselect';
 import * as CoinSelectSplit from 'coinselect/split';
 import * as Request from 'request';
 import * as Explorers from 'bitcore-explorers';
-import { KeyPair, Wallet } from 'GenericSDK';
-import * as Networks from '../networks';
+import { KeyPair, Wallet } from '../GenericSDK.d';
+import * as Networks from '../networks.ts';
 import * as IBitcoinSDK from './IBitcoinSDK';
-import GenericSDK from '../GenericSDK';
+import GenericSDK from '../GenericSDK.ts';
 
-namespace CryptoWallet.SDKS.Bitcoin {
+export namespace CryptoWallet.SDKS.Bitcoin {
   export class BitcoinSDK extends GenericSDK
-    implements IBitcoinSDK.CryptyoWallet.SDKS.Bitcoin.IBitcoinSDK {
+    implements IBitcoinSDK.CryptoWallet.SDKS.Bitcoin.IBitcoinSDK {
     Explore = Explorers
 
     Req = Request

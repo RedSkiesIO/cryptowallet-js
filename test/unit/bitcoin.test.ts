@@ -1,8 +1,7 @@
 /* eslint-disable import/no-unresolved */
 import * as Mocha from 'mocha';
 import * as Chai from 'chai';
-import * as Bitcoin from 'bitcoinjs-lib';
-import * as series from 'async-series';
+import { KeyPair } from 'src/SDKS/GenericSDK.d';
 import { CryptoWallet } from '../../src/SDKFactory';
 
 
@@ -61,77 +60,163 @@ const testAddresses = ['2N3sy5gP2EmDJdxmTv8xBpW1vy6J3oHb6E8',
 
 
 describe('bitcoinSDK (wallet)', () => {
-  it('can generate a BTC HD wallet', () => {
-    const wallet: any = btc.generateHDWallet(entropy, network);
+  describe('generateHDWallet', () => {
+    it('can generate a BTC testnet HD wallet', () => {
+      const wallet: any = btc.generateHDWallet(entropy, 'BITCOIN_TESTNET');
+      const keypair: any = btc.generateKeyPair(wallet, 0);
+      expect(wallet.external.xpriv).to.equal('xprvA1zR34Tm9KnyfTxTd9n7m7Q1gMauEKPNzdRL7nfF3cGYiwLYd9xmPJBdRGfL6tu4U46oQf4FhjG2ysih1e5Wfa7ia6W8ZhrLUEcKAjUqLNs');
+      expect(wallet.external.xpub).to.equal('xpub6EymSZzeyhMGsx2vjBK88FLkEPRPdn7EMrLvvB4rbwoXbjfhAhH1w6W7GY7MY2nMfp4ebihHWYh5wg2U4wQX3c9JUTndGAa2JjjrZY1f3dc');
+      expect(wallet.bip).to.equal(bip);
+      expect(wallet.type).to.equal(1);
+    });
 
-    // expect(wallet.mnemonic).to.equal(entropy);
-    expect(wallet.external.xpriv).to.equal('xprvA1zR34Tm9KnyfTxTd9n7m7Q1gMauEKPNzdRL7nfF3cGYiwLYd9xmPJBdRGfL6tu4U46oQf4FhjG2ysih1e5Wfa7ia6W8ZhrLUEcKAjUqLNs');
-    expect(wallet.external.xpub).to.equal('xpub6EymSZzeyhMGsx2vjBK88FLkEPRPdn7EMrLvvB4rbwoXbjfhAhH1w6W7GY7MY2nMfp4ebihHWYh5wg2U4wQX3c9JUTndGAa2JjjrZY1f3dc');
-    expect(wallet.bip).to.equal(bip);
-    expect(wallet.type).to.equal(1);
+    it('can generate a regtest HD wallet', () => {
+      const wallet: any = btc.generateHDWallet(entropy, 'REGTEST');
+      expect(wallet.external.xpriv).to.equal('xprv9uZZn2GG7khoyKSKnxBnwc1G9YcrSAtVZ7ohwxwDWUJDfWNHqZE4vUWjbbrXmhCzTERyzWzwuobfkwM1ZiG9DQBXwjEAA3wraqcU1do4Rir');
+      expect(wallet.external.xpub).to.equal('xpub68YvBXo9x8G7BoWntyioJjwzhaTLqdcLvLjJkMLq4oqCYJhSP6YKUGqDSsu1aQSejM9xxApK67fzupboqQ8TkXeAb81ySQj2yC4f1MfrTg8');
+      expect(wallet.bip).to.equal(0);
+      expect(wallet.type).to.equal(0);
+    });
 
-    console.log(wallet);
+    it('can generate a Litecoin HD wallet', () => {
+      const wallet: any = btc.generateHDWallet(entropy, 'LITECOIN');
+      expect(wallet.external.xpriv).to.equal('xprv9zZDbfbjnMv81DYDd79G8BGHa6y9aEbUwYoXjGVQdW4MxJw4XpE5CGmRcbXcFMW3AmZh3GZr8Lj6fQUPs46s5rgj7BgY21XsNV4RKvewxAq');
+      expect(wallet.external.xpub).to.equal('xpub6DYa1B8dcjURDhcgj8gGVKD288odyhKLJmj8Xeu2BqbLq7GD5MYKk55uTsw1T9n2QvQRrgbW4n465CZUQsVekBGKQQ5mpphqy97Vhe9j8Pg');
+      expect(wallet.bip).to.equal(49);
+      expect(wallet.type).to.equal(2);
+    });
+
+    it('can generate a Dash HD wallet', () => {
+      const wallet: any = btc.generateHDWallet(entropy, 'DASH');
+      expect(wallet.external.xpriv).to.equal('xprvA1WARJ2YwFfriS6eQHWBWecQYd6VPt5c7safPbLeiNsHct9pSTeZZe3oV3CkVK6KHrxfp44w3phNcfJDxvvQSd5TJcotRWkcRkhetQQGz7f');
+      expect(wallet.external.xpub).to.equal('xpub6EVWpoZSmdE9vvB7WK3BsnZ96evyoLoTV6WGBykGGiQGVgUxyzxp7SNHLM8V79Y9jvF91TRnUwyFiDmUotWWopsgGdWURkT6sscFHaouoQ1');
+      expect(wallet.bip).to.equal(44);
+      expect(wallet.type).to.equal(5);
+    });
+
+    it('can detect an invalid entropy when generating a wallet', () => {
+      const badFn = () => btc.generateHDWallet(invalidEntropy, network);
+      expect(badFn).to.throw('Invalid entropy');
+    });
+
+    it('can detect an invalid network when generating a wallet', () => {
+      function badFn() { return btc.generateHDWallet(entropy, 'btcc testnet'); }
+      expect(badFn).to.throw('Invalid network');
+    });
   });
 
-  // it('can detect an invalid entropy when generating a wallet', () => {
-  //   const badFn = () => btc.generateHDWallet(invalidEntropy, network);
-  //   expect(badFn).to.throw('Invalid entropy');
-  // });
+  describe('generateKeyPair', () => {
+    it('can create a key pair', () => {
+      const wallet: any = btc.generateHDWallet(entropy, network);
+      const keypair: KeyPair = btc.generateKeyPair(wallet, 0);
+      assert.strictEqual(keypair.derivationPath, derPath);
+      assert.strictEqual(keypair.address, '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf');
+      assert.strictEqual(
+        keypair.publicKey, '03f3ce9fafbcf2da98817a706e5d41272455df20b8f832f6700c1bb2652ac44de0',
+      );
+      assert.strictEqual(
+        keypair.privateKey, 'cNJiShRC1rQqQ8MZDtvGWqHJq2sDgErcnq897jq1YMnpCm8JRFXr',
+      );
+      assert.equal(keypair.type, 'BITCOIN_TESTNET');
+    });
 
-  // it('can detect an invalid network when generating a wallet', () => {
-  //   function badFn() { return btc.generateHDWallet(entropy, 'btcc testnet'); }
-  //   expect(badFn).to.throw('Invalid network');
-  // });
+    it('can create a litecoin key pair', () => {
+      const wallet: any = btc.generateHDWallet(entropy, 'LITECOIN');
+      const keypair: any = btc.generateKeyPair(wallet, 0);
+      assert.equal(keypair.address, 'M8d9iWobmxVNo1hHcovnxsUptzn7GGA4SL');
+    });
 
-  it('can create a key pair', () => {
-    const wallet: any = btc.generateHDWallet(entropy, network);
-    const keypair: any = btc.generateKeyPair(wallet, 0);
-    assert.strictEqual(keypair.derivationPath, derPath);
-    assert.strictEqual(keypair.address, '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf');
-    assert.strictEqual(
-      keypair.publicKey, '03f3ce9fafbcf2da98817a706e5d41272455df20b8f832f6700c1bb2652ac44de0',
-    );
-    assert.strictEqual(
-      keypair.privateKey, 'cNJiShRC1rQqQ8MZDtvGWqHJq2sDgErcnq897jq1YMnpCm8JRFXr',
-    );
-    assert.equal(keypair.type, 'BITCOIN_TESTNET');
+    it('can create a regtest key pair', () => {
+      const wallet: any = btc.generateHDWallet(regtest, 'REGTEST');
+      const keypair: any = btc.generateKeyPair(wallet, 0);
+      assert.equal(keypair.address, 'mnJQyeDFmGjNoxyxKQC6MMFdpx77rYV3Bo');
+    });
+
+    it('can create a litecoin testnet key pair', () => {
+      const wallet: any = btc.generateHDWallet(entropy, 'LITECOIN_TESTNET');
+      const keypair: any = btc.generateKeyPair(wallet, 0);
+      assert.equal(keypair.address, 'QSc9ybA8G55zU5eSGrw32hFBe3R88gkLWc');
+    });
+
+    it('can create a dogecoin key pair', () => {
+      const wallet: any = btc.generateHDWallet(entropy, 'DOGECOIN');
+      const keypair: any = btc.generateKeyPair(wallet, 0);
+      assert.equal(keypair.address, 'DTaFz5tzRjvk38e5La2Egrahat1V67Dk5k');
+    });
+
+    it('can create a dash key pair', () => {
+      const wallet: any = btc.generateHDWallet(entropy, 'DASH');
+      const keypair: any = btc.generateKeyPair(wallet, 0);
+      assert.equal(keypair.address, 'XwzcnQSMZRhZDcNZZmskLB2ztiJnsD26vG');
+    });
+
+    it('can create a dash testnet key pair', () => {
+      const wallet: any = btc.generateHDWallet(entropy, 'DASH_TESTNET');
+      const keypair: any = btc.generateKeyPair(wallet, 0);
+      assert.equal(keypair.address, 'yWxRFULbGzvNuFafp1jUFNenXbiGrdoNWr');
+    });
+
+    it('can detect an invalid wallet type when creating a keypair', () => {
+      const wallet: any = btc.generateHDWallet(entropy, 'ETHEREUM');
+      const badFn = () => btc.generateKeyPair(wallet, 0);
+      expect(badFn).to.throw('Invalid wallet type');
+    });
   });
 
-  // it('can create a litecoin key pair', () => {
-  //   const wallet: any = btc.generateHDWallet(entropy, 'LITECOIN');
-  //   const keypair: any = btc.generateKeyPair(wallet, 0);
-  //   assert.equal(keypair.address, 'M8d9iWobmxVNo1hHcovnxsUptzn7GGA4SL');
-  // });
+  describe('generateAddress', () => {
+    it('can create an btc testnet address', () => {
+      const wallet: any = btc.generateHDWallet(entropy, network);
+      const account: any = btc.generateAddress(wallet, 0);
+      assert.strictEqual(account.address, '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf');
+      assert.strictEqual(
+        account.index, 0,
+      );
+      assert.equal(account.type, 'BITCOIN_TESTNET');
+    });
 
-  // it('can create a regtest key pair', () => {
-  //   const wallet: any = btc.generateHDWallet(regtest, 'REGTEST');
-  //   const keypair: any = btc.generateKeyPair(wallet, 0);
-  //   assert.equal(keypair.address, 'mnJQyeDFmGjNoxyxKQC6MMFdpx77rYV3Bo');
-  // });
+    // it('can create a litecoin key pair', () => {
+    //   const wallet: any = btc.generateHDWallet(entropy, 'LITECOIN');
+    //   const keypair: any = btc.generateKeyPair(wallet, 0);
+    //   assert.equal(keypair.address, 'M8d9iWobmxVNo1hHcovnxsUptzn7GGA4SL');
+    // });
 
-  // it('can create a litecoin testnet key pair', () => {
-  //   const wallet: any = btc.generateHDWallet(entropy, 'LITECOIN_TESTNET');
-  //   const keypair: any = btc.generateKeyPair(wallet, 0);
-  //   assert.equal(keypair.address, 'QSc9ybA8G55zU5eSGrw32hFBe3R88gkLWc');
-  // });
+    // it('can create a regtest key pair', () => {
+    //   const wallet: any = btc.generateHDWallet(regtest, 'REGTEST');
+    //   const keypair: any = btc.generateKeyPair(wallet, 0);
+    //   assert.equal(keypair.address, 'mnJQyeDFmGjNoxyxKQC6MMFdpx77rYV3Bo');
+    // });
 
-  // it('can create a dogecoin key pair', () => {
-  //   const wallet: any = btc.generateHDWallet(entropy, 'DOGECOIN');
-  //   const keypair: any = btc.generateKeyPair(wallet, 0);
-  //   assert.equal(keypair.address, 'DTaFz5tzRjvk38e5La2Egrahat1V67Dk5k');
-  // });
+    // it('can create a litecoin testnet key pair', () => {
+    //   const wallet: any = btc.generateHDWallet(entropy, 'LITECOIN_TESTNET');
+    //   const keypair: any = btc.generateKeyPair(wallet, 0);
+    //   assert.equal(keypair.address, 'QSc9ybA8G55zU5eSGrw32hFBe3R88gkLWc');
+    // });
 
-  // it('can create a dash key pair', () => {
-  //   const wallet: any = btc.generateHDWallet(entropy, 'DASH');
-  //   const keypair: any = btc.generateKeyPair(wallet, 0);
-  //   assert.equal(keypair.address, 'XwzcnQSMZRhZDcNZZmskLB2ztiJnsD26vG');
-  // });
+    // it('can create a dogecoin key pair', () => {
+    //   const wallet: any = btc.generateHDWallet(entropy, 'DOGECOIN');
+    //   const keypair: any = btc.generateKeyPair(wallet, 0);
+    //   assert.equal(keypair.address, 'DTaFz5tzRjvk38e5La2Egrahat1V67Dk5k');
+    // });
 
-  // it('can create a dash testnet key pair', () => {
-  //   const wallet: any = btc.generateHDWallet(entropy, 'DASH_TESTNET');
-  //   const keypair: any = btc.generateKeyPair(wallet, 0);
-  //   assert.equal(keypair.address, 'yWxRFULbGzvNuFafp1jUFNenXbiGrdoNWr');
-  // });
+    // it('can create a dash key pair', () => {
+    //   const wallet: any = btc.generateHDWallet(entropy, 'DASH');
+    //   const keypair: any = btc.generateKeyPair(wallet, 0);
+    //   assert.equal(keypair.address, 'XwzcnQSMZRhZDcNZZmskLB2ztiJnsD26vG');
+    // });
+
+    // it('can create a dash testnet key pair', () => {
+    //   const wallet: any = btc.generateHDWallet(entropy, 'DASH_TESTNET');
+    //   const keypair: any = btc.generateKeyPair(wallet, 0);
+    //   assert.equal(keypair.address, 'yWxRFULbGzvNuFafp1jUFNenXbiGrdoNWr');
+    // });
+
+    // it('can detect an invalid wallet type when creating a keypair', () => {
+    //   const wallet: any = btc.generateHDWallet(entropy, 'ETHEREUM');
+    //   const badFn = () => btc.generateKeyPair(wallet, 0);
+    //   expect(badFn).to.throw('Invalid wallet type');
+    // });
+  });
+
 
   // it('can create a 3 of 4 multisig address', () => {
   //   const address: any = btc.generateSegWit3of4MultiSigAddress(

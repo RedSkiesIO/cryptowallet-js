@@ -5,13 +5,17 @@ import * as bip44hdkey from 'ethereumjs-wallet/hdkey';
 import * as EthereumLib from 'ethereumjs-wallet';
 import EthereumTx from 'ethereumjs-tx';
 import Web3 from 'web3';
-import { KeyPair, Wallet, Address } from 'GenericSDK';
+import {
+  KeyPair, Wallet, Address,
+} from '../GenericSDK.d';
+// import { Transaction } from './index.d';
 import GenericSDK from '../GenericSDK';
 import * as IEthereumSDK from './IEthereumSDK';
+import { Transaction } from './ethereumTypes';
 
 export namespace CryptoWallet.SDKS.Ethereum {
   export class EthereumSDK extends GenericSDK
-    implements IEthereumSDK.CryptyoWallet.SDKS.Ethereum.IEthereumSDK {
+    implements IEthereumSDK.CryptoWallet.SDKS.Ethereum.IEthereumSDK {
     Bip = bip44hdkey
 
     ethereumlib = EthereumLib;

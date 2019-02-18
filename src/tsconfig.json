@@ -4,15 +4,15 @@
     "baseUrl": ".",
     "paths": {
       "*": [
-        "types/*"
+        "../types/*"
       ]
     },
     "outDir": "../lib",
     "declarationDir": "../types",
     "declaration": true
+
   },
   "include": [
     "**/*.ts",
-    "../test/unit/ethereum.test.ts"
   ]
 }

@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-unresolved
-import { KeyPair } from 'GenericSDK';
+import { KeyPair } from '../GenericSDK.d';
 
-export namespace CryptyoWallet.SDKS.Ethereum {
+export namespace CryptoWallet.SDKS.Ethereum {
   export interface IEthereumSDK {
 
     createEthTx(

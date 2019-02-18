@@ -1,5 +1,6 @@
 /* eslint-disable import/no-unresolved */
 // eslint-disable-next-line spaced-comment
+///<reference path="./../types/module.d.ts" />
 import * as Bip39 from 'bip39';
 import * as Bip44hdkey from 'hdkey';
 import * as Bitcoinlib from 'bitcoinjs-lib';
@@ -9,8 +10,8 @@ import * as Axios from 'axios';
 import * as Coinselect from 'coinselect';
 import * as CoinSelectSplit from 'coinselect/split';
 import {
-  KeyPair, Wallet, Address, Transaction,
-} from 'GenericSDK';
+  Wallet, KeyPair, Address, Transaction,
+} from './GenericSDK.d';
 import * as Networks from './networks';
 import * as ISDK from './ISDK';
 
@@ -133,8 +134,8 @@ export namespace CryptoWallet.SDKS {
       if (!wallet.network.connect) {
         throw new Error('Invalid wallet type');
       }
-      let node = wallet.external;
-      if (internal) { node = wallet.internal; }
+      let node = Bip44hdkey.fromJSON(wallet.external);
+      if (internal) { node = Bip44hdkey.fromJSON(wallet.internal); }
       const addrNode = node.deriveChild(index);
       let result: any = this.bitcoinlib.payments.p2sh({
         redeem: this.bitcoinlib.payments.p2wpkh(

@@ -238,6 +238,7 @@ export const ETHEREUM_KOVAN = {
 export const REGTEST = {
   name: 'REGTEST',
   type: 'test',
+  bip: 0,
   discovery: 'http://192.168.1.195:3001/api',
   segwit: false,
   feeApi: 'https://api.blockcypher.com/v1/btc/main',

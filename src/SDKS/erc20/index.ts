@@ -4,7 +4,7 @@
 import EthereumTx from 'ethereumjs-tx';
 import Web3 from 'web3';
 import * as Axios from 'axios';
-import { KeyPair } from 'GenericSDK';
+import { KeyPair } from '../GenericSDK.d';
 import * as IERC20SDK from './IERC20SDK';
 import * as ERC20JSON from './erc20';
 import * as Networks from '../networks';

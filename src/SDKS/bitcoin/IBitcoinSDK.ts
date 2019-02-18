@@ -1,9 +1,12 @@
 // eslint-disable-next-line import/no-unresolved
-import { KeyPair, Wallet } from 'GenericSDK';
+// import { KeyPair, Wallet } from 'SDKS/GenericSDK';
 import { ECPair } from 'bitcoinjs-lib';
+// eslint-disable-next-line import/no-unresolved
+import { Wallet, KeyPair } from '../GenericSDK.d';
 
-export namespace CryptyoWallet.SDKS.Bitcoin {
+export namespace CryptoWallet.SDKS.Bitcoin {
   export interface IBitcoinSDK {
+
 
     generateSegWitAddress(
       keypair: KeyPair,
@@ -53,4 +56,5 @@ export namespace CryptyoWallet.SDKS.Bitcoin {
       minerRate: number,
     ): Object;
   }
+
 }
