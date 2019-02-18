@@ -6,7 +6,6 @@ import * as IBitcoinSDK from './IBitcoinSDK';
 import GenericSDK from '../GenericSDK.ts';
 export declare namespace CryptoWallet.SDKS.Bitcoin {
     class BitcoinSDK extends GenericSDK implements IBitcoinSDK.CryptoWallet.SDKS.Bitcoin.IBitcoinSDK {
-        Explore: any;
         Req: Request.RequestAPI<Request.Request, Request.CoreOptions, Request.RequiredUriUrl>;
         /**
          * generates a segwit address

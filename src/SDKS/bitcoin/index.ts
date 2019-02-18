@@ -9,7 +9,6 @@ import * as Bitcoinaddress from 'bitcoin-address';
 import * as Coinselect from 'coinselect';
 import * as CoinSelectSplit from 'coinselect/split';
 import * as Request from 'request';
-import * as Explorers from 'bitcore-explorers';
 import { KeyPair, Wallet } from '../GenericSDK.d';
 import * as Networks from '../networks.ts';
 import * as IBitcoinSDK from './IBitcoinSDK';
@@ -18,8 +17,6 @@ import GenericSDK from '../GenericSDK.ts';
 export namespace CryptoWallet.SDKS.Bitcoin {
   export class BitcoinSDK extends GenericSDK
     implements IBitcoinSDK.CryptoWallet.SDKS.Bitcoin.IBitcoinSDK {
-    Explore = Explorers
-
     Req = Request
 
 
