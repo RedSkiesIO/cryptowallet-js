@@ -1,21 +1,25 @@
-import BitcoinSDK from './SDKS/bitcoin'
-import EthereumSDK from './SDKS/bitcoin'
+/* eslint-disable import/no-unresolved */
+/* eslint-disable no-inner-declarations */
+import BitcoinSDK from './SDKS/bitcoin';
+import EthereumSDK from './SDKS/ethereum';
+import ERC20SDK from './SDKS/erc20';
 import * as ISDK from './SDKS/ISDK';
 
-export namespace CryptyoWallet {
+export namespace CryptoWallet {
 
-  export function createSDK(sdk: string) : ISDK.CryptyoWallet.SDKS.ISDK {
-
-    switch(sdk) {
-      case "Bitcoin":
+  export function createSDK(sdk: string) {
+    switch (sdk) {
+      case 'Bitcoin':
         return new BitcoinSDK();
-        break;
-      case "Ethereum":
+
+      case 'Ethereum':
         return new EthereumSDK();
-        break;
+
+      case 'ERC20':
+        return new ERC20SDK();
+
       default:
         return new BitcoinSDK();
-        break;
     }
   }
 }

@@ -1,4 +1,4 @@
-export namespace CryptyoWallet.SDKS {
+export namespace CryptoWallet.SDKS {
   export interface IWIF {
 
   }
