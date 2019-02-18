@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import _Vue, { PluginObject } from 'vue';
 
 const version = '__VERSION__';

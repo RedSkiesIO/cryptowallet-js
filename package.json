@@ -41,7 +41,6 @@
     "@types/jest": "^24.0.6",
     "@types/lodash": "^4.14.117",
     "@types/lodash-es": "^4.17.1",
-    "@types/mocha": "^5.2.5",
     "@types/node": "^10.10.3",
     "@types/power-assert": "^1.5.0",
     "@vue/babel-preset-app": "^3.0.1",
@@ -123,9 +122,10 @@
     "release": "conventional-github-releaser -p eslint",
     "clean": "rm -rf coverage && rm -rf lib/*.js* && rm -rf types/*.d.ts* && rm -rf dist/*.js* && rm -rf ./*.log",
     "dev": "cross-env BABEL_ENV=test webpack-dev-server --inline --hot --open --content-base ./test/unit/ --config config/webpack.dev.conf.js",
-    "lint": "eslint --fix --ext .ts src test",
+    "lint": "eslint --fix --ext .ts src",
     "test": "mocha -r ts-node/register 'test/**/*.test.ts'",
+    "test:jest": "jest",
     "test:cover": "cross-env BABEL_ENV=test karma start config/karma.cover.conf.js",
-    "test:unit": "cross-env BABEL_ENV=test karma start config/karma.unit.conf.js"
+    "test:unit": "cross-env NODE_ENV=test jest"
   }
 }
