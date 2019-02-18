@@ -139,7 +139,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
       gasPrice: number,
     ): Object {
       const privateKey: Buffer = Buffer.from(keypair.privateKey.substr(2), 'hex');
-      const web3: Web3 = new this.Web3(keypair.network.provider);
+      const web3: any = new this.Web3(keypair.network.provider);
       return new Promise((resolve, reject) => {
         web3.eth.getTransactionCount(keypair.address, 'latest', (err: Error, nonce: number) => {
           if (err) {
@@ -147,7 +147,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
           }
           const sendAmount: string = amount.toString();
           const gasAmount: string = gasPrice.toString();
-          const tx: EthereumTx = new EthereumTx({
+          const tx: any = new EthereumTx({
             nonce,
             gasPrice: web3.utils.toHex(gasAmount),
             gasLimit: web3.utils.toHex(21000),
@@ -190,7 +190,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
       rawTx: string,
       network: string,
     ): Object {
-      const web3: Web3 = new this.Web3(this.networks[network].provider);
+      const web3: any = new this.Web3(this.networks[network].provider);
       return new Promise((resolve, reject) => {
         web3.eth.sendSignedTransaction(rawTx, (err: Error, hash: string) => {
           if (err) return reject(err);
@@ -209,7 +209,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
     verifyTxSignature(
       tx: any,
     ): boolean {
-      const transaction: EthereumTx = new EthereumTx(tx);
+      const transaction: any = new EthereumTx(tx);
       this.VerifyTx = tx;
       if (transaction.verifySignature()) {
         return true;

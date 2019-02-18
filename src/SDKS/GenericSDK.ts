@@ -65,9 +65,9 @@ export namespace CryptoWallet.SDKS {
         bip = 44;
       }
       const wallet: Wallet = {
+        bip,
         external: externalNode.toJSON(),
         internal: internalNode.toJSON(),
-        bip,
         type: cointype,
         network: this.networks[network],
       };
@@ -450,7 +450,9 @@ export namespace CryptoWallet.SDKS {
       if (!this.networks[network].connect) {
         throw new Error('Invalid network type');
       }
-      const keyPairs = transaction.pubKeys.map((q: any) => this.bitcoinlib.ECPair.fromPublicKey(Buffer.from(q, 'hex'), this.networks[network].connect));
+      const keyPairs = transaction.pubKeys.map(
+        (q: any) => this.bitcoinlib.ECPair.fromPublicKey(Buffer.from(q, 'hex'), this.networks[network].connect),
+      );
       const tx = this.bitcoinlib.Transaction.fromHex(transaction.txHex);
       const valid: boolean[] = [];
       tx.ins.forEach((input: any, i: number) => {

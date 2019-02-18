@@ -42,22 +42,19 @@ export namespace CryptoWallet.SDKS.ERC20 {
       contractAddress: string,
       decimals: number,
     ): Object {
-      const web3: Web3 = new this.Web3(keypair.network.provider);
+      const web3: any = new this.Web3(keypair.network.provider);
       const abiArray = this.json.contract;
       const contract = new web3.eth.Contract(this.json.contract, contractAddress);
       // const privateKey = Buffer.from(keypair.privateKey.substr(2), 'hex');
 
       return {
-        // keypair,
+        decimals,
         address: keypair.address,
         network: keypair.network,
         name: tokenName,
         symbol: tokenSymbol,
         contract: contractAddress,
-        decimals,
-        // web3,
         contractInstance: contract,
-        // privateKey,
       };
     }
 
@@ -128,7 +125,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
       rawTx: string,
       network: string,
     ): Object {
-      const web3: Web3 = new this.Web3(this.networks[network].provider);
+      const web3: any = new this.Web3(this.networks[network].provider);
       return new Promise((resolve, reject) => {
         web3.eth.sendSignedTransaction(rawTx, (err: Error, result: string) => {
           if (err) return reject(err);
@@ -151,7 +148,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
       amount: number,
       gasPrice: number,
     ): Object {
-      const web3: Web3 = new this.Web3(erc20Wallet.network.provider);
+      const web3: any = new this.Web3(erc20Wallet.network.provider);
       const contract = new web3.eth.Contract(this.json.contract, erc20Wallet.contract);
       const sendAmount: string = (amount * (10 ** erc20Wallet.decimals)).toString();
       const method = contract.methods.transfer(to, sendAmount).encodeABI();
@@ -172,7 +169,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
       amount: number,
       gasPrice: number,
     ): Object {
-      const web3: Web3 = new this.Web3(erc20Wallet.network.provider);
+      const web3: any = new this.Web3(erc20Wallet.network.provider);
       const contract = new web3.eth.Contract(this.json.contract, erc20Wallet.contract);
       const sendAmount: string = (amount * (10 ** erc20Wallet.decimals)).toString();
       const method = contract.methods.approve(to, sendAmount).encodeABI();
@@ -193,7 +190,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
       gasPrice: number,
     ): Object {
       return new Promise(async (resolve, reject) => {
-        const web3: Web3 = new this.Web3(erc20Wallet.network.provider);
+        const web3: any = new this.Web3(erc20Wallet.network.provider);
         const contract = new web3.eth.Contract(this.json.contract, erc20Wallet.contract);
         const check: number = await this.checkAllowance(erc20Wallet, from);
 
@@ -221,7 +218,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
     ): Promise<number> {
       this.Wallet = erc20Wallet;
       return new Promise(async (resolve, reject) => {
-        const web3: Web3 = new this.Web3(erc20Wallet.network.provider);
+        const web3: any = new this.Web3(erc20Wallet.network.provider);
         const contract = new web3.eth.Contract(this.json.contract, erc20Wallet.contract);
         contract.methods.allowance(from, erc20Wallet.address).call()
           .then((result: number) => resolve(result));
@@ -237,7 +234,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
     ): Promise<number> {
       this.Wallet = erc20Wallet;
       return new Promise(async (resolve, reject) => {
-        const web3: Web3 = new this.Web3(erc20Wallet.network.provider);
+        const web3: any = new this.Web3(erc20Wallet.network.provider);
         const contract = new web3.eth.Contract(this.json.contract, erc20Wallet.contract);
         contract.methods.balanceOf(erc20Wallet.address).call()
           .then((result: number) => {
@@ -253,7 +250,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
       network: string,
     ): Object {
       return new Promise(async (resolve, reject) => {
-        const web3: Web3 = new this.Web3(this.networks[network].provider);
+        const web3: any = new this.Web3(this.networks[network].provider);
         const abiArray = this.json.contract;
 
         const contract = new web3.eth.Contract(abiArray, address);

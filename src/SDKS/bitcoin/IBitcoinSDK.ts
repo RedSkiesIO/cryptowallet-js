@@ -21,7 +21,7 @@ export namespace CryptoWallet.SDKS.Bitcoin {
       key2: string,
       key3: string,
       key4: string,
-      network: string
+      network: string,
     ): string;
 
     create1t1tx(
@@ -29,7 +29,7 @@ export namespace CryptoWallet.SDKS.Bitcoin {
       txHash: string,
       txNumber: number,
       address: string,
-      amount: number
+      amount: number,
     ): String;
 
     create2t2tx(

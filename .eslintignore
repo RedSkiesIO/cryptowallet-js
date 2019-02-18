@@ -1,1 +1,4 @@
 config/*.js
+types/*.ts
+src/SDKS/erc20/erc20.ts
+test/unit/*.ts
