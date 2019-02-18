@@ -1,7 +1,9 @@
-declare namespace CryptyoWallet {
-  class CryptoWalletJS {
+import * as SDKFactory from './SDKFactory.ts';
 
-  }
+namespace CryptoWallet {
+export class CryptoWalletJS {
+SDKFactory = SDKFactory;
+}
 }
 
-export default CryptyoWallet.CryptoWalletJS;
+export default CryptoWallet.CryptoWalletJS;

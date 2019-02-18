@@ -1,27 +1,90 @@
-import * as IWIF from './IWIF';
+// eslint-disable-next-line import/no-unresolved
+import { Wallet, KeyPair, Address } from './GenericSDK.d';
 
-export namespace CryptyoWallet.SDKS {
+export namespace CryptoWallet.SDKS {
   export interface ISDK {
 
-    generateKeyPair(entropy : string) : Object;
+    generateHDWallet(
+      entropy: string,
+      network: string,
+    ): Wallet;
 
-    importWIF(wif : IWIF.CryptyoWallet.SDKS.IWIF) : Object;
 
-    gernerateP2SHMultiSig(key1 : string, key2 : string, key3 : string) : Object;
+    generateKeyPair(
+      wallet: object,
+      index: number,
+      internal?: boolean,
+    ): KeyPair;
 
-    generateSegWitAddress() : Object;
+    generateAddress(
+      wallet: Wallet,
+      index: number,
+      internal?: boolean,
+    ): Address;
 
-    generateSegWitP2SH() : Object;
+    importWIF(
+      wif: string,
+      network: string,
+    ): Object;
 
-    generateSegWit3of4MultiSigaddress(key1 : string, key2 : string, key3 : string) : Object;
+    createRawTx(
+      accounts: object[],
+      change: string[],
+      utxos: any,
+      wallet: Wallet,
+      toAddress: string,
+      amount: number,
+      feeRate: number,
+      max?: boolean,
+    ): Object;
 
-    generateTestNetAddress() : Object;
+    broadcastTx(
+      rawTx: string,
+      network: string,
+    ): Object;
 
-    create1t1tx() : Object;
+    validateAddress(
+      address: string,
+      network: string,
+    ): boolean;
 
-    create2t2tx() : Object;
+    getTransactionFee(
+      network: string,
+    ): Object;
 
-    verifyTxSignature(signature : string) : boolean;
+    verifyTxSignature(
+      transaction: object,
+      network: string,
+    ): boolean;
 
+    accountDiscovery(
+      wallet: Wallet,
+      netork: string,
+      internal?: boolean,
+    ): Object;
+
+    getTransactionHistory(
+      addresses: string[],
+      network: string,
+      from: number,
+      to: number,
+    ): Object;
+
+    getBalance(
+      addresses: string[],
+      network: string,
+    ): Object;
+
+    getPriceFeed(
+      coins: string[],
+      currencies: string[],
+    ): Object;
+
+    getHistoricalData(
+      coin: string,
+      currency: string,
+      period: string,
+    ): Object;
   }
 }
+
