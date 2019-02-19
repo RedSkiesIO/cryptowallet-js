@@ -6,7 +6,7 @@ import * as Bip44hdkey from 'hdkey';
 import * as Bitcoinlib from 'bitcoinjs-lib';
 import * as Wif from 'wif';
 import * as Request from 'request';
-import * as Axios from 'axios';
+import axios, * as others from 'axios';
 import * as Coinselect from 'coinselect';
 import * as CoinSelectSplit from 'coinselect/split';
 import {
@@ -14,7 +14,6 @@ import {
 } from './GenericSDK.d';
 import * as Networks from './networks';
 import * as ISDK from './ISDK';
-
 
 export namespace CryptoWallet.SDKS {
   export abstract class GenericSDK implements ISDK.CryptoWallet.SDKS.ISDK {
@@ -28,7 +27,7 @@ export namespace CryptoWallet.SDKS {
 
     request: any = Request;
 
-    axios: any = Axios;
+    axios: any = axios;
 
     /**
      * generates an hierarchical determinitsic wallet for a given coin type
@@ -211,12 +210,9 @@ export namespace CryptoWallet.SDKS {
           throw new Error('Invalid network type');
         }
         if (this.networks[network].segwit) {
-          Request.post(this.networks[network].broadcastUrl,
-            {
-              form: {
-                tx_hex: tx,
-              },
-            },
+          Request.post(
+            this.networks[network].broadcastUrl,
+            { form: { tx_hex: tx } },
             (error: any, body: any, result: any) => {
               if (error) {
                 return reject(new Error(`Transaction failed: ${error}`));
@@ -224,7 +220,8 @@ export namespace CryptoWallet.SDKS {
               const output = JSON.parse(result);
               const res = output.data.txid;
               return resolve(res);
-            });
+            },
+          );
         } else {
           Request.post(`${this.networks[network].discovery}/tx/send`,
             {
@@ -273,18 +270,20 @@ export namespace CryptoWallet.SDKS {
     getTransactionFee(
       network: string,
     ): Object {
+      if (!this.networks[network]) {
+        throw new Error('Invalid network');
+      }
       return new Promise((resolve, reject) => {
-        if (!this.networks[network].connect) {
-          throw new Error('Invalid network type');
-        }
         const URL = this.networks[network].feeApi;
         this.axios.get(URL)
-          .then((r: any) => resolve({
-            high: r.data.high_fee_per_kb / 1000,
-            medium: r.data.medium_fee_per_kb / 1000,
-            low: r.data.low_fee_per_kb / 1000,
-          }))
-          .catch((error: any) => reject(error));
+          .then((r: any) => {
+            resolve({
+              high: r.data.high_fee_per_kb / 1000,
+              medium: r.data.medium_fee_per_kb / 1000,
+              low: r.data.low_fee_per_kb / 1000,
+            });
+          })
+          .catch((error: any) => reject(error.message));
       });
     }
 
@@ -311,7 +310,8 @@ export namespace CryptoWallet.SDKS {
         throw new Error(`Invalid to address "${toAddress}"`);
       }
       const feeRate: number = minerRate;
-      const transactionAmount: number = Math.floor((amount * 100000000));
+      const satoshisMultiplier = 100000000;
+      const transactionAmount: number = Math.floor((amount * satoshisMultiplier));
       const net = wallet.network;
       let rawTx: any;
       return new Promise(async (resolve, reject) => {
@@ -409,7 +409,7 @@ export namespace CryptoWallet.SDKS {
           inputs.forEach((input: any) => {
             senders.push(input.address);
           });
-          fee /= 100000000;
+          fee /= satoshisMultiplier;
           const transaction: Transaction = {
             fee,
             change,
@@ -425,7 +425,7 @@ export namespace CryptoWallet.SDKS {
             confirmedTime: undefined,
           };
           if (max) {
-            transaction.value = maxValue / 100000000;
+            transaction.value = maxValue / satoshisMultiplier;
           }
           const spentInput = inputs;
           return resolve({
@@ -451,7 +451,9 @@ export namespace CryptoWallet.SDKS {
         throw new Error('Invalid network type');
       }
       const keyPairs = transaction.pubKeys.map(
-        (q: any) => this.bitcoinlib.ECPair.fromPublicKey(Buffer.from(q, 'hex'), this.networks[network].connect),
+        (q: any) => this.bitcoinlib.ECPair.fromPublicKey(
+          Buffer.from(q, 'hex'), this.networks[network].connect,
+        ),
       );
       const tx = this.bitcoinlib.Transaction.fromHex(transaction.txHex);
       const valid: boolean[] = [];
@@ -694,7 +696,9 @@ export namespace CryptoWallet.SDKS {
       coins: string[],
       currencies: string[],
     ): Object {
-      const URL = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${coins.toString()}&tsyms=${currencies.toString()}&api_key=${this.networks.cryptocompare}`;
+      const URL = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=
+      ${coins.toString()}&tsyms=${currencies.toString()}
+      &api_key=${this.networks.cryptocompare}`;
       return new Promise((resolve, reject) => {
         this.axios.get(URL)
           .then((r: any) => resolve(r.data.DISPLAY))
@@ -709,9 +713,21 @@ export namespace CryptoWallet.SDKS {
     ): Object {
       let time: number;
       let length: string;
-      if (period === 'day') { time = 24; length = 'hour'; } else if (period === 'week') { time = 168; length = 'hour'; } else if (period === 'month') { time = 31; length = 'day'; } else { return new Error(`"${period}" is not a valid time period`); }
+      if (period === 'day') {
+        time = 24;
+        length = 'hour';
+      } else if (period === 'week') {
+        time = 168;
+        length = 'hour';
+      } else if (period === 'month') {
+        time = 31;
+        length = 'day';
+      } else {
+        return new Error(`"${period}" is not a valid time period`);
+      }
       return new Promise((resolve, reject) => {
-        const URL = `https://min-api.cryptocompare.com/data/histo${length}?fsym=${coin}&tsym=${currency}&limit=${time}&api_key=${this.networks.cryptocompare}`;
+        const URL = `https://min-api.cryptocompare.com/data/histo
+        ${length}?fsym=${coin}&tsym=${currency}&limit=${time}&api_key=${this.networks.cryptocompare}`;
         this.axios.get(URL)
           .then((r: any) => {
             const data = r.data.Data;

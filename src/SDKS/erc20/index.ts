@@ -1,8 +1,8 @@
 /* eslint-disable import/no-unresolved */
 // eslint-disable-next-line spaced-comment
 ///<reference path="../../types/module.d.ts" />
-import EthereumTx from 'ethereumjs-tx';
-import Web3 from 'web3';
+import * as EthereumTx from 'ethereumjs-tx';
+import * as Web3 from 'web3';
 import * as Axios from 'axios';
 import { KeyPair } from '../GenericSDK.d';
 import * as IERC20SDK from './IERC20SDK';
@@ -12,19 +12,19 @@ import * as Networks from '../networks';
 
 export namespace CryptoWallet.SDKS.ERC20 {
   export class ERC20SDK implements IERC20SDK.CryptoWallet.SDKS.Erc20.IERC20SDK {
-    json: any = ERC20JSON
+    json: any = ERC20JSON;
 
-    networks: any = Networks
+    networks: any = Networks;
 
-    axios: any = Axios
+    axios: any = Axios;
 
-    Tx: any = EthereumTx
+    Tx: any = EthereumTx;
 
-    Wallet: any
+    wallet: any;
 
-    Contract: any
+    contract: any;
 
-    Web3: any = Web3
+    Web3: any = Web3;
 
     /**
      * Creates an object containg all the information relating to a ERC20 token
@@ -216,7 +216,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
       erc20Wallet: any,
       from: string,
     ): Promise<number> {
-      this.Wallet = erc20Wallet;
+      this.wallet = erc20Wallet;
       return new Promise(async (resolve, reject) => {
         const web3: any = new this.Web3(erc20Wallet.network.provider);
         const contract = new web3.eth.Contract(this.json.contract, erc20Wallet.contract);
@@ -232,7 +232,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
     getBalance(
       erc20Wallet: any,
     ): Promise<number> {
-      this.Wallet = erc20Wallet;
+      this.wallet = erc20Wallet;
       return new Promise(async (resolve, reject) => {
         const web3: any = new this.Web3(erc20Wallet.network.provider);
         const contract = new web3.eth.Contract(this.json.contract, erc20Wallet.contract);
@@ -286,9 +286,14 @@ export namespace CryptoWallet.SDKS.ERC20 {
       startBlock?: number,
     ): Object {
       return new Promise(async (resolve, reject) => {
-        let URL: string = `${erc20Wallet.network.getErc20TranApi + erc20Wallet.contract}&address=${erc20Wallet.address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
+        let URL: string = `${erc20Wallet.network.getErc20TranApi + erc20Wallet.contract}
+        &address=${erc20Wallet.address}
+        &startblock=${startBlock}
+        &sort=desc&apikey=${this.networks.ethToken}`;
         if (typeof startBlock === 'undefined') {
-          URL = `${erc20Wallet.network.getErc20TranApi + erc20Wallet.contract}&address=${erc20Wallet.address}&sort=desc&apikey=${this.networks.ethToken}`;
+          URL = `${erc20Wallet.network.getErc20TranApi + erc20Wallet.contract}
+          &address=${erc20Wallet.address}
+          &sort=desc&apikey=${this.networks.ethToken}`;
         }
         await this.axios.get(URL)
           .then(async (res: any) => {
@@ -310,17 +315,16 @@ export namespace CryptoWallet.SDKS.ERC20 {
               }
 
               const transaction: object = {
+                sent,
+                receiver,
+                confirmed,
                 hash: r.hash,
                 blockHeight: r.blockNumber,
                 fee: r.cumulativeGasUsed / 1000000000,
-                sent,
                 value: r.value / (10 ** erc20Wallet.decimals),
                 sender: r.from,
-                receiver,
-                confirmed,
                 confirmedTime: r.timeStamp,
                 confirmations: r.confirmations,
-
               };
 
               transactions.push(transaction);

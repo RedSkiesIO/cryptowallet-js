@@ -5,11 +5,11 @@
     "paths": {
       "*": [
         "types/*"
-      ]
+      ],
     },
-    "outDir": "../lib",
+    "outDir": "../lib"
   },
   "include": [
-    "**/*.ts",
+    "**/*.ts"
   ]
 }

@@ -47,7 +47,6 @@ export const BITCOIN_TESTNET = {
   },
 };
 
-
 export const LITECOIN = {
   name: 'LITECOIN',
   bip: 2,

@@ -6,8 +6,6 @@ import { Wallet, KeyPair } from '../GenericSDK.d';
 
 export namespace CryptoWallet.SDKS.Bitcoin {
   export interface IBitcoinSDK {
-
-
     generateSegWitAddress(
       keypair: KeyPair,
     ): string;

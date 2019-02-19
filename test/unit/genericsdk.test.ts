@@ -1,19 +1,14 @@
 /* eslint-disable import/no-unresolved */
-// eslint-disable-next-line spaced-comment
-///<reference path="../../src/types/module.d.ts" />
 import 'jest';
-import mockAxios from 'jest-mock-axios';
 import { KeyPair } from 'src/SDKS/GenericSDK.d';
+import axios from 'axios';
+import * as request from 'request';
 import { CryptoWallet } from '../../src/SDKFactory';
-import { TransactionBuilder } from 'bitcoinjs-lib';
-  
-//jest.mock('axios');
 
-
-const request = require('request');
-
-// const { assert } = Chai;
-// const { expect } = Chai;
+jest.mock('axios');
+jest.mock('request');
+const mockAxios: any = axios;
+// const mockRequest: any = request;
 
 const btc: any = CryptoWallet.createSDK('Bitcoin');
 
@@ -65,7 +60,6 @@ const testAddresses = ['2N3sy5gP2EmDJdxmTv8xBpW1vy6J3oHb6E8',
 
 
 describe('bitcoinSDK (wallet)', () => {
-  
   describe('generateHDWallet', () => {
     it('can generate a BTC testnet HD wallet', () => {
       const wallet: any = btc.generateHDWallet(entropy, 'BITCOIN_TESTNET');
@@ -118,11 +112,11 @@ describe('bitcoinSDK (wallet)', () => {
       expect(keypair.derivationPath).toBe(derPath);
       expect(keypair.address).toBe('2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf');
       expect(
-        keypair.publicKey).toBe('03f3ce9fafbcf2da98817a706e5d41272455df20b8f832f6700c1bb2652ac44de0',
-      );
+        keypair.publicKey,
+      ).toBe('03f3ce9fafbcf2da98817a706e5d41272455df20b8f832f6700c1bb2652ac44de0');
       expect(
-        keypair.privateKey).toBe('cNJiShRC1rQqQ8MZDtvGWqHJq2sDgErcnq897jq1YMnpCm8JRFXr',
-      );
+        keypair.privateKey,
+      ).toBe('cNJiShRC1rQqQ8MZDtvGWqHJq2sDgErcnq897jq1YMnpCm8JRFXr');
       expect(keypair.type).toBe('BITCOIN_TESTNET');
     });
 
@@ -132,11 +126,11 @@ describe('bitcoinSDK (wallet)', () => {
       // expect(keypair.derivationPath).toBe('m/49\'/1\'/0\'/1/0');
       expect(keypair.address).toBe('2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA');
       expect(
-        keypair.publicKey).toBe('020526d00a6c48f0f016afc4b996cdace8e4f112d2d51b946161d4bec732f0c8b2',
-      );
+        keypair.publicKey,
+      ).toBe('020526d00a6c48f0f016afc4b996cdace8e4f112d2d51b946161d4bec732f0c8b2');
       expect(
-        keypair.privateKey).toBe('cSueohr8ghpDSHPsBAeStxc3Hcb2isXZFebgBHRZivhPHjyZcDSK',
-      );
+        keypair.privateKey,
+      ).toBe('cSueohr8ghpDSHPsBAeStxc3Hcb2isXZFebgBHRZivhPHjyZcDSK');
       expect(keypair.type).toBe('BITCOIN_TESTNET');
     });
 
@@ -218,80 +212,211 @@ describe('bitcoinSDK (wallet)', () => {
 
   describe('importWif', () => {
     it('can import a keypair from a WIF', () => {
-    const keypair = btc.importWIF('cNJiShRC1rQqQ8MZDtvGWqHJq2sDgErcnq897jq1YMnpCm8JRFXr', network);
-    expect(keypair.address).toBe('2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf');
-  });
+      const keypair = btc.importWIF('cNJiShRC1rQqQ8MZDtvGWqHJq2sDgErcnq897jq1YMnpCm8JRFXr', network);
+      expect(keypair.address).toBe('2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf');
+    });
 
-  it('can import a dash testnet keypair from a WIF', () => {
-    const keypair = btc.importWIF('cSsfhMdx4kqS2KjkipGr9dNp6Ae1ysjMhZg66in9SVHnYQMCU9jf', 'DASH_TESTNET');
-    expect(keypair.address).toBe('yWxRFULbGzvNuFafp1jUFNenXbiGrdoNWr');
-  });
+    it('can import a dash testnet keypair from a WIF', () => {
+      const keypair = btc.importWIF('cSsfhMdx4kqS2KjkipGr9dNp6Ae1ysjMhZg66in9SVHnYQMCU9jf', 'DASH_TESTNET');
+      expect(keypair.address).toBe('yWxRFULbGzvNuFafp1jUFNenXbiGrdoNWr');
+    });
 
-  it('can detect an invalid network type when importing a WIF', () => {
-    function badFn() { return btc.importWIF('cNJiShRC1rQqQ8MZDtvGWqHJq2sDgErcnq897jq1YMnpCm8JRFXr', 'ETHEREUM'); }
-    expect(badFn).toThrow('Invalid network type');
-  });
-
+    it('can detect an invalid network type when importing a WIF', () => {
+      function badFn() { return btc.importWIF('cNJiShRC1rQqQ8MZDtvGWqHJq2sDgErcnq897jq1YMnpCm8JRFXr', 'ETHEREUM'); }
+      expect(badFn).toThrow('Invalid network type');
+    });
   });
 
   describe('validateAddress', () => {
     it('can confirm a bitcoin testnet address is valid', () => {
-    const valid = btc.validateAddress('2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf', network);
-    expect(valid).toBe(true);
+      const valid = btc.validateAddress('2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf', network);
+      expect(valid).toBe(true);
+    });
+
+    it('can confirm a bitcoin testnet address is not valid', () => {
+      const valid = btc.validateAddress('2MyFPraHtEy2uKttPeku1okVeyJGTYvkf', network);
+      expect(valid).toBe(false);
+    });
   });
 
-  it('can confirm a bitcoin testnet address is not valid', () => {
-    const valid = btc.validateAddress('2MyFPraHtEy2uKttPeku1okVeyJGTYvkf', network);
-    expect(valid).toBe(false);
-  });
-
-  });
+  // describe('broadcastTx', () => {
+  //   it('can broadcast a bitcoin tx', async () => {
+  //     request.post.mockResolvedValue({
+  //       error: null,
+  //       body: {},
+  //       result: JSON.stringify({ data: { txid: '000000' } }),
+  //     });
+  //     const txHash = await btc.broadcastTx('txHex', 'BITCOIN');
+  //     console.log('txHash :', txHash);
+  //   });
+  // });
 
   describe('getTransactionFee', () => {
-    it('can get the transaction fee for bitcoon testnet', async () => {
-    
-    let catchFn = jest.fn(),
-    thenFn = jest.fn();
-    
-    btc.getTransactionFee(network)
-      .then(thenFn)
-      .catch(catchFn);
+    it('can get the transacion fee for a bitcoin transaction', async () => {
+      // eslint-disable-next-line prefer-const
+      const responseObj = {
+        data: {
+          name: 'BTC.main',
+          height: 563742,
+          hash: '00000000000000000008c64fae18b54a1a9dc6517779dd5789cea6178c22b40b',
+          time: '2019-02-19T09:38:37.353246671Z',
+          latest_url: 'https://api.blockcypher.com/v1/btc/main/blocks/00000000000000000008c64fae18b54a1a9dc6517779dd5789cea6178c22b40b',
+          previous_hash: '00000000000000000002e30187633e89d13618a43e8f40647dedfdbac5320dc5',
+          previous_url: 'https://api.blockcypher.com/v1/btc/main/blocks/00000000000000000002e30187633e89d13618a43e8f40647dedfdbac5320dc5',
+          peer_count: 783,
+          unconfirmed_count: 2677,
+          high_fee_per_kb: 21569,
+          medium_fee_per_kb: 12000,
+          low_fee_per_kb: 3000,
+          last_fork_height: 562630,
+          last_fork_hash: '0000000000000000000a03b17c49727b1df86200f228bfa71e3a38420c4b2151',
+        },
+      };
+      mockAxios.get.mockResolvedValue(responseObj);
 
-    let responseObj = {
-      data: {
-      "name": "BTC.main",
-      "height": 563651,
-      "hash": "000000000000000000176d22e825c9a1941660e4b8f9d1d6918b791f32416618",
-      "time": "2019-02-18T20:22:18.081002931Z",
-      "latest_url": "https://api.blockcypher.com/v1/btc/main/blocks/000000000000000000176d22e825c9a1941660e4b8f9d1d6918b791f32416618",
-      "previous_hash": "0000000000000000000988ce5f81b944c9eac291634cd2120ef9325ca8edb3ef",
-      "previous_url": "https://api.blockcypher.com/v1/btc/main/blocks/0000000000000000000988ce5f81b944c9eac291634cd2120ef9325ca8edb3ef",
-      "peer_count": 784,
-      "unconfirmed_count": 4501,
-      "high_fee_per_kb": 23003,
-      "medium_fee_per_kb": 12000,
-      "low_fee_per_kb": 3000,
-      "last_fork_height": 562630,
-      "last_fork_hash": "0000000000000000000a03b17c49727b1df86200f228bfa71e3a38420c4b2151",
-      },
-    };
+      const fee = await btc.getTransactionFee('BITCOIN');
 
-    mockAxios.mockResponse(responseObj);
-
-    expect(thenFn).toHaveBeenCalledWith({
-      high: 23.003,
-      medium: 12,
-      low: 3
+      expect(fee).toEqual({
+        high: 21.569,
+        medium: 12,
+        low: 3,
+      });
     });
-    expect(catchFn).not.toHaveBeenCalled();
+
+    it('can detect an invalid network', async () => {
+      expect(() => btc.getTransactionFee('bitocin')).toThrow('Invalid network');
+    });
+
+    it('can get the transacion fee for a bitcoin transaction', async () => {
+      // eslint-disable-next-line prefer-const
+      mockAxios.get.mockResolvedValue(() => { throw new Error('some error'); });
+
+      return expect(btc.getTransactionFee('BITCOIN')).rejects.toMatch('Cannot read property \'high_fee_per_kb\' of undefined');
+    });
   });
 
+
+  describe('createRawTx', () => {
+    it('can create a bitcoin raw transaction', async () => {
+      // mockAxios.get.mockResolvedValue({
+      //   data: [{
+      //     address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+      //     txid: '48d2bc7293fe1b1b3c74b1276861c3ab1a63a01fbf87789c192f3491422e9dbf',
+      //     vout: 82,
+      //     scriptPubKey: 'a91441d8fdc7c1218b669e29928a209cd2d4df70ca9687',
+      //     amount: 0.17433129,
+      //     satoshis: 17433129,
+      //     height: 1448809,
+      //     confirmations: 29673,
+      //   }],
+      // });
+      // const utxos = await btc.getUTXOs(['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'], network);
+      const wallet: any = btc.generateHDWallet(entropy, network);
+      const utxo = [{
+        address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+        txid: '48d2bc7293fe1b1b3c74b1276861c3ab1a63a01fbf87789c192f3491422e9dbf',
+        vout: 82,
+        scriptPubKey: 'a91441d8fdc7c1218b669e29928a209cd2d4df70ca9687',
+        amount: 0.17433129,
+        satoshis: 17433129,
+        height: 1448809,
+        confirmations: 29673,
+        value: 17433129,
+      }];
+
+      const accounts = [{
+        address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+        index: 0,
+        change: false,
+      }];
+
+      const rawTx = btc.createRawTx(
+        accounts,
+        ['2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA'],
+        utxo,
+        wallet,
+        '2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
+        0.1,
+        36,
+      );
+
+      console.log('rawTx :', rawTx);
+    });
+  });
+
+  it('can create a bitcoin raw transaction sending the full balance', async () => {
+    const wallet: any = btc.generateHDWallet(entropy, network);
+    const utxo = [{
+      address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+      txid: '48d2bc7293fe1b1b3c74b1276861c3ab1a63a01fbf87789c192f3491422e9dbf',
+      vout: 82,
+      scriptPubKey: 'a91441d8fdc7c1218b669e29928a209cd2d4df70ca9687',
+      amount: 0.17433129,
+      satoshis: 17433129,
+      height: 1448809,
+      confirmations: 29673,
+      value: 17433129,
+    }];
+
+    const accounts = [{
+      address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+      index: 0,
+      change: false,
+    }];
+
+    const rawTx = btc.createRawTx(
+      accounts,
+      ['2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA'],
+      utxo,
+      wallet,
+      '2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
+      0.1,
+      36,
+      true,
+    );
+
+    console.log('rawTx :', rawTx);
+  });
+
+  it('can create a bitcoin raw transaction with more than one change address', async () => {
+    const wallet: any = btc.generateHDWallet(entropy, network);
+    const utxo = [{
+      address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+      txid: '48d2bc7293fe1b1b3c74b1276861c3ab1a63a01fbf87789c192f3491422e9dbf',
+      vout: 82,
+      scriptPubKey: 'a91441d8fdc7c1218b669e29928a209cd2d4df70ca9687',
+      amount: 0.17433129,
+      satoshis: 17433129,
+      height: 1448809,
+      confirmations: 29673,
+      value: 17433129,
+    }];
+
+    const accounts = [{
+      address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+      index: 0,
+      change: false,
+    }];
+
+    const rawTx = btc.createRawTx(
+      accounts,
+      ['2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA',
+        '2NDbQDbR89XMTbTDSzfWUS93DXbywDqYCtH'],
+      utxo,
+      wallet,
+      '2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
+      0.1,
+      36,
+    );
+
+    console.log('rawTx :', rawTx);
+  });
   // it('can confirm a bitcoin testnet address is not valid', () => {
   //   const valid = btc.validateAddress('2MyFPraHtEy2uKttPeku1okVeyJGTYvkf', network);
   //   expect(valid).toBe(false);
   // });
 
-  });
+  // });
 
 
   // it('can create a 3 of 4 multisig address', () => {
@@ -737,3 +862,5 @@ describe('bitcoinSDK (wallet)', () => {
   //   console.log('times :', prices);
   // });
 });
+
+
