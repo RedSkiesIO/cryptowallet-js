@@ -2,7 +2,7 @@
 import 'jest';
 import { KeyPair } from 'src/SDKS/GenericSDK.d';
 import { CryptoWallet } from '../../src/SDKFactory';
-import { TransactionBuilder } from 'bitcoinjs-lib';
+import mockAxios from 'jest-mock-axios';
 
 
 const request = require('request');
@@ -241,6 +241,49 @@ describe('bitcoinSDK (wallet)', () => {
   });
 
   });
+
+  describe('getTransactionFee', () => {
+    it('can get the transacion fee for a bitcoin transaction', async () => {
+      
+      const fees = await btc.getTransactionFee('BITCOIN')
+      console.log('fees :', fees);
+
+      let responseObj = { 
+        data: {
+        "name": "BTC.main",
+        "height": 563742,
+        "hash": "00000000000000000008c64fae18b54a1a9dc6517779dd5789cea6178c22b40b",
+        "time": "2019-02-19T09:38:37.353246671Z",
+        "latest_url": "https://api.blockcypher.com/v1/btc/main/blocks/00000000000000000008c64fae18b54a1a9dc6517779dd5789cea6178c22b40b",
+        "previous_hash": "00000000000000000002e30187633e89d13618a43e8f40647dedfdbac5320dc5",
+        "previous_url": "https://api.blockcypher.com/v1/btc/main/blocks/00000000000000000002e30187633e89d13618a43e8f40647dedfdbac5320dc5",
+        "peer_count": 783,
+        "unconfirmed_count": 2677,
+        "high_fee_per_kb": 21568,
+        "medium_fee_per_kb": 12000,
+        "low_fee_per_kb": 3000,
+        "last_fork_height": 562630,
+        "last_fork_hash": "0000000000000000000a03b17c49727b1df86200f228bfa71e3a38420c4b2151",
+      }
+    };
+      // mockAxios.mockResponse(responseObj);
+
+      // expect(fees).toBe({
+      //   high: 21.568,
+      //   medium: 12,
+      //   low: 3,
+      // });
+      // expect(catchFn).not.toHaveBeenCalled();
+  });
+      
+  });
+
+  // it('can confirm a bitcoin testnet address is not valid', () => {
+  //   const valid = btc.validateAddress('2MyFPraHtEy2uKttPeku1okVeyJGTYvkf', network);
+  //   expect(valid).toBe(false);
+  // });
+
+  //});
 
 
   // it('can create a 3 of 4 multisig address', () => {
