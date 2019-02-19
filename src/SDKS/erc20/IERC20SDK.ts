@@ -6,7 +6,7 @@ export namespace CryptoWallet.SDKS.Erc20 {
       tokenName: string,
       tokenSymbol: string,
       contractAddress: string,
-      decimals: number,
+      decimals: number
     ): Object;
 
     transfer(
@@ -14,14 +14,15 @@ export namespace CryptoWallet.SDKS.Erc20 {
       keypair: any,
       to: string,
       amount: number,
-      gasPrice: number,
-      ): Object;
+      gasPrice: number
+    ): Object;
 
     approveAccount(
       erc20Wallet: any,
-      keypair: any, to: string,
+      keypair: any,
+      to: string,
       amount: number,
-        gasPrice: number,
+      gasPrice: number
     ): Object;
 
     transferAllowance(
@@ -29,22 +30,22 @@ export namespace CryptoWallet.SDKS.Erc20 {
       keypair: any,
       from: string,
       amount: number,
-      gasPrice: number,
+      gasPrice: number
     ): Object;
 
     checkAllowance(
       erc20Wallet: any,
       from: string,
-      amount: number,
+      amount: number
     ): Object;
 
     getBalance(
-      erc20Wallet: any,
+      erc20Wallet: any
     ): Object;
 
     getTransactionHistory(
       erc20Wallet: any,
-      lastBlock?: number,
+      lastBlock?: number
     ): Object;
   }
 }

@@ -3,8 +3,8 @@
 ///<reference path="../../types/module.d.ts" />
 import * as bip44hdkey from 'ethereumjs-wallet/hdkey';
 import * as EthereumLib from 'ethereumjs-wallet';
-import EthereumTx from 'ethereumjs-tx';
-import Web3 from 'web3';
+import * as EthereumTx from 'ethereumjs-tx';
+import * as Web3 from 'web3';
 import {
   KeyPair, Wallet, Address,
 } from '../GenericSDK.d';
@@ -16,7 +16,7 @@ import { Transaction } from './ethereumTypes';
 export namespace CryptoWallet.SDKS.Ethereum {
   export class EthereumSDK extends GenericSDK
     implements IEthereumSDK.CryptoWallet.SDKS.Ethereum.IEthereumSDK {
-    Bip = bip44hdkey
+    Bip = bip44hdkey;
 
     ethereumlib = EthereumLib;
 
@@ -315,9 +315,9 @@ export namespace CryptoWallet.SDKS.Ethereum {
       let balance: number = 0;
       const promises: Promise<object>[] = [];
 
-
       const getAddrBalance = (addr: string) => new Promise(async (resolve, reject) => {
-        const URL: string = `${this.networks[network].getBalanceApi + addr}&tag=latest&apikey=${this.networks.ethToken}`;
+        const URL: string = `${this.networks[network].getBalanceApi + addr}
+        &tag=latest&apikey=${this.networks.ethToken}`;
         await this.axios.get(URL)
           .then((bal: any) => {
             balance += bal.data.result;
@@ -335,8 +335,10 @@ export namespace CryptoWallet.SDKS.Ethereum {
         try {
           await Promise.all(promises);
         } catch (e) { return reject(e); }
-        if (balance < 1000000000000) return resolve(0);
-        return resolve(balance / 1000000000000000000);
+        const weiMultiplier = 1000000000000000000;
+        const dust = 1000000000000;
+        if (balance < dust) return resolve(0);
+        return resolve(balance / weiMultiplier);
       });
     }
 
