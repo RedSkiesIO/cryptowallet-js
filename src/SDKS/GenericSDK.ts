@@ -303,7 +303,7 @@ export namespace CryptoWallet.SDKS {
       minerRate: number,
       max?: boolean,
     ): Promise<Object> {
-      if (!wallet.network.connect) {
+      if (!wallet || !wallet.network || !wallet.network.connect) {
         throw new Error('Invalid wallet type');
       }
       if (!this.validateAddress(toAddress, wallet.network.name)) {

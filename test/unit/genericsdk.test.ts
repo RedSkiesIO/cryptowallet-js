@@ -297,21 +297,7 @@ describe('bitcoinSDK (wallet)', () => {
 
 
   describe('createRawTx', () => {
-    it('can create a bitcoin raw transaction', async () => {
-      // mockAxios.get.mockResolvedValue({
-      //   data: [{
-      //     address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
-      //     txid: '48d2bc7293fe1b1b3c74b1276861c3ab1a63a01fbf87789c192f3491422e9dbf',
-      //     vout: 82,
-      //     scriptPubKey: 'a91441d8fdc7c1218b669e29928a209cd2d4df70ca9687',
-      //     amount: 0.17433129,
-      //     satoshis: 17433129,
-      //     height: 1448809,
-      //     confirmations: 29673,
-      //   }],
-      // });
-      // const utxos = await btc.getUTXOs(['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'], network);
-      const wallet: any = btc.generateHDWallet(entropy, network);
+    const wallet: any = btc.generateHDWallet(entropy, network);
       const utxo = [{
         address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
         txid: '48d2bc7293fe1b1b3c74b1276861c3ab1a63a01fbf87789c192f3491422e9dbf',
@@ -329,8 +315,23 @@ describe('bitcoinSDK (wallet)', () => {
         index: 0,
         change: false,
       }];
+    it('can create a bitcoin raw transaction', async () => {
+      // mockAxios.get.mockResolvedValue({
+      //   data: [{
+      //     address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+      //     txid: '48d2bc7293fe1b1b3c74b1276861c3ab1a63a01fbf87789c192f3491422e9dbf',
+      //     vout: 82,
+      //     scriptPubKey: 'a91441d8fdc7c1218b669e29928a209cd2d4df70ca9687',
+      //     amount: 0.17433129,
+      //     satoshis: 17433129,
+      //     height: 1448809,
+      //     confirmations: 29673,
+      //   }],
+      // });
+      // const utxos = await btc.getUTXOs(['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'], network);
+      
 
-      const rawTx = btc.createRawTx(
+      const rawTx = await btc.createRawTx(
         accounts,
         ['2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA'],
         utxo,
@@ -339,32 +340,13 @@ describe('bitcoinSDK (wallet)', () => {
         0.1,
         36,
       );
-
-      console.log('rawTx :', rawTx);
+      expect(rawTx.transaction.hash)
+      .toBe('0d81aede72b1792972f79e6be39af24431791a0154603f03b004baaeaab9b64f');
     });
-  });
+  
 
   it('can create a bitcoin raw transaction sending the full balance', async () => {
-    const wallet: any = btc.generateHDWallet(entropy, network);
-    const utxo = [{
-      address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
-      txid: '48d2bc7293fe1b1b3c74b1276861c3ab1a63a01fbf87789c192f3491422e9dbf',
-      vout: 82,
-      scriptPubKey: 'a91441d8fdc7c1218b669e29928a209cd2d4df70ca9687',
-      amount: 0.17433129,
-      satoshis: 17433129,
-      height: 1448809,
-      confirmations: 29673,
-      value: 17433129,
-    }];
-
-    const accounts = [{
-      address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
-      index: 0,
-      change: false,
-    }];
-
-    const rawTx = btc.createRawTx(
+    const rawTx = await btc.createRawTx(
       accounts,
       ['2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA'],
       utxo,
@@ -375,30 +357,12 @@ describe('bitcoinSDK (wallet)', () => {
       true,
     );
 
-    console.log('rawTx :', rawTx);
+    expect(rawTx.transaction.hash)
+    .toBe('1230c8f09e5f11eb3393a1decac8da8096de372eab9c2963af2a40c8f064159f'); 
   });
 
   it('can create a bitcoin raw transaction with more than one change address', async () => {
-    const wallet: any = btc.generateHDWallet(entropy, network);
-    const utxo = [{
-      address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
-      txid: '48d2bc7293fe1b1b3c74b1276861c3ab1a63a01fbf87789c192f3491422e9dbf',
-      vout: 82,
-      scriptPubKey: 'a91441d8fdc7c1218b669e29928a209cd2d4df70ca9687',
-      amount: 0.17433129,
-      satoshis: 17433129,
-      height: 1448809,
-      confirmations: 29673,
-      value: 17433129,
-    }];
-
-    const accounts = [{
-      address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
-      index: 0,
-      change: false,
-    }];
-
-    const rawTx = btc.createRawTx(
+    const rawTx = await btc.createRawTx(
       accounts,
       ['2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA',
         '2NDbQDbR89XMTbTDSzfWUS93DXbywDqYCtH'],
@@ -409,8 +373,127 @@ describe('bitcoinSDK (wallet)', () => {
       36,
     );
 
-    console.log('rawTx :', rawTx);
+    expect(rawTx.transaction.hash)
+    .toBe('d8b8746a6065450e1cf990ccba23f44eb15328be84635a813f7ac2732d6a3cde');  
   });
+
+  it('can create a bitcoin raw transaction with a utxo from a change address', async () => {
+    const wallet: any = btc.generateHDWallet(entropy, network);
+    const utxo = [{
+      address: '2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA',
+      txid: '065d03223107ec468c4dd373b793b604968388cbfbc62f770f6d42a197e6c246',
+      vout: 1,
+      scriptPubKey: 'a914d11a8d42832ff79dad1e902f814a876d43eca05587',
+      amount: 0.00098424,
+      satoshis: 98424,
+      height: 1447518,
+      confirmations: 31030,
+      value: 98424,
+    }];
+
+    const accounts = [{
+      address: '2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA',
+      index: 0,
+      change: true,
+    }];
+
+    const rawTx = await btc.createRawTx(
+      accounts,
+      ['2NDbQDbR89XMTbTDSzfWUS93DXbywDqYCtH'],
+      utxo,
+      wallet,
+      '2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
+      0.0005,
+      36,
+    );
+
+    expect(rawTx.transaction.hash)
+      .toBe('26feaebdbcf3bf479b68d50bdf34828d763f948a11d8b9eac1476752e83665db');
+  });
+
+  it('can create a Dash testnet raw transaction', async () => {
+    const wallet: any = btc.generateHDWallet(entropy, 'DASH_TESTNET');
+    const utxo = [{
+      address: 'yWxRFULbGzvNuFafp1jUFNenXbiGrdoNWr',
+      txid: 'ca6f45c6105e924df1ec6cc48ae8634e8e802fd7a039584d0e6d252ee981e73d',
+      vout: 0,
+      scriptPubKey: 'a914d11a8d42832ff79dad1e76a91474af505593334219ac81a2fa6f165f02ce7049d588ac902f814a876d43eca05587',
+      amount: 189.3686,
+      satoshis: 189368600000,
+      height: 47586,
+      confirmations: 3,
+      value: 189368600000,
+    }];
+
+    const accounts = [{
+      address: 'yWxRFULbGzvNuFafp1jUFNenXbiGrdoNWr',
+      index: 0,
+      change: false,
+    }];
+
+    const rawTx = await btc.createRawTx(
+      accounts,
+      ['yifJaS4dzhySqAWmFfm3E2gaysZRQmaJix'],
+      utxo,
+      wallet,
+      'yc1v3o1TkA5TUKntjFriDcoRBKgJ4hutZM',
+      5,
+      36,
+    );
+      expect(rawTx.transaction.hash)
+      .toBe('47c66d94ae1bf2d228909814a14780628a0a0d71b7011046c8c608960883b5f8');
+  });
+
+  it('can detect an invalid wallet object', async () => {
+    expect(() => btc.createRawTx(
+        accounts,
+        ['2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA'],
+        utxo,
+        'wallet',
+        '2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
+        0.1,
+        36,
+      )).toThrow('Invalid wallet type');
+    });
+
+  it('can detect an invalid address when creating a transaction', async () => {
+  expect(() => btc.createRawTx(
+      accounts,
+      ['2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA'],
+      utxo,
+      wallet,
+      '2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvq',
+      0.1,
+      36,
+    )).toThrow('Invalid to address "2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvq"');
+  });
+
+  it('can detect when there is no balance when creating a transaction', async () => {
+    const utxo:any = [];
+    expect(btc.createRawTx(
+        accounts,
+        ['2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA'],
+        utxo,
+        wallet,
+        '2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
+        0.1,
+        36,
+      )).rejects.toMatch('You don\'t have enough balance to cover transaction');
+    });
+
+    it('can detect when there is not enough balance to cover the transaction', async () => {
+      expect(btc.createRawTx(
+          accounts,
+          ['2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA'],
+          utxo,
+          wallet,
+          '2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
+          1,
+          36,
+        )).rejects.toMatch('You don\'t have enough Satoshis to cover the miner fee.');
+      });
+
+});
   // it('can confirm a bitcoin testnet address is not valid', () => {
   //   const valid = btc.validateAddress('2MyFPraHtEy2uKttPeku1okVeyJGTYvkf', network);
   //   expect(valid).toBe(false);
