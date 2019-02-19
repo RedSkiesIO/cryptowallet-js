@@ -60,6 +60,7 @@
     "eslint-plugin-vue-libs": "^2.0.1",
     "fork-ts-checker-webpack-plugin": "^0.4.9",
     "jest": "^24.1.0",
+    "jest-mock-axios": "^2.1.11",
     "karma": "^3.0.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-coverage": "^1.1.2",

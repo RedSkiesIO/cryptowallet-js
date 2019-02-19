@@ -1,8 +1,13 @@
 /* eslint-disable import/no-unresolved */
+// eslint-disable-next-line spaced-comment
+///<reference path="../../src/types/module.d.ts" />
 import 'jest';
+import mockAxios from 'jest-mock-axios';
 import { KeyPair } from 'src/SDKS/GenericSDK.d';
 import { CryptoWallet } from '../../src/SDKFactory';
 import { TransactionBuilder } from 'bitcoinjs-lib';
+  
+//jest.mock('axios');
 
 
 const request = require('request');
@@ -239,6 +244,52 @@ describe('bitcoinSDK (wallet)', () => {
     const valid = btc.validateAddress('2MyFPraHtEy2uKttPeku1okVeyJGTYvkf', network);
     expect(valid).toBe(false);
   });
+
+  });
+
+  describe('getTransactionFee', () => {
+    it('can get the transaction fee for bitcoon testnet', async () => {
+    
+    let catchFn = jest.fn(),
+    thenFn = jest.fn();
+    
+    btc.getTransactionFee(network)
+      .then(thenFn)
+      .catch(catchFn);
+
+    let responseObj = {
+      data: {
+      "name": "BTC.main",
+      "height": 563651,
+      "hash": "000000000000000000176d22e825c9a1941660e4b8f9d1d6918b791f32416618",
+      "time": "2019-02-18T20:22:18.081002931Z",
+      "latest_url": "https://api.blockcypher.com/v1/btc/main/blocks/000000000000000000176d22e825c9a1941660e4b8f9d1d6918b791f32416618",
+      "previous_hash": "0000000000000000000988ce5f81b944c9eac291634cd2120ef9325ca8edb3ef",
+      "previous_url": "https://api.blockcypher.com/v1/btc/main/blocks/0000000000000000000988ce5f81b944c9eac291634cd2120ef9325ca8edb3ef",
+      "peer_count": 784,
+      "unconfirmed_count": 4501,
+      "high_fee_per_kb": 23003,
+      "medium_fee_per_kb": 12000,
+      "low_fee_per_kb": 3000,
+      "last_fork_height": 562630,
+      "last_fork_hash": "0000000000000000000a03b17c49727b1df86200f228bfa71e3a38420c4b2151",
+      },
+    };
+
+    mockAxios.mockResponse(responseObj);
+
+    expect(thenFn).toHaveBeenCalledWith({
+      high: 23.003,
+      medium: 12,
+      low: 3
+    });
+    expect(catchFn).not.toHaveBeenCalled();
+  });
+
+  // it('can confirm a bitcoin testnet address is not valid', () => {
+  //   const valid = btc.validateAddress('2MyFPraHtEy2uKttPeku1okVeyJGTYvkf', network);
+  //   expect(valid).toBe(false);
+  // });
 
   });
 
@@ -686,5 +737,3 @@ describe('bitcoinSDK (wallet)', () => {
   //   console.log('times :', prices);
   // });
 });
-
-
