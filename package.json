@@ -14,6 +14,7 @@
     "url": "https://github.com/atlascity/cryptowallet-js/issues"
   },
   "dependencies": {
+    "@types/axios": "^0.14.0",
     "async-series": "0.0.1",
     "axios": "^0.18.0",
     "bip39": "^2.5.0",

@@ -126,6 +126,7 @@ export namespace CryptoWallet.SDKS.Bitcoin {
 
         this.axios.get(URL)
           .then((r: any) => {
+            console.log('r :', r);
             const result: any = [];
 
             if (r.data.length === 0) {

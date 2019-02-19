@@ -6,7 +6,7 @@ import * as Bip44hdkey from 'hdkey';
 import * as Bitcoinlib from 'bitcoinjs-lib';
 import * as Wif from 'wif';
 import * as Request from 'request';
-import * as Axios from 'axios';
+import axios, * as others from 'axios';
 import * as Coinselect from 'coinselect';
 import * as CoinSelectSplit from 'coinselect/split';
 import {
@@ -27,7 +27,7 @@ export namespace CryptoWallet.SDKS {
 
     request: any = Request;
 
-    axios: any = Axios;
+    axios: any = axios;
 
     /**
      * generates an hierarchical determinitsic wallet for a given coin type
@@ -270,18 +270,20 @@ export namespace CryptoWallet.SDKS {
     getTransactionFee(
       network: string,
     ): Object {
+      if (!this.networks[network]) {
+        throw new Error('Invalid network');
+      }
       return new Promise((resolve, reject) => {
-        if (!this.networks[network].connect) {
-          throw new Error('Invalid network type');
-        }
         const URL = this.networks[network].feeApi;
         this.axios.get(URL)
-          .then((r: any) => resolve({
-            high: r.data.high_fee_per_kb / 1000,
-            medium: r.data.medium_fee_per_kb / 1000,
-            low: r.data.low_fee_per_kb / 1000,
-          }))
-          .catch((error: any) => reject(error));
+          .then((r: any) => {
+            resolve({
+              high: r.data.high_fee_per_kb / 1000,
+              medium: r.data.medium_fee_per_kb / 1000,
+              low: r.data.low_fee_per_kb / 1000,
+            });
+          })
+          .catch((error: any) => reject(error.message));
       });
     }
 
