@@ -1,7 +1,5 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable spaced-comment */
-
-
 // eslint-disable-next-line spaced-comment
 ///<reference path="../../types/module.d.ts" />
 import * as BitcoinLib from 'bitcoinjs-lib';
@@ -12,13 +10,12 @@ import * as Request from 'request';
 import { KeyPair, Wallet } from '../GenericSDK.d';
 import * as Networks from '../networks.ts';
 import * as IBitcoinSDK from './IBitcoinSDK';
-import GenericSDK from '../GenericSDK.ts';
+import GenericSDK from '../GenericSDK';
 
 export namespace CryptoWallet.SDKS.Bitcoin {
   export class BitcoinSDK extends GenericSDK
     implements IBitcoinSDK.CryptoWallet.SDKS.Bitcoin.IBitcoinSDK {
-    Req = Request
-
+    req = Request;
 
     /**
      * generates a segwit address
@@ -81,15 +78,14 @@ export namespace CryptoWallet.SDKS.Bitcoin {
       const pubkeys: any = [key1, key2, key3, key4].map(hex => Buffer.from(hex, 'hex'));
       const { address } = this.bitcoinlib.payments.p2wsh({
         redeem: this.bitcoinlib.payments.p2ms({
-          m: 3,
           pubkeys,
+          m: 3,
           network: this.networks[network].connect,
         }),
         network: this.networks[network].connect,
       });
       return address;
     }
-
 
     /**
      *  generates a P2SH multisig keypair
@@ -200,10 +196,11 @@ export namespace CryptoWallet.SDKS.Bitcoin {
         // check whether the balance of the address covers the miner fee
         if ((balance - transactionAmount - feeRate) > 0) {
           const targets: any = [];
+          const satoshisMultiplier: number = 100000000;
           const createTargets = (address: string, index: number) => {
             const target: any = {
               address,
-              value: Math.floor(amounts[index] * 100000000),
+              value: Math.floor(amounts[index] * satoshisMultiplier),
             };
             targets.push(target);
           };
@@ -287,7 +284,7 @@ export namespace CryptoWallet.SDKS.Bitcoin {
           inputs.forEach((input: any) => {
             senders.push(input.address);
           });
-          fee /= 100000000;
+          fee /= satoshisMultiplier;
 
           const transaction = {
             fee,
@@ -318,7 +315,6 @@ export namespace CryptoWallet.SDKS.Bitcoin {
         return reject(new Error("You don't have enough Satoshis to cover the miner fee."));
       });
     }
-
 
     // decodeTx(rawTx: Object,
     //   change: string[],
@@ -380,7 +376,6 @@ export namespace CryptoWallet.SDKS.Bitcoin {
     // );
     // });
     // }
-
 
     /**
      *

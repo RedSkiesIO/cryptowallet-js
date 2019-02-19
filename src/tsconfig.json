@@ -5,10 +5,9 @@
     "paths": {
       "*": [
         "types/*"
-      ]
+      ],
     },
     "outDir": "../lib",
-    // "declarationDir": "../types",
   },
   "include": [
     "**/*.ts",

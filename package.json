@@ -123,7 +123,7 @@
     "release": "conventional-github-releaser -p eslint",
     "clean": "rm -rf coverage && rm -rf lib/*.js* && rm -rf types/*.d.ts* && rm -rf dist/*.js* && rm -rf ./*.log",
     "dev": "cross-env BABEL_ENV=test webpack-dev-server --inline --hot --open --content-base ./test/unit/ --config config/webpack.dev.conf.js",
-    "lint": "eslint --fix --ext .ts src test",
+    "lint": "eslint --fix --ext .ts src",
     "test": "mocha -r ts-node/register 'test/**/*.test.ts'",
     "test:cover": "cross-env BABEL_ENV=test karma start config/karma.cover.conf.js",
     "test:unit": "cross-env BABEL_ENV=test karma start config/karma.unit.conf.js"

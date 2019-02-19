@@ -3,12 +3,10 @@ import { Wallet, KeyPair, Address } from './GenericSDK.d';
 
 export namespace CryptoWallet.SDKS {
   export interface ISDK {
-
     generateHDWallet(
       entropy: string,
       network: string,
     ): Wallet;
-
 
     generateKeyPair(
       wallet: object,
@@ -87,4 +85,3 @@ export namespace CryptoWallet.SDKS {
     ): Object;
   }
 }
-
