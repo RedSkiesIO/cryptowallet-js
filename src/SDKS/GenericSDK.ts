@@ -496,6 +496,7 @@ export namespace CryptoWallet.SDKS {
         return new Promise(async (resolve, reject) => {
           this.axios.get(URL)
             .then((addr: any) => {
+              console.log('addr :', addr);
               const result = {
                 address,
                 received: addr.data.totalReceived,
