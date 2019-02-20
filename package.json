@@ -69,8 +69,7 @@
     "uglify-js": "^2.7.5",
     "vue-template-compiler": "^2.5.17",
     "webpack": "^4.19.1",
-    "webpack-cli": "^3.1.1",
-    "webpack-dev-server": "^3.1.8"
+    "webpack-cli": "^3.1.1"
   },
   "files": [
     "dist/cryptowallet-js.js",
@@ -104,7 +103,6 @@
     "build:ts": "tsc -p src",
     "build:ts:watch": "tsc -p src --watch",
     "clean": "rm -rf coverage && rm -rf lib/*.js* && rm -rf types/*.d.ts* && rm -rf dist/*.js* && rm -rf ./*.log",
-    "dev": "cross-env BABEL_ENV=test webpack-dev-server --inline --hot --open --content-base ./test/unit/ --config config/webpack.dev.conf.js",
     "lint": "eslint --fix --ext .ts src",
     "test": "npm run build'",
     "test:cover": "",
