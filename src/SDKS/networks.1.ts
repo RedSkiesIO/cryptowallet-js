@@ -1,14 +1,14 @@
-
-export const ethToken = process.env.ETHERSCAN_API_KEY;
-export const cryptocompare = process.env.CRYPTOCOMPARE_API_KEY;
+export const token = 'token=f4d997113b76452393a65216e046ab77';
+export const ethToken = '2JAADVNZG512YIZSCF7S6JDXS8QI7PSUFY';
+export const cryptocompare = '59e79cbecb93c903d32e1c5d5a5414863bf890a6636b0b6e2fd8c2b86c505df5';
 
 export const BITCOIN = {
   name: 'BITCOIN',
   bip: 0,
   segwit: true,
-  discovery: process.env.BITCOIN_DISCOVERY,
-  broadcastUrl: process.env.BITCOIN_BROADCAST,
-  feeApi: process.env.BITCOIN_FEE,
+  discovery: 'https://insight.bitpay.com/api',
+  broadcastUrl: 'https://chain.so/api/v2/send_tx/BTC',
+  feeApi: 'https://api.blockcypher.com/v1/btc/main',
   connect: {
     messagePrefix: '\x18Bitcoin Signed Message:\n',
     bech32: 'bc',
@@ -27,10 +27,14 @@ export const BITCOIN_TESTNET = {
   type: 'testnet',
   bip: 1,
   segwit: true,
-  discovery: process.env.BITCOIN_TESTNET_DISCOVERY,
-  broadcastUrl: process.env.BITCOIN_TESTNET_BROADCAST,
-  feeApi: process.env.BITCOIN_TESTNET_FEE,
+  discovery: 'https://test-insight.bitpay.com/api',
+  broadcastUrl: 'https://chain.so/api/v2/send_tx/BTCTEST',
+  sendTxApi: 'https://api.blockcypher.com/v1/btc/test3/txs/push',
+  getTranApi: 'https://api.blockcypher.com/v1/btc/test3/addrs/',
+  decodeTxApi: 'https://api.blockcypher.com/v1/btc/test3/txs/decode',
+  feeApi: 'https://api.blockcypher.com/v1/btc/main',
   connect: {
+
     messagePrefix: '\x18Bitcoin Signed Message:\n',
     bech32: 'tb',
     bip32: {
@@ -47,9 +51,9 @@ export const LITECOIN = {
   name: 'LITECOIN',
   bip: 2,
   segwit: true,
-  discovery: process.env.LITECOIN_DISCOVERY,
-  broadcastUrl: process.env.LITECOIN_BROADCAST,
-  feeApi: process.env.LITECOIN_FEE,
+  discovery: 'https://insight.litecore.io/api',
+  broadcastUrl: 'https://chain.so/api/v2/send_tx/LTC',
+  feeApi: 'https://api.blockcypher.com/v1/ltc/main',
   connect: {
     messagePrefix: '\x19Litecoin Signed Message:\n',
     bip32: {
@@ -67,9 +71,9 @@ export const LITECOIN_TESTNET = {
   type: 'litecoin testnet',
   bip: 1,
   segwit: true,
-  discovery: process.env.LITECOIN_TESTNET_DISCOVERY,
-  broadcastUrl: process.env.LITECOIN_TESTNET_BROADCAST,
-  feeApi: process.env.LITECOIN_TESTNET_FEE,
+  feeApi: 'https://api.blockcypher.com/v1/ltc/main',
+  discovery: 'https://testnet.litecore.io/api',
+  broadcastUrl: 'https://chain.so/api/v2/send_tx/LTCTEST',
   connect: {
     messagePrefix: '\x19Litecoin Signed Message:\n',
     bip32: {
@@ -86,8 +90,8 @@ export const DASH = {
   name: 'DASH',
   bip: 5,
   segwit: false,
-  discovery: process.env.DASH_DISCOVERY,
-  feeApi: process.env.DASH_FEE,
+  discovery: 'https://insight.dash.org/api',
+  feeApi: 'https://api.blockcypher.com/v1/dash/main',
   connect: {
     messagePrefix: 'unused',
     bip32: {
@@ -104,8 +108,8 @@ export const DASH_TESTNET = {
   name: 'DASH_TESTNET',
   bip: 1,
   segwit: false,
-  discovery: process.env.DASH_TESTNET_DISCOVERY,
-  feeApi: process.env.DASH_TESTNET_FEE,
+  discovery: 'https://testnet-insight.dashevo.org/insight-api',
+  feeApi: 'https://api.blockcypher.com/v1/dash/main',
   connect: {
     messagePrefix: 'unused',
     bip32: {
@@ -181,21 +185,28 @@ export const VIACOIN_TESTNET = {
 export const ETHEREUM = {
   name: 'ETHEREUM',
   bip: 60,
-  feeApi: process.env.ETHEREUM_FEE,
-  provider: process.env.ETHEREUM_PROVIDER,
+  sendTxApi: 'https://api.blockcypher.com/v1/eth/main/txs/push',
+  feeApi: 'https://api.blockcypher.com/v1/btc/main',
+  provider: 'https://mainnet.infura.io/v3/352fc30cd8364caabaea4a3d67da773f',
   chainId: 1,
 };
 
+export const ETHEREUM_CLASSIC = {
+  name: 'ETHEREUM_CLASSIC',
+  bip: 61,
+  provider: 'https://ethereumclassic.network',
+  chainId: 1,
+};
 
 export const ETHEREUM_ROPSTEN = {
   name: 'ETHEREUM_ROPSTEN',
   networkName: 'ropsten',
   bip: 60,
-  getTranApi: process.env.ETHEREUM_ROPSTEN_GET_TRAN,
-  getBalanceApi: process.env.ETHEREUM_ROPSTEN_GET_BALANCE,
-  getErc20TranApi: process.env.ETHEREUM_ROPSTEN_GET_ERC20_TRAN,
-  feeApi: process.env.ETHEREUM_ROPSTEN_FEE,
-  provider: process.env.ETHEREUM_ROPSTEN_PROVIDER,
+  getTranApi: 'http://api-ropsten.etherscan.io/api?module=account&action=txlist&address=',
+  getBalanceApi: 'https://api-ropsten.etherscan.io/api?module=account&action=balance&address=',
+  getErc20TranApi: 'http://api-ropsten.etherscan.io/api?module=account&action=tokentx&contractaddress=',
+  provider: 'https://ropsten.infura.io/v3/352fc30cd8364caabaea4a3d67da773f',
+  feeApi: 'https://api.blockcypher.com/v1/eth/main',
   chainId: 3,
 };
 
@@ -203,11 +214,11 @@ export const ETHEREUM_RINKEBY = {
   name: 'ETHEREUM_RINKEBY',
   networkName: 'rinkeby',
   bip: 60,
-  getTranApi: process.env.ETHEREUM_RINKEBY_GET_TRAN,
-  getBalanceApi: process.env.ETHEREUM_RINKEBY_GET_BALANCE,
-  getErc20TranApi: process.env.ETHEREUM_RINKEBY_GET_ERC20_TRAN,
-  feeApi: process.env.ETHEREUM_RINKEBY_FEE,
-  provider: process.env.ETHEREUM_RINKEBY_PROVIDER,
+  getTranApi: 'http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=',
+  getBalanceApi: 'https://api-rinkeby.etherscan.io/api?module=account&action=balance&address=',
+  getErc20TranApi: 'http://api-rinkeby.etherscan.io/api?module=account&action=tokentx&contractaddress=',
+  provider: 'https://rinkeby.infura.io/v3/352fc30cd8364caabaea4a3d67da773f',
+  feeApi: 'https://api.blockcypher.com/v1/eth/main',
   chainId: 4,
 };
 
@@ -215,11 +226,11 @@ export const ETHEREUM_KOVAN = {
   name: 'ETHEREUM_KOVAN',
   networkName: 'kovan',
   bip: 60,
-  getTranApi: process.env.ETHEREUM_KOVAN_GET_TRAN,
-  getBalanceApi: process.env.ETHEREUM_KOVAN_GET_BALANCE,
-  getErc20TranApi: process.env.ETHEREUM_KOVAN_GET_ERC20_TRAN,
-  feeApi: process.env.ETHEREUM_KOVAN_FEE,
-  provider: process.env.ETHEREUM_KOVAN_PROVIDER,
+  getTranApi: 'http://api-kovan.etherscan.io/api?module=account&action=txlist&address=',
+  getBalanceApi: 'https://api-kovan.etherscan.io/api?module=account&action=balance&address=',
+  getErc20TranApi: 'http://api-kovan.etherscan.io/api?module=account&action=tokentx&contractaddress=',
+  provider: 'https://kovan.infura.io/v3/352fc30cd8364caabaea4a3d67da773f',
+  feeApi: 'https://api.blockcypher.com/v1/eth/main',
   chainId: 42,
 };
 
@@ -227,9 +238,9 @@ export const REGTEST = {
   name: 'REGTEST',
   type: 'test',
   bip: 0,
-  discovery: process.env.BITCOIN_REGTEST_DISCOVERY,
+  discovery: 'http://192.168.1.195:3001/api',
   segwit: false,
-  feeApi: process.env.BITCOIN_REGTEST_FEE,
+  feeApi: 'https://api.blockcypher.com/v1/btc/main',
   connect: {
     messagePrefix: '\x18Bitcoin Signed Message:\n',
     bech32: 'bcrt',

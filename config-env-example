@@ -1,0 +1,49 @@
+export BITCOIN_DISCOVERY='https://insight.bitpay.com/api'
+export BITCOIN_BROADCAST='https://chain.so/api/v2/send_tx/BTC'
+export BITCOIN_FEE='https://api.blockcypher.com/v1/btc/main'
+
+export BITCOIN_TESTNET_DISCOVERY='https://test-insight.bitpay.com/api'
+export BITCOIN_TESTNET_BROADCAST='https://chain.so/api/v2/send_tx/BTCTEST'
+export BITCOIN_TESTNET_FEE='https://api.blockcypher.com/v1/btc/main'
+
+export LITECOIN_DISCOVERY=''
+export LITECOIN_BROADCAST=''
+export LITECOIN_FEE=''
+
+export LITECOIN_DISCOVERY=''
+export LITECOIN_BROADCAST=''
+export LITECOIN_FEE=''
+
+export DASH_DISCOVERY=''
+export DASH_FEE=''
+
+export DASH_TETSNET=''
+export DASH_FEE=''
+
+export ETHEREUM_PROVIDER=''
+export ETHEREUM_FEE=''
+
+export ETHEREUM_ROPSTEN_PROVIDER=''
+export ETHEREUM_ROPSTEN_FEE=''
+export ETHEREUM_ROPSTEN_GET_TRAN=''
+export ETHEREUM_ROPSTEN_GET_BALANCE=''
+export ETHEREUM_ROPSTEN_GET_ERC20_TRAN=''
+
+export ETHEREUM_RINKEBY_PROVIDER=''
+export ETHEREUM_RINKEBY_FEE=''
+export ETHEREUM_RINKEBY_GET_TRAN=''
+export ETHEREUM_RINKEBY_GET_BALANCE=''
+export ETHEREUM_RINKEBY_GET_ERC20_TRAN=''
+
+
+export ETHEREUM_KOVAN_PROVIDER=''
+export ETHEREUM_KOVAN_FEE=''
+export ETHEREUM_KOVAN_GET_TRAN=''
+export ETHEREUM_KOVAN_GET_BALANCE=''
+export ETHEREUM_KOVAN_GET_ERC20_TRAN=''
+
+export BITCOIN_REGTEST_DISCOVERY=''
+export BITCOIN_REGTEST_FEE=''
+
+export CRYPTOCOMPARE_API_KEY='';
+export ETHERSCAN_API_KEY=''
