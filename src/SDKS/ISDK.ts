@@ -57,7 +57,6 @@ export namespace CryptoWallet.SDKS {
 
     accountDiscovery(
       wallet: Wallet,
-      netork: string,
       internal?: boolean,
     ): Object;
 

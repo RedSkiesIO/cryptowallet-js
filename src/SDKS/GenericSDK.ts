@@ -447,7 +447,7 @@ export namespace CryptoWallet.SDKS {
       transaction: any,
       network: string,
     ): boolean {
-      if (!this.networks[network].connect) {
+      if (!this.networks[network] || !this.networks[network].connect) {
         throw new Error('Invalid network type');
       }
       const keyPairs = transaction.pubKeys.map(
@@ -478,10 +478,11 @@ export namespace CryptoWallet.SDKS {
      */
     accountDiscovery(
       wallet: Wallet,
-      network: string,
       internal?: boolean,
     ): Object {
-      // const wallet: any = this.generateHDWallet(entropy, network);
+      if (!wallet || !wallet.network || !wallet.network.connect) {
+        throw new Error('Invalid wallet type');
+      }
       const apiUrl: string = wallet.network.discovery;
       let usedAddresses: object[] = [];
       const emptyAddresses: number[] = [];
@@ -492,33 +493,28 @@ export namespace CryptoWallet.SDKS {
 
       const checkAddress = (address: string, i: number) => {
         const URL: string = `${apiUrl}/addr/${address}?noTxList=1`;
-
         return new Promise(async (resolve, reject) => {
-          this.axios.get(URL)
-            .then((addr: any) => {
-              console.log('addr :', addr);
-              const result = {
-                address,
-                received: addr.data.totalReceived,
-                balance: addr.data.balance,
-                index: i,
-              };
+          const addr = await this.axios.get(URL);
+          if (!addr.data) {
+            return reject(new Error('API ERROR'));
+          }
+          const result = {
+            address,
+            received: addr.data.totalReceived,
+            balance: addr.data.balance,
+            index: i,
+          };
 
-              if (result.received > 0) {
-                usedAddresses.push(result);
-              } else {
-                emptyAddresses.push(result.index);
-              }
-              return resolve(result);
-            })
-            .catch((error: Error) => reject(error));
+          if (result.received > 0) {
+            usedAddresses.push(result);
+          } else {
+            emptyAddresses.push(result.index);
+          }
+          return resolve(result);
         });
       };
 
       return new Promise(async (resolve, reject) => {
-        if (!this.networks[network].connect) {
-          return reject(new Error(`${network} is an invalid network`));
-        }
         let startIndex: number = 0;
         const discover = async () => {
           const promises = [];

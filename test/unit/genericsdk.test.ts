@@ -517,6 +517,21 @@ describe('bitcoinSDK (wallet)', () => {
           txApperances: 27,
         },
       };
+      const usedAddress = {
+        data: {
+          addrStr: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+          balance: 0,
+          balanceSat: 0,
+          totalReceived: 2.63638985,
+          totalReceivedSat: 263638985,
+          totalSent: 2.27162652,
+          totalSentSat: 227162652,
+          unconfirmedBalance: 0,
+          unconfirmedBalanceSat: 0,
+          unconfirmedTxApperances: 0,
+          txApperances: 27,
+        },
+      };
       const emptyResponse = {
         data: {
           addrStr: '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM',
@@ -532,10 +547,23 @@ describe('bitcoinSDK (wallet)', () => {
           txApperances: 0,
         },
       };
+      mockAxios.get.mockImplementationOnce(() => response);
+      mockAxios.get.mockImplementationOnce(() => usedAddress);
       mockAxios.get.mockResolvedValue(emptyResponse);
       const wallet: any = btc.generateHDWallet(entropy, network);
-      const discovery = await btc.accountDiscovery(wallet, network, true);
-      console.log('discovery :', discovery);
+      const discovery = await btc.accountDiscovery(wallet, true);
+      expect(discovery.nextAddress).toBe(2);
+    });
+
+    it('can detect an invalid wallet type', async () => {
+      expect(() => btc.accountDiscovery('wallet')).toThrow('Invalid wallet type');
+    });
+
+    it('can detect an api error', async () => {
+      mockAxios.get.mockResolvedValue(new Error('error'));
+      const wallet: any = btc.generateHDWallet(entropy, network);
+      const discovery = btc.accountDiscovery(wallet, true).catch((e: Error) => expect(e.message).toMatch('API ERROR'));
+      return discovery;
     });
   });
   // it('can confirm a bitcoin testnet address is not valid', () => {
