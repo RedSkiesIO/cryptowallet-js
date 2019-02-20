@@ -210,38 +210,24 @@ export namespace CryptoWallet.SDKS {
           throw new Error('Invalid network type');
         }
         if (this.networks[network].segwit) {
-          Request.post(
-            this.networks[network].broadcastUrl,
-            { form: { tx_hex: tx } },
-            (error: any, body: any, result: any) => {
-              if (error) {
-                return reject(new Error(`Transaction failed: ${error}`));
-              }
-              const output = JSON.parse(result);
-              const res = output.data.txid;
-              return resolve(res);
-            },
-          );
+          this.axios.post(this.networks[network].broadcastUrl, {tx_hex: tx})
+          .then((r:any) => {
+            const output = JSON.parse(r);
+            const res = output.data.txid;
+            return resolve(res);
+          })
+          .catch((e:Error) => reject(new Error('Transaction failed')));
         } else {
-          Request.post(`${this.networks[network].discovery}/tx/send`,
-            {
-              form: {
-                rawtx: tx,
-              },
-            },
-            (error: any, body: any, result: any) => {
-              if (error) {
-                return reject(new Error(`Transaction failed: ${error}`));
-              }
-              try {
-                const res = JSON.parse(result);
-                const { txid } = res;
-                return resolve(txid);
-              } catch (err) {
-                return reject(new Error(result));
-              }
-            });
-        }
+          this.axios.post(`${this.networks[network].discovery}/tx/send`, {rawtx: tx})
+          .then((r:any) => {
+            
+              const res = JSON.parse(r);
+              const { txid } = res;
+              return resolve(txid);
+            
+          })
+          .catch((e:Error) => reject(new Error('Transaction failed')));        
+          }
       });
     }
 
@@ -569,17 +555,18 @@ export namespace CryptoWallet.SDKS {
       to: number,
     ): Object {
       if (!this.networks[network].connect) {
-        return new Error(`${network} is an invalid network`);
+        throw new Error(`${network} is an invalid network`);
       }
       const validAddress = (address: string) => this.validateAddress(address, network);
       if (!addresses.every(validAddress)) {
-        return new Error('Invalid address used');
+        throw new Error('Invalid address used');
       }
       return new Promise((resolve, reject) => {
         const apiUrl: string = this.networks[network].discovery;
         const URL: string = `${apiUrl}/addrs/${addresses.toString()}/txs?from=${from}&to=${to}`;
         this.axios.get(URL)
           .then((r: any) => {
+            // console.log(r.data.items);
             if (r.data.totalItems === 0) { return resolve(); }
             let more: boolean = false;
             if (r.data.totalItems > to) { more = true; }
@@ -587,6 +574,7 @@ export namespace CryptoWallet.SDKS {
             const transactions: Transaction[] = [];
 
             results.forEach((result: any) => {
+              //console.log('result :', result);
               let confirmed: boolean = false;
               if (result.confirmations > 5) { confirmed = true; }
               let sent: boolean = false;
@@ -646,7 +634,7 @@ export namespace CryptoWallet.SDKS {
 
             return resolve(history);
           })
-          .catch((error: Error) => reject(error));
+          .catch((error: Error) => reject(new Error('API failed to get transaction history')));
       });
     }
 
@@ -656,15 +644,12 @@ export namespace CryptoWallet.SDKS {
      * @param network
      */
     getBalance(addresses: string[], network: string): Object {
-      if (!this.networks[network]) {
-        return new Error(`${network} is an invalid network`);
-      }
-      if (!this.networks[network].connect) {
-        return new Error(`${network} is an invalid network`);
+      if (!this.networks[network] || !this.networks[network].connect) {
+        throw new Error(`${network} is an invalid network`);
       }
       const validAddress = (address: string) => this.validateAddress(address, network);
       if (!addresses.every(validAddress)) {
-        return new Error('Invalid address used');
+        throw new Error('Invalid address used');
       }
 
       return new Promise((resolve, reject) => {
@@ -685,61 +670,63 @@ export namespace CryptoWallet.SDKS {
 
             return resolve(balance);
           })
-          .catch((error: any) => reject(error));
+          .catch((error: any) => reject(new Error('API failed to return a balance')));
       });
     }
+    /**
+     * TODO: Move these methods to a plugin in the mobile wallet
+     */
+    // getPriceFeed(
+    //   coins: string[],
+    //   currencies: string[],
+    // ): Object {
+    //   const URL = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=
+    //   ${coins.toString()}&tsyms=${currencies.toString()}
+    //   &api_key=${this.networks.cryptocompare}`;
+    //   return new Promise((resolve, reject) => {
+    //     this.axios.get(URL)
+    //       .then((r: any) => resolve(r.data.DISPLAY))
+    //       .catch((error: Error) => reject(new Error(`No price data for "${coins}"`)));
+    //   });
+    // }
 
-    getPriceFeed(
-      coins: string[],
-      currencies: string[],
-    ): Object {
-      const URL = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=
-      ${coins.toString()}&tsyms=${currencies.toString()}
-      &api_key=${this.networks.cryptocompare}`;
-      return new Promise((resolve, reject) => {
-        this.axios.get(URL)
-          .then((r: any) => resolve(r.data.DISPLAY))
-          .catch((error: Error) => reject(new Error(`No price data for "${coins}"`)));
-      });
-    }
-
-    getHistoricalData(
-      coin: string,
-      currency: string,
-      period: string,
-    ): Object {
-      let time: number;
-      let length: string;
-      if (period === 'day') {
-        time = 24;
-        length = 'hour';
-      } else if (period === 'week') {
-        time = 168;
-        length = 'hour';
-      } else if (period === 'month') {
-        time = 31;
-        length = 'day';
-      } else {
-        return new Error(`"${period}" is not a valid time period`);
-      }
-      return new Promise((resolve, reject) => {
-        const URL = `https://min-api.cryptocompare.com/data/histo
-        ${length}?fsym=${coin}&tsym=${currency}&limit=${time}&api_key=${this.networks.cryptocompare}`;
-        this.axios.get(URL)
-          .then((r: any) => {
-            const data = r.data.Data;
-            if (!data.map) {
-              return reject(new Error(`No price data for "${coin}" in "${currency}" found`));
-            }
-            const dataset = data.map((x: any) => ({
-              t: x.time * 1000,
-              y: x.close,
-            }));
-            return resolve(dataset);
-          })
-          .catch((error: any) => reject(error));
-      });
-    }
+    // getHistoricalData(
+    //   coin: string,
+    //   currency: string,
+    //   period: string,
+    // ): Object {
+    //   let time: number;
+    //   let length: string;
+    //   if (period === 'day') {
+    //     time = 24;
+    //     length = 'hour';
+    //   } else if (period === 'week') {
+    //     time = 168;
+    //     length = 'hour';
+    //   } else if (period === 'month') {
+    //     time = 31;
+    //     length = 'day';
+    //   } else {
+    //     return new Error(`"${period}" is not a valid time period`);
+    //   }
+    //   return new Promise((resolve, reject) => {
+    //     const URL = `https://min-api.cryptocompare.com/data/histo
+    //     ${length}?fsym=${coin}&tsym=${currency}&limit=${time}&api_key=${this.networks.cryptocompare}`;
+    //     this.axios.get(URL)
+    //       .then((r: any) => {
+    //         const data = r.data.Data;
+    //         if (!data.map) {
+    //           return reject(new Error(`No price data for "${coin}" in "${currency}" found`));
+    //         }
+    //         const dataset = data.map((x: any) => ({
+    //           t: x.time * 1000,
+    //           y: x.close,
+    //         }));
+    //         return resolve(dataset);
+    //       })
+    //       .catch((error: any) => reject(error));
+    //   });
+    // }
   }
 
 }
