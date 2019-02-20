@@ -104,7 +104,7 @@
     "build:ts:watch": "tsc -p src --watch",
     "clean": "rm -rf coverage && rm -rf lib/*.js* && rm -rf types/*.d.ts* && rm -rf dist/*.js* && rm -rf ./*.log",
     "lint": "eslint --fix --ext .ts src",
-    "test": "npm run build'",
+    "test": "",
     "test:cover": "",
     "test:unit": ""
   }
