@@ -23,11 +23,24 @@ describe('bitcoinSDK (wallet)', () => {
   });
 
   describe('generateSegWitP2SH', () => {
-    it('can generate a BTC testnet segwit address', () => {
+    it('can generate a BTC testnet segwit P2SH address', () => {
       const wallet: any = btc.generateHDWallet(entropy, 'BITCOIN_TESTNET');
       const keypair: any = btc.generateKeyPair(wallet, 0);
       const address = btc.generateSegWitP2SH(keypair);
       expect(address).toBe('2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf');
+    });
+  });
+
+  describe('generateSegWit3of4MultiSigAddress', () => {
+    it('can generate a BTC testnet segwit 3 of 4 multisig address', () => {
+      const address = btc.generateSegWit3of4MultiSigAddress(
+        '026477115981fe981a6918a6297d9803c4dc04f328f22041bedff886bbc2962e01',
+        '02c96db2302d19b43d4c69368babace7854cc84eb9e061cde51cfa77ca4a22b8b9',
+        '023e4740d0ba639e28963f3476157b7cf2fb7c6fdf4254f97099cf8670b505ea59',
+        '03c6103b3b83e4a24a0e33a4df246ef11772f9992663db0c35759a5e2ebf68d8e9',
+        'BITCOIN',
+      );
+      expect(address).toBe('bc1q75f6dv4q8ug7zhujrsp5t0hzf33lllnr3fe7e2pra3v24mzl8rrqtp3qul');
     });
   });
 });
