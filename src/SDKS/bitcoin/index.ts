@@ -87,7 +87,7 @@ export namespace CryptoWallet.SDKS.Bitcoin {
      * @param keys
      * @param network
      */
-    gernerateP2SHMultiSig(
+    generateP2SHMultiSig(
       keys: string[],
       network: string,
     ): string {
