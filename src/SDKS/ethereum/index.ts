@@ -350,7 +350,6 @@ export namespace CryptoWallet.SDKS.Ethereum {
      */
     accountDiscovery(
       wallet: Wallet,
-      network: string,
       internal?: boolean,
     ): Object {
       const accounts: Address[] = [];

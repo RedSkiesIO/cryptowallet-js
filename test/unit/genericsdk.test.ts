@@ -4,6 +4,7 @@ import { KeyPair } from 'src/SDKS/GenericSDK.d';
 import axios from 'axios';
 import * as request from 'request';
 import { CryptoWallet } from '../../src/SDKFactory';
+import mockTransactionHistory from '../datasets/mockTransactionHistory';
 
 jest.mock('axios');
 jest.mock('request');
@@ -562,17 +563,97 @@ describe('bitcoinSDK (wallet)', () => {
     it('can detect an api error', async () => {
       mockAxios.get.mockResolvedValue(new Error('error'));
       const wallet: any = btc.generateHDWallet(entropy, network);
-      const discovery = btc.accountDiscovery(wallet, true).catch((e: Error) => expect(e.message).toMatch('API ERROR'));
+      const discovery = btc.accountDiscovery(wallet, true)
+        .catch((e: Error) => expect(e.message).toMatch('API ERROR'));
       return discovery;
     });
   });
 
-  // describe('getTransactionHistory', () => {
-  //   it('can get the transaction history of a wallet', () => {
-  //     const wallet: any = btc.generateHDWallet(entropy, network);
-  //     const history: any = btc.getTransactionHistory()
-  //   });
-  // });
+  describe('getTransactionHistory', () => {
+    it('can get the transaction histoy of bitcoin testnet address', async () => {
+      mockAxios.get.mockResolvedValue({ data: mockTransactionHistory });
+      const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'];
+      const history = await btc.getTransactionHistory(addresses, network, 0, 50);
+      expect(history.totalTransactions).toBe(27);
+    });
+
+    it('can get the transaction histoy of an unused bitcoin testnet address', async () => {
+      mockAxios.get.mockResolvedValue({ data: { totalItems: 0 } });
+      const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'];
+      const history = await btc.getTransactionHistory(addresses, network, 0, 50);
+      expect(history).toBeUndefined();
+    });
+
+    it('can check if more transaction history is available', async () => {
+      mockAxios.get.mockResolvedValue({ data: mockTransactionHistory });
+      const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'];
+      const history = await btc.getTransactionHistory(addresses, network, 0, 20);
+      expect(history.more).toBe(true);
+    });
+
+    it('can detect if an invalid address is used', async () => {
+      mockAxios.get.mockResolvedValue({ data: mockTransactionHistory });
+      const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvk'];
+      expect(() => btc.getTransactionHistory(addresses, network, 0, 20)).toThrow('Invalid address used');
+    });
+
+    it('can detect if an invalid network is used', async () => {
+      mockAxios.get.mockResolvedValue({ data: mockTransactionHistory });
+      const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'];
+      expect(() => btc.getTransactionHistory(addresses, 'ETHEREUM', 0, 20)).toThrow('ETHEREUM is an invalid network');
+    });
+
+    it('can catch an API error', async () => {
+      mockAxios.get.mockResolvedValue(new Error('some error'));
+      const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'];
+      const history = await btc.getTransactionHistory(addresses, network, 0, 20)
+        .catch((e: Error) => expect(e.message).toMatch('API failed to get transaction history'));
+    });
+  });
+
+  describe('getBalance', () => {
+    it('can get the balance of a bitcoin testnet address', async () => {
+      const utxo = [{
+        address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+        txid: '48d2bc7293fe1b1b3c74b1276861c3ab1a63a01fbf87789c192f3491422e9dbf',
+        vout: 82,
+        scriptPubKey: 'a91441d8fdc7c1218b669e29928a209cd2d4df70ca9687',
+        amount: 0.17433129,
+        satoshis: 17433129,
+        height: 1448809,
+        confirmations: 29673,
+        value: 17433129,
+      }];
+      mockAxios.get.mockResolvedValue({ data: utxo });
+      const balance = await btc.getBalance(['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'], network);
+      expect(balance).toBe(0.17433129);
+    });
+
+    it('can get the balance of an empty bitcoin testnet address', async () => {
+      mockAxios.get.mockResolvedValue({ data: [] });
+      const balance = await btc.getBalance(['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'], network);
+      expect(balance).toBe(0);
+    });
+
+    it('can detect if an invalid address is used', async () => {
+      const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvk'];
+      expect(() => btc.getBalance(addresses, network)).toThrow('Invalid address used');
+    });
+
+    it('can detect if an invalid network is used', async () => {
+      mockAxios.get.mockResolvedValue({ data: mockTransactionHistory });
+      const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'];
+      expect(() => btc.getBalance(addresses, 'ETHEREUM')).toThrow('ETHEREUM is an invalid network');
+    });
+
+    it('can catch an API error', async () => {
+      mockAxios.get.mockResolvedValue(new Error('some error'));
+      const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'];
+      const balance = await btc.getBalance(addresses, network)
+        .catch((e: Error) => expect(e.message).toMatch('API failed to return a balance'));
+      return balance;
+    });
+  });
   // it('can confirm a bitcoin testnet address is not valid', () => {
   //   const valid = btc.validateAddress('2MyFPraHtEy2uKttPeku1okVeyJGTYvkf', network);
   //   expect(valid).toBe(false);
