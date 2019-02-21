@@ -566,6 +566,13 @@ describe('bitcoinSDK (wallet)', () => {
       return discovery;
     });
   });
+
+  // describe('getTransactionHistory', () => {
+  //   it('can get the transaction history of a wallet', () => {
+  //     const wallet: any = btc.generateHDWallet(entropy, network);
+  //     const history: any = btc.getTransactionHistory()
+  //   });
+  // });
   // it('can confirm a bitcoin testnet address is not valid', () => {
   //   const valid = btc.validateAddress('2MyFPraHtEy2uKttPeku1okVeyJGTYvkf', network);
   //   expect(valid).toBe(false);
