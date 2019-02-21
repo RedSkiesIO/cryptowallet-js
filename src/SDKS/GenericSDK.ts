@@ -5,8 +5,7 @@ import * as Bip39 from 'bip39';
 import * as Bip44hdkey from 'hdkey';
 import * as Bitcoinlib from 'bitcoinjs-lib';
 import * as Wif from 'wif';
-import * as Request from 'request';
-import * as Axios from 'axios';
+import axios, * as others from 'axios';
 import * as Coinselect from 'coinselect';
 import * as CoinSelectSplit from 'coinselect/split';
 import {
@@ -25,9 +24,7 @@ export namespace CryptoWallet.SDKS {
 
     wif: any = Wif;
 
-    request: any = Request;
-
-    axios: any = Axios;
+    axios: any = axios;
 
     /**
      * generates an hierarchical determinitsic wallet for a given coin type
@@ -205,42 +202,26 @@ export namespace CryptoWallet.SDKS {
       tx: string,
       network: string,
     ): Object {
+      if (!this.networks[network] || !this.networks[network].connect) {
+        throw new Error('Invalid network type');
+      }
       return new Promise((resolve, reject) => {
-        if (!this.networks[network].connect) {
-          throw new Error('Invalid network type');
-        }
         if (this.networks[network].segwit) {
-          Request.post(
-            this.networks[network].broadcastUrl,
-            { form: { tx_hex: tx } },
-            (error: any, body: any, result: any) => {
-              if (error) {
-                return reject(new Error(`Transaction failed: ${error}`));
-              }
-              const output = JSON.parse(result);
+          this.axios.post(this.networks[network].broadcastUrl, { tx_hex: tx })
+            .then((r:any) => {
+              const output = JSON.parse(r);
               const res = output.data.txid;
               return resolve(res);
-            },
-          );
+            })
+            .catch((e:Error) => reject(new Error('Transaction failed')));
         } else {
-          Request.post(`${this.networks[network].discovery}/tx/send`,
-            {
-              form: {
-                rawtx: tx,
-              },
-            },
-            (error: any, body: any, result: any) => {
-              if (error) {
-                return reject(new Error(`Transaction failed: ${error}`));
-              }
-              try {
-                const res = JSON.parse(result);
-                const { txid } = res;
-                return resolve(txid);
-              } catch (err) {
-                return reject(new Error(result));
-              }
-            });
+          this.axios.post(`${this.networks[network].discovery}/tx/send`, { rawtx: tx })
+            .then((r:any) => {
+              const res = JSON.parse(r);
+              const { txid } = res;
+              return resolve(txid);
+            })
+            .catch((e:Error) => reject(new Error('Transaction failed')));
         }
       });
     }
@@ -270,18 +251,20 @@ export namespace CryptoWallet.SDKS {
     getTransactionFee(
       network: string,
     ): Object {
+      if (!this.networks[network]) {
+        throw new Error('Invalid network');
+      }
       return new Promise((resolve, reject) => {
-        if (!this.networks[network].connect) {
-          throw new Error('Invalid network type');
-        }
         const URL = this.networks[network].feeApi;
         this.axios.get(URL)
-          .then((r: any) => resolve({
-            high: r.data.high_fee_per_kb / 1000,
-            medium: r.data.medium_fee_per_kb / 1000,
-            low: r.data.low_fee_per_kb / 1000,
-          }))
-          .catch((error: any) => reject(error));
+          .then((r: any) => {
+            resolve({
+              high: r.data.high_fee_per_kb / 1000,
+              medium: r.data.medium_fee_per_kb / 1000,
+              low: r.data.low_fee_per_kb / 1000,
+            });
+          })
+          .catch((error: any) => reject(error.message));
       });
     }
 
@@ -301,7 +284,7 @@ export namespace CryptoWallet.SDKS {
       minerRate: number,
       max?: boolean,
     ): Promise<Object> {
-      if (!wallet.network.connect) {
+      if (!wallet || !wallet.network || !wallet.network.connect) {
         throw new Error('Invalid wallet type');
       }
       if (!this.validateAddress(toAddress, wallet.network.name)) {
@@ -445,7 +428,7 @@ export namespace CryptoWallet.SDKS {
       transaction: any,
       network: string,
     ): boolean {
-      if (!this.networks[network].connect) {
+      if (!this.networks[network] || !this.networks[network].connect) {
         throw new Error('Invalid network type');
       }
       const keyPairs = transaction.pubKeys.map(
@@ -463,7 +446,7 @@ export namespace CryptoWallet.SDKS {
         });
         const ss = this.bitcoinlib.script.signature.decode(p2pkh.signature);
         const hash = tx.hashForSignature(i, p2pkh.output, ss.hashType);
-        valid.push(hash === ss.signature);
+        valid.push(keyPair.verify(hash, ss.signature));
       });
       return valid.every(item => item === true);
     }
@@ -476,10 +459,12 @@ export namespace CryptoWallet.SDKS {
      */
     accountDiscovery(
       wallet: Wallet,
-      network: string,
+
       internal?: boolean,
     ): Object {
-      // const wallet: any = this.generateHDWallet(entropy, network);
+      if (!wallet || !wallet.network || !wallet.network.connect) {
+        throw new Error('Invalid wallet type');
+      }
       const apiUrl: string = wallet.network.discovery;
       let usedAddresses: object[] = [];
       const emptyAddresses: number[] = [];
@@ -492,30 +477,27 @@ export namespace CryptoWallet.SDKS {
         const URL: string = `${apiUrl}/addr/${address}?noTxList=1`;
 
         return new Promise(async (resolve, reject) => {
-          this.axios.get(URL)
-            .then((addr: any) => {
-              const result = {
-                address,
-                received: addr.data.totalReceived,
-                balance: addr.data.balance,
-                index: i,
-              };
+          const addr = await this.axios.get(URL);
+          if (!addr.data) {
+            return reject(new Error('API ERROR'));
+          }
+          const result = {
+            address,
+            received: addr.data.totalReceived,
+            balance: addr.data.balance,
+            index: i,
+          };
 
-              if (result.received > 0) {
-                usedAddresses.push(result);
-              } else {
-                emptyAddresses.push(result.index);
-              }
-              return resolve(result);
-            })
-            .catch((error: Error) => reject(error));
+          if (result.received > 0) {
+            usedAddresses.push(result);
+          } else {
+            emptyAddresses.push(result.index);
+          }
+          return resolve(result);
         });
       };
 
       return new Promise(async (resolve, reject) => {
-        if (!this.networks[network].connect) {
-          return reject(new Error(`${network} is an invalid network`));
-        }
         let startIndex: number = 0;
         const discover = async () => {
           const promises = [];
@@ -570,11 +552,11 @@ export namespace CryptoWallet.SDKS {
       to: number,
     ): Object {
       if (!this.networks[network].connect) {
-        return new Error(`${network} is an invalid network`);
+        throw new Error(`${network} is an invalid network`);
       }
       const validAddress = (address: string) => this.validateAddress(address, network);
       if (!addresses.every(validAddress)) {
-        return new Error('Invalid address used');
+        throw new Error('Invalid address used');
       }
       return new Promise((resolve, reject) => {
         const apiUrl: string = this.networks[network].discovery;
@@ -647,7 +629,7 @@ export namespace CryptoWallet.SDKS {
 
             return resolve(history);
           })
-          .catch((error: Error) => reject(error));
+          .catch((error: Error) => reject(new Error('API failed to get transaction history')));
       });
     }
 
@@ -657,15 +639,12 @@ export namespace CryptoWallet.SDKS {
      * @param network
      */
     getBalance(addresses: string[], network: string): Object {
-      if (!this.networks[network]) {
-        return new Error(`${network} is an invalid network`);
-      }
-      if (!this.networks[network].connect) {
-        return new Error(`${network} is an invalid network`);
+      if (!this.networks[network] || !this.networks[network].connect) {
+        throw new Error(`${network} is an invalid network`);
       }
       const validAddress = (address: string) => this.validateAddress(address, network);
       if (!addresses.every(validAddress)) {
-        return new Error('Invalid address used');
+        throw new Error('Invalid address used');
       }
 
       return new Promise((resolve, reject) => {
@@ -686,61 +665,64 @@ export namespace CryptoWallet.SDKS {
 
             return resolve(balance);
           })
-          .catch((error: any) => reject(error));
+          .catch((error: any) => reject(new Error('API failed to return a balance')));
       });
     }
+    /**
+     * TODO: Move these methods to a plugin in the mobile wallet
+     */
+    // getPriceFeed(
+    //   coins: string[],
+    //   currencies: string[],
+    // ): Object {
+    //   const URL = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=
+    //   ${coins.toString()}&tsyms=${currencies.toString()}
+    //   &api_key=${this.networks.cryptocompare}`;
+    //   return new Promise((resolve, reject) => {
+    //     this.axios.get(URL)
+    //       .then((r: any) => resolve(r.data.DISPLAY))
+    //       .catch((error: Error) => reject(new Error(`No price data for "${coins}"`)));
+    //   });
+    // }
 
-    getPriceFeed(
-      coins: string[],
-      currencies: string[],
-    ): Object {
-      const URL = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=
-      ${coins.toString()}&tsyms=${currencies.toString()}
-      &api_key=${this.networks.cryptocompare}`;
-      return new Promise((resolve, reject) => {
-        this.axios.get(URL)
-          .then((r: any) => resolve(r.data.DISPLAY))
-          .catch((error: Error) => reject(new Error(`No price data for "${coins}"`)));
-      });
-    }
-
-    getHistoricalData(
-      coin: string,
-      currency: string,
-      period: string,
-    ): Object {
-      let time: number;
-      let length: string;
-      if (period === 'day') {
-        time = 24;
-        length = 'hour';
-      } else if (period === 'week') {
-        time = 168;
-        length = 'hour';
-      } else if (period === 'month') {
-        time = 31;
-        length = 'day';
-      } else {
-        return new Error(`"${period}" is not a valid time period`);
-      }
-      return new Promise((resolve, reject) => {
-        const URL = `https://min-api.cryptocompare.com/data/histo
-        ${length}?fsym=${coin}&tsym=${currency}&limit=${time}&api_key=${this.networks.cryptocompare}`;
-        this.axios.get(URL)
-          .then((r: any) => {
-            const data = r.data.Data;
-            if (!data.map) {
-              return reject(new Error(`No price data for "${coin}" in "${currency}" found`));
-            }
-            const dataset = data.map((x: any) => ({
-              t: x.time * 1000,
-              y: x.close,
-            }));
-            return resolve(dataset);
-          })
-          .catch((error: any) => reject(error));
-      });
-    }
+    // getHistoricalData(
+    //   coin: string,
+    //   currency: string,
+    //   period: string,
+    // ): Object {
+    //   let time: number;
+    //   let length: string;
+    //   if (period === 'day') {
+    //     time = 24;
+    //     length = 'hour';
+    //   } else if (period === 'week') {
+    //     time = 168;
+    //     length = 'hour';
+    //   } else if (period === 'month') {
+    //     time = 31;
+    //     length = 'day';
+    //   } else {
+    //     return new Error(`"${period}" is not a valid time period`);
+    //   }
+    //   return new Promise((resolve, reject) => {
+    //     const URL = `https://min-api.cryptocompare.com/data/histo
+    //     ${length}?fsym=${coin}&tsym=${currency}&limit=${time}&api_key=
+    // ${this.networks.cryptocompare}`;
+    //     this.axios.get(URL)
+    //       .then((r: any) => {
+    //         const data = r.data.Data;
+    //         if (!data.map) {
+    //           return reject(new Error(`No price data for "${coin}" in "${currency}" found`));
+    //         }
+    //         const dataset = data.map((x: any) => ({
+    //           t: x.time * 1000,
+    //           y: x.close,
+    //         }));
+    //         return resolve(dataset);
+    //       })
+    //       .catch((error: any) => reject(error));
+    //   });
+    // }
   }
 
 }

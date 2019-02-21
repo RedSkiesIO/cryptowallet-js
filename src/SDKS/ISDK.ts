@@ -57,7 +57,6 @@ export namespace CryptoWallet.SDKS {
 
     accountDiscovery(
       wallet: Wallet,
-      netork: string,
       internal?: boolean,
     ): Object;
 
@@ -73,15 +72,16 @@ export namespace CryptoWallet.SDKS {
       network: string,
     ): Object;
 
-    getPriceFeed(
-      coins: string[],
-      currencies: string[],
-    ): Object;
+    // getPriceFeed(
+    //   coins: string[],
+    //   currencies: string[],
+    // ): Object;
 
-    getHistoricalData(
-      coin: string,
-      currency: string,
-      period: string,
-    ): Object;
+    // getHistoricalData(
+    //   coin: string,
+    //   currency: string,
+    //   period: string,
+    // ): Object;
+
   }
 }

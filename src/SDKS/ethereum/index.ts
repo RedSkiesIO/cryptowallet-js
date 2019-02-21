@@ -20,7 +20,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
 
     ethereumlib = EthereumLib;
 
-    Web3 = Web3;
+    Web3:any = Web3;
 
     VerifyTx: any;
 
@@ -76,7 +76,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
       address: string,
       network: string,
     ): boolean {
-      const web3 = new this.Web3(this.networks[network].provider);
+      const web3: any = new this.Web3(this.networks[network].provider);
       return web3.utils.isAddress(address.toLowerCase());
     }
 
@@ -350,7 +350,6 @@ export namespace CryptoWallet.SDKS.Ethereum {
      */
     accountDiscovery(
       wallet: Wallet,
-      network: string,
       internal?: boolean,
     ): Object {
       const accounts: Address[] = [];
