@@ -3,20 +3,15 @@
 // eslint-disable-next-line spaced-comment
 ///<reference path="../../types/module.d.ts" />
 import * as BitcoinLib from 'bitcoinjs-lib';
-import * as Bitcoinaddress from 'bitcoin-address';
 import * as Coinselect from 'coinselect';
 import * as CoinSelectSplit from 'coinselect/split';
-import * as Request from 'request';
 import { KeyPair, Wallet } from '../GenericSDK.d';
-import * as Networks from '../networks.ts';
 import * as IBitcoinSDK from './IBitcoinSDK';
 import GenericSDK from '../GenericSDK';
 
 export namespace CryptoWallet.SDKS.Bitcoin {
   export class BitcoinSDK extends GenericSDK
     implements IBitcoinSDK.CryptoWallet.SDKS.Bitcoin.IBitcoinSDK {
-    req = Request;
-
     /**
      * generates a segwit address
      * @param keyPair
@@ -126,7 +121,6 @@ export namespace CryptoWallet.SDKS.Bitcoin {
 
         this.axios.get(URL)
           .then((r: any) => {
-            console.log('r :', r);
             const result: any = [];
 
             if (r.data.length === 0) {

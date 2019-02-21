@@ -5,7 +5,6 @@ import * as Bip39 from 'bip39';
 import * as Bip44hdkey from 'hdkey';
 import * as Bitcoinlib from 'bitcoinjs-lib';
 import * as Wif from 'wif';
-import * as Request from 'request';
 import axios, * as others from 'axios';
 import * as Coinselect from 'coinselect';
 import * as CoinSelectSplit from 'coinselect/split';
@@ -24,8 +23,6 @@ export namespace CryptoWallet.SDKS {
     bip39: any = Bip39;
 
     wif: any = Wif;
-
-    request: any = Request;
 
     axios: any = axios;
 
@@ -205,29 +202,27 @@ export namespace CryptoWallet.SDKS {
       tx: string,
       network: string,
     ): Object {
+      if (!this.networks[network] || !this.networks[network].connect) {
+        throw new Error('Invalid network type');
+      }
       return new Promise((resolve, reject) => {
-        if (!this.networks[network].connect) {
-          throw new Error('Invalid network type');
-        }
         if (this.networks[network].segwit) {
-          this.axios.post(this.networks[network].broadcastUrl, {tx_hex: tx})
-          .then((r:any) => {
-            const output = JSON.parse(r);
-            const res = output.data.txid;
-            return resolve(res);
-          })
-          .catch((e:Error) => reject(new Error('Transaction failed')));
+          this.axios.post(this.networks[network].broadcastUrl, { tx_hex: tx })
+            .then((r:any) => {
+              const output = JSON.parse(r);
+              const res = output.data.txid;
+              return resolve(res);
+            })
+            .catch((e:Error) => reject(new Error('Transaction failed')));
         } else {
-          this.axios.post(`${this.networks[network].discovery}/tx/send`, {rawtx: tx})
-          .then((r:any) => {
-            
+          this.axios.post(`${this.networks[network].discovery}/tx/send`, { rawtx: tx })
+            .then((r:any) => {
               const res = JSON.parse(r);
               const { txid } = res;
               return resolve(txid);
-            
-          })
-          .catch((e:Error) => reject(new Error('Transaction failed')));        
-          }
+            })
+            .catch((e:Error) => reject(new Error('Transaction failed')));
+        }
       });
     }
 
@@ -443,15 +438,17 @@ export namespace CryptoWallet.SDKS {
       );
       const tx = this.bitcoinlib.Transaction.fromHex(transaction.txHex);
       const valid: boolean[] = [];
+
       tx.ins.forEach((input: any, i: number) => {
         const keyPair = keyPairs[i];
         const p2pkh = this.bitcoinlib.payments.p2pkh({
           pubkey: keyPair.publicKey,
           input: input.script,
         });
+
         const ss = this.bitcoinlib.script.signature.decode(p2pkh.signature);
         const hash = tx.hashForSignature(i, p2pkh.output, ss.hashType);
-        valid.push(hash === ss.signature);
+        valid.push(keyPair.verify(hash, ss.signature));
       });
       return valid.every(item => item === true);
     }
@@ -574,7 +571,7 @@ export namespace CryptoWallet.SDKS {
             const transactions: Transaction[] = [];
 
             results.forEach((result: any) => {
-              //console.log('result :', result);
+              // console.log('result :', result);
               let confirmed: boolean = false;
               if (result.confirmations > 5) { confirmed = true; }
               let sent: boolean = false;
@@ -711,7 +708,8 @@ export namespace CryptoWallet.SDKS {
     //   }
     //   return new Promise((resolve, reject) => {
     //     const URL = `https://min-api.cryptocompare.com/data/histo
-    //     ${length}?fsym=${coin}&tsym=${currency}&limit=${time}&api_key=${this.networks.cryptocompare}`;
+    //     ${length}?fsym=${coin}&tsym=${currency}&limit=${time}&api_key=
+    // ${this.networks.cryptocompare}`;
     //     this.axios.get(URL)
     //       .then((r: any) => {
     //         const data = r.data.Data;

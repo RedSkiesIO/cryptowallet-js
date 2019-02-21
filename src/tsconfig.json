@@ -4,7 +4,8 @@
     "baseUrl": ".",
     "paths": {
       "*": [
-        "types/*"
+        "types/*",
+        "test/*"
       ],
     },
     "outDir": "../lib"
