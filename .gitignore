@@ -10,3 +10,5 @@ node_modules
 *.swp
 *~
 .idea/*
+app-env
+networks.1.ts

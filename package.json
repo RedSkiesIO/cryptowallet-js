@@ -4,68 +4,72 @@
   "version": "0.0.1",
   "author": {
     "name": "James Kirkby",
-    "email": "nshcore@protonmail.com"
+    "email": "james.kirby@atlascity.io"
+  },
+  "contributor": {
+    "name": "Stephen Horsfall",
+    "email": "stephen.horsfall@atlascity.io"
   },
   "bugs": {
     "url": "https://github.com/atlascity/cryptowallet-js/issues"
   },
   "dependencies": {
-    "bitcoinjs-lib": "^4.0.2"
+    "async-series": "0.0.1",
+    "axios": "^0.18.0",
+    "bip39": "^2.5.0",
+    "bitcoin-address": "^0.3.0",
+    "bitcoinjs-lib": "^4.0.2",
+    "coinselect": "^3.1.11",
+    "ethereumjs-tx": "^1.3.7",
+    "ethereumjs-wallet": "^0.6.2",
+    "etherscan-api": "^10.0.0",
+    "hdkey": "^1.1.0",
+    "request": "^2.88.0",
+    "tslint": "^5.11.0",
+    "vue": "^2.5.17",
+    "web3": "1.0.0-beta.34",
+    "wif": "^2.0.6"
   },
   "devDependencies": {
     "@babel/core": "^7.1.0",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
     "@babel/plugin-proposal-decorators": "^7.1.0",
     "@babel/preset-typescript": "^7.1.0",
+    "@types/bip39": "^2.4.2",
     "@types/bitcoinjs-lib": "^4.0.0",
+    "@types/jest": "^24.0.6",
     "@types/lodash": "^4.14.117",
     "@types/lodash-es": "^4.17.1",
-    "@types/mocha": "^5.2.0",
     "@types/node": "^10.10.3",
     "@types/power-assert": "^1.5.0",
     "@vue/babel-preset-app": "^3.0.1",
     "@vue/test-utils": "^1.0.0-beta.25",
-    "all-contributors-cli": "^6.1.1",
     "babel-eslint": "^9.0.0",
     "babel-loader": "^8.0.2",
     "babel-plugin-istanbul": "^5.0.1",
     "babel-preset-power-assert": "^3.0.0",
     "buble": "^0.19.3",
-    "conventional-changelog-cli": "^1.2.0",
-    "conventional-github-releaser": "^1.1.3",
     "cross-env": "^5.1.6",
-    "eslint": "^5.6.0",
+    "eslint": "^5.9.0",
     "eslint-loader": "^2.1.0",
     "eslint-plugin-typescript": "^0.12.0",
     "eslint-plugin-vue-libs": "^2.0.1",
     "fork-ts-checker-webpack-plugin": "^0.4.9",
-    "karma": "^3.0.0",
-    "karma-chrome-launcher": "^2.2.0",
-    "karma-coverage": "^1.1.2",
-    "karma-firefox-launcher": "^1.1.0",
-    "karma-mocha": "^1.3.0",
-    "karma-mocha-reporter": "^2.2.5",
-    "karma-safari-launcher": "^1.0.0",
-    "karma-sourcemap-loader": "^0.3.7",
-    "karma-webpack": "^3.0.5",
-    "lint-staged": "^8.1.4",
-    "mocha": "^5.2.0",
-    "mocha-loader": "^2.0.0",
+    "jest": "^24.1.0",
     "power-assert": "^1.6.0",
     "rollup": "^0.66.0",
     "rollup-plugin-buble": "^0.19.2",
     "rollup-plugin-replace": "^2.0.0",
+    "ts-jest": "^23.10.5",
     "ts-loader": "^5.2.0",
+    "ts-node": "^7.0.1",
+    "tslint-config-airbnb": "^5.11.1",
     "typescript": "^3.0.3",
     "typescript-eslint-parser": "^18.0.0",
     "uglify-js": "^2.7.5",
-    "vue": "^2.5.17",
     "vue-template-compiler": "^2.5.17",
-    "vuepress": "^0.14.0",
     "webpack": "^4.19.1",
-    "webpack-cli": "^3.1.1",
-    "webpack-dev-server": "^3.1.14",
-    "yorkie": "^2.0.0"
+    "webpack-cli": "^3.1.1"
   },
   "files": [
     "dist/cryptowallet-js.js",
@@ -73,11 +77,12 @@
     "dist/cryptowallet-js.common.js",
     "dist/cryptowallet-js.esm.js",
     "types",
-    "src"
+    "src",
+    "lib"
   ],
   "homepage": "https://github.com/atlascity/cryptowallet-js#readme",
-  "main": "dist/cryptowallet-js.common.js",
-  "module": "dist/cryptowallet-js.esm.js",
+  "main": "lib/src",
+  "module": "lib/src",
   "unpkg": "dist/cryptowallet-js.js",
   "types": "types/index.d.ts",
   "keywords": [
@@ -97,29 +102,10 @@
     "build": "npm run build:ts && node config/build.js",
     "build:ts": "tsc -p src",
     "build:ts:watch": "tsc -p src --watch",
-    "changelog": "conventional-changelog -i CHANGELOG.md -s -p eslint",
-    "release": "conventional-github-releaser -p eslint",
     "clean": "rm -rf coverage && rm -rf lib/*.js* && rm -rf types/*.d.ts* && rm -rf dist/*.js* && rm -rf ./*.log",
-    "dev": "cross-env BABEL_ENV=test webpack-dev-server --inline --hot --open --content-base ./test/unit/ --config config/webpack.dev.conf.js",
-    "docs:dev": "vuepress dev docs",
-    "docs:build": "node config/version.js && vuepress build docs",
-    "lint": "eslint --fix --ext .ts src test",
-    "test": "npm run lint && npm run test:cover",
-    "test:cover": "cross-env BABEL_ENV=test karma start config/karma.cover.conf.js",
-    "test:unit": "cross-env BABEL_ENV=test karma start config/karma.unit.conf.js",
-    "security:audit": "npm audit"
-  },
-  "gitHooks": {
-    "pre-commit": "lint-staged && npm run security:audit"
-  },
-  "lint-staged": {
-    "*.js": [
-      "eslint --ext .js,.vue src",
-      "git add"
-    ],
-    "*.vue": [
-      "eslint --ext .js,.vue src",
-      "git add"
-    ]
+    "lint": "eslint --fix --ext .ts src",
+    "test": "",
+    "test:cover": "",
+    "test:unit": ""
   }
 }

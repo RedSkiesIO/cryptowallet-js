@@ -11,12 +11,16 @@ module.exports = {
     'typescript'
   ],
   extends: [
-    'plugin:vue-libs/recommended'
+    'plugin:vue-libs/recommended',
+    'airbnb-base'
   ],
   rules: {
     'object-curly-spacing': ['error', 'always'],
     'no-multiple-empty-lines': ['error', { max: 2, maxBOF: 1 }],
     'no-undef': 'off',
-    'no-unused-vars': 'off'
+    'no-unused-vars': 'off',
+    align: {
+      'mode': 'strict',
+    }
   }
 }

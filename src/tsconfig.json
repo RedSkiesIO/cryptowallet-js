@@ -1,9 +1,13 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../lib",
-    "declarationDir": "../types",
-    "declaration": true
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "types/*"
+      ],
+    },
+    "outDir": "../lib"
   },
   "include": [
     "**/*.ts"
