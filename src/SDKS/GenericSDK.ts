@@ -494,7 +494,6 @@ export namespace CryptoWallet.SDKS {
             emptyAddresses.push(result.index);
           }
           return resolve(result);
-
         });
       };
 
@@ -564,7 +563,6 @@ export namespace CryptoWallet.SDKS {
         const URL: string = `${apiUrl}/addrs/${addresses.toString()}/txs?from=${from}&to=${to}`;
         this.axios.get(URL)
           .then((r: any) => {
-
             if (r.data.totalItems === 0) { return resolve(); }
             let more: boolean = false;
             if (r.data.totalItems > to) { more = true; }
@@ -572,7 +570,6 @@ export namespace CryptoWallet.SDKS {
             const transactions: Transaction[] = [];
 
             results.forEach((result: any) => {
-
               let confirmed: boolean = false;
               if (result.confirmations > 5) { confirmed = true; }
               let sent: boolean = false;
