@@ -1,6 +1,5 @@
 /* eslint-disable import/no-unresolved */
 import 'jest';
-import { KeyPair } from 'src/SDKS/GenericSDK.d';
 import axios from 'axios';
 import { CryptoWallet } from '../../src/SDKFactory';
 
