@@ -438,14 +438,12 @@ export namespace CryptoWallet.SDKS {
       );
       const tx = this.bitcoinlib.Transaction.fromHex(transaction.txHex);
       const valid: boolean[] = [];
-
       tx.ins.forEach((input: any, i: number) => {
         const keyPair = keyPairs[i];
         const p2pkh = this.bitcoinlib.payments.p2pkh({
           pubkey: keyPair.publicKey,
           input: input.script,
         });
-
         const ss = this.bitcoinlib.script.signature.decode(p2pkh.signature);
         const hash = tx.hashForSignature(i, p2pkh.output, ss.hashType);
         valid.push(keyPair.verify(hash, ss.signature));
@@ -461,6 +459,7 @@ export namespace CryptoWallet.SDKS {
      */
     accountDiscovery(
       wallet: Wallet,
+
       internal?: boolean,
     ): Object {
       if (!wallet || !wallet.network || !wallet.network.connect) {
@@ -476,6 +475,7 @@ export namespace CryptoWallet.SDKS {
 
       const checkAddress = (address: string, i: number) => {
         const URL: string = `${apiUrl}/addr/${address}?noTxList=1`;
+
         return new Promise(async (resolve, reject) => {
           const addr = await this.axios.get(URL);
           if (!addr.data) {
@@ -494,6 +494,7 @@ export namespace CryptoWallet.SDKS {
             emptyAddresses.push(result.index);
           }
           return resolve(result);
+
         });
       };
 
@@ -563,7 +564,7 @@ export namespace CryptoWallet.SDKS {
         const URL: string = `${apiUrl}/addrs/${addresses.toString()}/txs?from=${from}&to=${to}`;
         this.axios.get(URL)
           .then((r: any) => {
-            // console.log(r.data.items);
+
             if (r.data.totalItems === 0) { return resolve(); }
             let more: boolean = false;
             if (r.data.totalItems > to) { more = true; }
@@ -571,7 +572,7 @@ export namespace CryptoWallet.SDKS {
             const transactions: Transaction[] = [];
 
             results.forEach((result: any) => {
-              // console.log('result :', result);
+
               let confirmed: boolean = false;
               if (result.confirmations > 5) { confirmed = true; }
               let sent: boolean = false;
