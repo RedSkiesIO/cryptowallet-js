@@ -21,6 +21,15 @@ describe('bitcoinSDK (wallet)', () => {
       expect(address).toBe('tb1qgmfs2qjff3726j9sy76hpa2mnlnsvv4nnd7zxt');
     });
   });
+
+  describe('generateSegWitP2SH', () => {
+    it('can generate a BTC testnet segwit address', () => {
+      const wallet: any = btc.generateHDWallet(entropy, 'BITCOIN_TESTNET');
+      const keypair: any = btc.generateKeyPair(wallet, 0);
+      const address = btc.generateSegWitP2SH(keypair);
+      expect(address).toBe('2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf');
+    });
+  });
 });
 
 
