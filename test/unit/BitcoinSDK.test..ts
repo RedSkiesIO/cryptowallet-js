@@ -25,7 +25,6 @@ describe('bitcoinSDK (wallet)', () => {
       expect(() => btc.generateSegWitAddress(keypair)).toThrow('Invalid keypair type');
     });
   });
-
   describe('generateSegWitP2SH', () => {
     it('can generate a BTC testnet segwit address', () => {
       const wallet: any = btc.generateHDWallet(entropy, network);
