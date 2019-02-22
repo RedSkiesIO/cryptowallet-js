@@ -187,7 +187,7 @@ export namespace CryptoWallet.SDKS.Bitcoin {
       amounts: number[],
       minerRate: number,
     ): Object {
-      if (!wallet.network.connect) {
+      if (!wallet.network || !wallet.network.connect) {
         throw new Error('Invalid wallet type');
       }
 
