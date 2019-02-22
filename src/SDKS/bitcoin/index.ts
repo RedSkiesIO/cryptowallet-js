@@ -410,9 +410,13 @@ export namespace CryptoWallet.SDKS.Bitcoin {
       keypair: KeyPair,
       txHash: string,
       txNumber: number,
+      txValue: number,
       address: string,
       amount: number,
     ): String {
+      if (!keypair.network || !keypair.network.connect) {
+        throw new Error('Invalid keypair');
+      }
       const key = this.bitcoinlib.ECPair.fromWIF(keypair.privateKey, keypair.network.connect);
       const p2wpkh = this.bitcoinlib.payments.p2wpkh(
         { pubkey: key.publicKey, network: keypair.network.connect },
@@ -420,13 +424,14 @@ export namespace CryptoWallet.SDKS.Bitcoin {
       const p2sh = this.bitcoinlib.payments.p2sh(
         { redeem: p2wpkh, network: keypair.network.connect },
       );
-      const txb = new this.bitcoinlib.TransactionBuilder();
+      const txb = new this.bitcoinlib.TransactionBuilder(keypair.network.connect);
 
       txb.setVersion(1);
       txb.addInput(txHash, txNumber);
       txb.addOutput(address, amount);
+
       if (keypair.network.segwit) {
-        txb.sign(0, key, p2sh.redeem.output, undefined);
+        txb.sign(0, key, p2sh.redeem.output, undefined, txValue);
       } else {
         txb.sign(0, key);
       }

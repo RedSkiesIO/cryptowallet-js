@@ -170,7 +170,7 @@ describe('bitcoinSDK (wallet)', () => {
         [0.05, 0.05],
         36,
       );
-      console.log(tx);
+      expect(tx.transaction.hash).toBe('383828987896c74ac5a5b560327ee066da6b148dc60b380a3320fae984a061c2');
     });
 
     it('can create a raw tx with 2 recepients and 2 change addresses ', async () => {
@@ -190,7 +190,7 @@ describe('bitcoinSDK (wallet)', () => {
         [0.05, 0.05],
         36,
       );
-      console.log(tx);
+      expect(tx.transaction.hash).toBe('b7985529236e5af800274c7af46ed4d4ed96b390d41ba314f178414c080eed8a');
     });
 
     it('can create a Dash testnet raw transaction with 2 recepients', async () => {
@@ -223,7 +223,7 @@ describe('bitcoinSDK (wallet)', () => {
         [5, 5],
         36,
       );
-      console.log(rawTx);
+      expect(rawTx.transaction.hash).toBe('9557278adae402b63f0fb4a369f93db4e68b5be46c6fe6cb76968192d1afedc8');
     });
 
     it('can detect an invalid wallet object ', async () => {
@@ -325,6 +325,77 @@ describe('bitcoinSDK (wallet)', () => {
           '03c6103b3b83e4a24a0e33a4df246ef11772f9992663db0c35759a5e2ebf68d8e9'],
         'BITCOIN',
       )).toThrow('Invalid public key used');
+    });
+  });
+
+  describe('create1t1tx', () => {
+    const utxo = [{
+      address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+      txid: '48d2bc7293fe1b1b3c74b1276861c3ab1a63a01fbf87789c192f3491422e9dbf',
+      vout: 82,
+      scriptPubKey: 'a91441d8fdc7c1218b669e29928a209cd2d4df70ca9687',
+      amount: 0.17433129,
+      satoshis: 17433129,
+      height: 1448809,
+      confirmations: 29673,
+      value: 17433129,
+    }];
+
+    it('can create a 1 to 1 btc testnet transaction', () => {
+      const wallet: any = btc.generateHDWallet(entropy, network);
+      const keypair: any = btc.generateKeyPair(wallet, 0);
+      const tx = btc.create1t1tx(
+        keypair,
+        utxo[0].txid,
+        utxo[0].vout,
+        utxo[0].value,
+        'mfhV5QiSeuzzKasgTYPZWJqqQyJxENGSmK',
+        17433000,
+      );
+      expect(tx).toBe(
+        '01000000000101bf9d2e4291342f199c7887bf1fa0631aabc3616827b1743c1b1bfe9372bcd248520000001716001446d30502494c7cad48b027b570f55b9fe70632b3ffffffff01a8010a01000000001976a91401fddae9f9a820f0c6f28e2db916bdc0341f869788ac0248304502210085b36e03d8b2f8dae99b83dd5ca226b9122550900f9b0a7991efd8cca989a9eb022039bf3db65cfac51d3028912a5d443442b57295edb23fe0e590a7c7a9ec2de517012103f3ce9fafbcf2da98817a706e5d41272455df20b8f832f6700c1bb2652ac44de000000000',
+      );
+    });
+
+    it('can create a 1 to 1 dash testnet transaction', () => {
+      const wallet: any = btc.generateHDWallet(entropy, 'DASH_TESTNET');
+      const keypair: any = btc.generateKeyPair(wallet, 0);
+      const dashUtxo = [{
+        address: 'yWxRFULbGzvNuFafp1jUFNenXbiGrdoNWr',
+        txid: 'ca6f45c6105e924df1ec6cc48ae8634e8e802fd7a039584d0e6d252ee981e73d',
+        vout: 0,
+        scriptPubKey: 'a914d11a8d42832ff79dad1e76a91474af505593334219ac81a2fa6f165f02ce7049d588ac902f814a876d43eca05587',
+        amount: 189.3686,
+        satoshis: 189368600000,
+        height: 47586,
+        confirmations: 3,
+        value: 189368600000,
+      }];
+
+      const tx = btc.create1t1tx(
+        keypair,
+        dashUtxo[0].txid,
+        dashUtxo[0].vout,
+        dashUtxo[0].value,
+        'yc1v3o1TkA5TUKntjFriDcoRBKgJ4hutZM',
+        189368500000,
+      );
+      expect(tx).toBe(
+        '01000000013de781e92e256d0e4d5839a0d72f808e4e63e88ac46cecf14d925e10c6456fca000000006a47304402201d51ca0f2bf01e85fbde49a83e1692cdee189e4e128775e6160750775c3f51f1022052f1bafa0da086c38ab86b56205f0681b55e9d21e49423c6eca9338d9205d3bc012103545bb4c84f82bb1a8e4a270715aa60c58a5331777c6929acf587b3dcdcf36c58ffffffff0120ff3d172c0000001976a914ac313b030c9c66561acf9fb8146d60ab73ffe71288ac00000000',
+      );
+    });
+
+    it('can detect an invalid keypair', () => {
+      const wallet: any = eth.generateHDWallet(entropy, network);
+      const keypair: any = eth.generateKeyPair(wallet, 0);
+      expect(() => btc.create1t1tx(
+        'keypair',
+        utxo[0].txid,
+        utxo[0].vout,
+        utxo[0].value,
+        'mfhV5QiSeuzzKasgTYPZWJqqQyJxENGSmK',
+        17433000,
+      )).toThrow('Invalid keypair');
     });
   });
 });
