@@ -42,6 +42,9 @@ export namespace CryptoWallet.SDKS.Bitcoin {
     generateSegWitP2SH(
       keyPair: KeyPair,
     ): string {
+      if (!keyPair.network || !keyPair.network.connect) {
+        throw new Error('Invalid keypair type');
+      }
       const key: BitcoinLib.ECPair = this.bitcoinlib.ECPair.fromWIF(
         keyPair.privateKey,
         keyPair.network.connect,
