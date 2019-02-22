@@ -135,6 +135,13 @@ export namespace CryptoWallet.SDKS.Bitcoin {
       addresses: string[],
       network: string,
     ): Object {
+      if (!this.networks[network] || !this.networks[network].connect) {
+        throw new Error('Invalid network');
+      }
+      const validAddress = (address: string) => this.validateAddress(address, network);
+      if (!addresses.every(validAddress)) {
+        throw new Error('Invalid address used');
+      }
       return new Promise((resolve, reject) => {
         const apiUrl: string = this.networks[network].discovery;
         const URL:string = `${apiUrl}/addrs/${addresses.toString()}/utxo`;
@@ -157,7 +164,7 @@ export namespace CryptoWallet.SDKS.Bitcoin {
 
             return resolve(result);
           })
-          .catch((error: Error) => reject(error));
+          .catch((error: Error) => reject(new Error('Failed to fetch UTXOs')));
       });
     }
 
@@ -180,7 +187,7 @@ export namespace CryptoWallet.SDKS.Bitcoin {
       amounts: number[],
       minerRate: number,
     ): Object {
-      if (!wallet.network.connect) {
+      if (!wallet.network || !wallet.network.connect) {
         throw new Error('Invalid wallet type');
       }
 
