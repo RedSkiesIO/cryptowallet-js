@@ -227,17 +227,44 @@ describe('bitcoinSDK (wallet)', () => {
       console.log(rawTx);
     });
 
+    it('can detect an invalid wallet object ', async () => {
+      expect(() => btc.createTxToMany(
+        accounts,
+        ['2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA'],
+        utxo,
+        'wallet',
+        ['2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
+          '2Mt7HbkByM5SRjVFBnxBAyBsUwJWWDQrQcH'],
+        [0.05, 0.05],
+        36,
+      )).toThrow('Invalid wallet type');
+    });
+
     it('can detect when there is no balance when creating a transaction', async () => {
       const emptyUtxo:any = [];
-      expect(btc.createRawTx(
+      expect(btc.createTxToMany(
         accounts,
         ['2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA'],
         emptyUtxo,
         wallet,
-        '2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
-        0.1,
+        ['2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
+          '2Mt7HbkByM5SRjVFBnxBAyBsUwJWWDQrQcH'],
+        [0.1, 0.1],
         36,
       )).rejects.toMatch('You don\'t have enough balance to cover transaction');
+    });
+
+    it('can detect when there is not enough balance to cover the transaction', async () => {
+      expect(btc.createTxToMany(
+        accounts,
+        ['2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA'],
+        utxo,
+        wallet,
+        ['2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
+          '2Mt7HbkByM5SRjVFBnxBAyBsUwJWWDQrQcH'],
+        [5, 5],
+        36,
+      )).rejects.toMatch('You don\'t have enough Satoshis to cover the miner fee.');
     });
   });
 });
