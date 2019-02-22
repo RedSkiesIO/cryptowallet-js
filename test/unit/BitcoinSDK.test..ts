@@ -38,7 +38,6 @@ describe('bitcoinSDK (wallet)', () => {
       expect(() => btc.generateSegWitAddress(keypair)).toThrow('Invalid keypair type');
     });
   });
-
   describe('generateSegWit3of4MultiSigAddress', () => {
     it('can generate a BTC testnet segwit 3 of 4 multisig address', () => {
       const address = btc.generateSegWit3of4MultiSigAddress(
