@@ -36,7 +36,7 @@ describe('bitcoinSDK (wallet)', () => {
     it('can detect if an invalid keypair is used', () => {
       const wallet: any = eth.generateHDWallet(entropy, 'ETHEREUM');
       const keypair: any = eth.generateKeyPair(wallet, 0);
-      expect(() => btc.generateSegWitAddress(keypair)).toThrow('Invalid keypair type');
+      expect(() => btc.generateSegWitP2SH(keypair)).toThrow('Invalid keypair type');
     });
   });
 
@@ -98,6 +98,47 @@ describe('bitcoinSDK (wallet)', () => {
           '03c6103b3b83e4a24a0e33a4df246ef11772f9992663db0c35759a5e2ebf68d8e9'],
         'BITCOIN',
       )).toThrow('Invalid public key used');
+    });
+  });
+
+  describe('getUTXOs', () => {
+    it('can retrieve the UTXOs of a btc testnet address', async () => {
+      mockAxios.get.mockResolvedValue({
+        data: [{
+          address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+          txid: '48d2bc7293fe1b1b3c74b1276861c3ab1a63a01fbf87789c192f3491422e9dbf',
+          vout: 82,
+          scriptPubKey: 'a91441d8fdc7c1218b669e29928a209cd2d4df70ca9687',
+          amount: 0.17433129,
+          satoshis: 17433129,
+          height: 1448809,
+          confirmations: 29673,
+        }],
+      });
+      const utxos = await btc.getUTXOs(['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'], network);
+      expect(utxos[0].value).toBe(17433129);
+    });
+
+    it('can retrieve the UTXOs of a btc testnet address', async () => {
+      mockAxios.get.mockResolvedValue({
+        data: [],
+      });
+      const utxos = await btc.getUTXOs(['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'], network);
+      expect(utxos).toEqual([]);
+    });
+
+    it('can detect if an invalid network is used', () => {
+      expect(() => btc.getUTXOs(['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'], 'ETHEREUM')).toThrow('Invalid network');
+    });
+
+    it('can detect if an invalid address is used', () => {
+      expect(() => btc.getUTXOs(['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvk'], network)).toThrow('Invalid address used');
+    });
+    it('can detect an API error', async () => {
+      mockAxios.get.mockResolvedValue(() => { throw new Error('some error'); });
+      const utxos = btc.getUTXOs(['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'], network)
+        .catch((e: Error) => expect(e.message).toBe('Failed to fetch UTXOs'));
+      return utxos;
     });
   });
 });
