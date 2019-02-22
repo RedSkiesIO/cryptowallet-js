@@ -438,14 +438,12 @@ export namespace CryptoWallet.SDKS {
       );
       const tx = this.bitcoinlib.Transaction.fromHex(transaction.txHex);
       const valid: boolean[] = [];
-
       tx.ins.forEach((input: any, i: number) => {
         const keyPair = keyPairs[i];
         const p2pkh = this.bitcoinlib.payments.p2pkh({
           pubkey: keyPair.publicKey,
           input: input.script,
         });
-
         const ss = this.bitcoinlib.script.signature.decode(p2pkh.signature);
         const hash = tx.hashForSignature(i, p2pkh.output, ss.hashType);
         valid.push(keyPair.verify(hash, ss.signature));
@@ -563,7 +561,6 @@ export namespace CryptoWallet.SDKS {
         const URL: string = `${apiUrl}/addrs/${addresses.toString()}/txs?from=${from}&to=${to}`;
         this.axios.get(URL)
           .then((r: any) => {
-            // console.log(r.data.items);
             if (r.data.totalItems === 0) { return resolve(); }
             let more: boolean = false;
             if (r.data.totalItems > to) { more = true; }
@@ -571,7 +568,6 @@ export namespace CryptoWallet.SDKS {
             const transactions: Transaction[] = [];
 
             results.forEach((result: any) => {
-              // console.log('result :', result);
               let confirmed: boolean = false;
               if (result.confirmations > 5) { confirmed = true; }
               let sent: boolean = false;
