@@ -266,8 +266,10 @@ describe('bitcoinSDK (wallet)', () => {
       expect(() => btc.getTransactionFee('bitocin')).toThrow('Invalid network');
     });
 
-    it('can detect an API error', async () => {
+    it('can get the transacion fee for a bitcoin transaction', async () => {
+      // eslint-disable-next-line prefer-const
       mockAxios.get.mockResolvedValue(() => { throw new Error('some error'); });
+
       return expect(btc.getTransactionFee('BITCOIN')).rejects.toMatch('Cannot read property \'high_fee_per_kb\' of undefined');
     });
   });

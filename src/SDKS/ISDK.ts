@@ -82,5 +82,6 @@ export namespace CryptoWallet.SDKS {
     //   currency: string,
     //   period: string,
     // ): Object;
+
   }
 }
