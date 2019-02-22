@@ -19,6 +19,9 @@ export namespace CryptoWallet.SDKS.Bitcoin {
     generateSegWitAddress(
       keyPair: KeyPair,
     ): string {
+      if (!keyPair.network || !keyPair.network.connect) {
+        throw new Error('Invalid keypair type');
+      }
       const key: BitcoinLib.ECPair = this.bitcoinlib.ECPair.fromWIF(
         keyPair.privateKey,
         keyPair.network.connect,
@@ -250,7 +253,6 @@ export namespace CryptoWallet.SDKS.Bitcoin {
           });
 
           const txb = new this.bitcoinlib.TransactionBuilder(net.connect);
-
           txb.setVersion(1);
 
           inputs.forEach((input: any) => {
