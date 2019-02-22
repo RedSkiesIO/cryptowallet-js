@@ -250,7 +250,6 @@ export namespace CryptoWallet.SDKS.Bitcoin {
           });
 
           const txb = new this.bitcoinlib.TransactionBuilder(net.connect);
-
           txb.setVersion(1);
 
           inputs.forEach((input: any) => {

@@ -43,7 +43,9 @@
     "babel-loader": "^8.0.2",
     "babel-plugin-istanbul": "^5.0.1",
     "babel-preset-power-assert": "^3.0.0",
+    "bn.js": "^4.11.8",
     "buble": "^0.19.3",
+    "chai": "^4.2.0",
     "cross-env": "^5.1.6",
     "eslint": "^5.9.0",
     "eslint-loader": "^2.1.0",
@@ -51,6 +53,7 @@
     "eslint-plugin-vue-libs": "^2.0.1",
     "fork-ts-checker-webpack-plugin": "^0.4.9",
     "jest": "^24.1.0",
+    "lodash": "^4.17.11",
     "power-assert": "^1.6.0",
     "rollup": "^0.66.0",
     "rollup-plugin-buble": "^0.19.2",
@@ -65,9 +68,7 @@
     "vue-template-compiler": "^2.5.17",
     "webpack": "^4.19.1",
     "webpack-bundle-analyzer": "^3.0.4",
-    "webpack-cli": "^3.1.1",
-    "bn.js": "^4.11.8",
-    "lodash": "^4.17.11"
+    "webpack-cli": "^3.1.1"
   },
   "files": [
     "dist/cryptowallet-js.js",
@@ -87,7 +88,7 @@
   ],
   "license": "MIT",
   "engines": {
-    "node": ">= 8.11"
+    "node": ">= 8.15"
   },
   "repository": {
     "type": "git",
