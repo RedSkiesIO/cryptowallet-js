@@ -141,6 +141,105 @@ describe('bitcoinSDK (wallet)', () => {
       return utxos;
     });
   });
+
+  describe('createTxToMany', () => {
+    const wallet: any = btc.generateHDWallet(entropy, network);
+    const utxo = [{
+      address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+      txid: '48d2bc7293fe1b1b3c74b1276861c3ab1a63a01fbf87789c192f3491422e9dbf',
+      vout: 82,
+      scriptPubKey: 'a91441d8fdc7c1218b669e29928a209cd2d4df70ca9687',
+      amount: 0.17433129,
+      satoshis: 17433129,
+      height: 1448809,
+      confirmations: 29673,
+      value: 17433129,
+    }];
+    const accounts = [{
+      address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+      index: 0,
+      change: false,
+    }];
+    it('can create a raw tx with 2 recepients ', async () => {
+      const tx = await btc.createTxToMany(
+        accounts,
+        ['2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA'],
+        utxo,
+        wallet,
+        ['2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
+          '2Mt7HbkByM5SRjVFBnxBAyBsUwJWWDQrQcH'],
+        [0.05, 0.05],
+        36,
+      );
+      console.log(tx);
+    });
+
+    it('can create a raw tx with 2 recepients and 2 change addresses ', async () => {
+      const changeAccount = [{
+        address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+        index: 0,
+        change: true,
+      }];
+      const tx = await btc.createTxToMany(
+        changeAccount,
+        ['2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA',
+          '2NDbQDbR89XMTbTDSzfWUS93DXbywDqYCtH'],
+        utxo,
+        wallet,
+        ['2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
+          '2Mt7HbkByM5SRjVFBnxBAyBsUwJWWDQrQcH'],
+        [0.05, 0.05],
+        36,
+      );
+      console.log(tx);
+    });
+
+    it('can create a Dash testnet raw transaction with 2 recepients', async () => {
+      const dashWallet: any = btc.generateHDWallet(entropy, 'DASH_TESTNET');
+      const dashUtxo = [{
+        address: 'yWxRFULbGzvNuFafp1jUFNenXbiGrdoNWr',
+        txid: 'ca6f45c6105e924df1ec6cc48ae8634e8e802fd7a039584d0e6d252ee981e73d',
+        vout: 0,
+        scriptPubKey: 'a914d11a8d42832ff79dad1e76a91474af505593334219ac81a2fa6f165f02ce7049d588ac902f814a876d43eca05587',
+        amount: 189.3686,
+        satoshis: 189368600000,
+        height: 47586,
+        confirmations: 3,
+        value: 189368600000,
+      }];
+
+      const dashAccounts = [{
+        address: 'yWxRFULbGzvNuFafp1jUFNenXbiGrdoNWr',
+        index: 0,
+        change: false,
+      }];
+
+      const rawTx = await btc.createTxToMany(
+        dashAccounts,
+        ['yifJaS4dzhySqAWmFfm3E2gaysZRQmaJix'],
+        dashUtxo,
+        dashWallet,
+        ['yc1v3o1TkA5TUKntjFriDcoRBKgJ4hutZM',
+          'yLhoHGyVegBkDJWfzJZNuZtse1g7w2mxTU'],
+        [5, 5],
+        36,
+      );
+      console.log(rawTx);
+    });
+
+    it('can detect when there is no balance when creating a transaction', async () => {
+      const emptyUtxo:any = [];
+      expect(btc.createRawTx(
+        accounts,
+        ['2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA'],
+        emptyUtxo,
+        wallet,
+        '2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
+        0.1,
+        36,
+      )).rejects.toMatch('You don\'t have enough balance to cover transaction');
+    });
+  });
 });
 
 
