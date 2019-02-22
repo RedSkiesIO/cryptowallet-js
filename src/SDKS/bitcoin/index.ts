@@ -407,19 +407,29 @@ export namespace CryptoWallet.SDKS.Bitcoin {
      * @param amount
      */
     create1t1tx(
-      keypair: BitcoinLib.ECPair,
+      keypair: KeyPair,
       txHash: string,
       txNumber: number,
       address: string,
       amount: number,
     ): String {
+      const key = this.bitcoinlib.ECPair.fromWIF(keypair.privateKey, keypair.network.connect);
+      const p2wpkh = this.bitcoinlib.payments.p2wpkh(
+        { pubkey: key.publicKey, network: keypair.network.connect },
+      );
+      const p2sh = this.bitcoinlib.payments.p2sh(
+        { redeem: p2wpkh, network: keypair.network.connect },
+      );
       const txb = new this.bitcoinlib.TransactionBuilder();
 
       txb.setVersion(1);
       txb.addInput(txHash, txNumber);
       txb.addOutput(address, amount);
-      txb.sign(0, keypair);
-
+      if (keypair.network.segwit) {
+        txb.sign(0, key, p2sh.redeem.output, undefined);
+      } else {
+        txb.sign(0, key);
+      }
       return txb.build().toHex();
     }
 
