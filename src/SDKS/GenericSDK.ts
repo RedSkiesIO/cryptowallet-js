@@ -568,6 +568,10 @@ export namespace CryptoWallet.SDKS {
             const transactions: Transaction[] = [];
 
             results.forEach((result: any) => {
+              let confirmed: boolean = false;
+              if (result.confirmations > 5) { confirmed = true; }
+              let sent: boolean = false;
+              let value: number = 0;
               const change: string[] = [];
               const receivers: string[] = [];
               const senders: string[] = [];
