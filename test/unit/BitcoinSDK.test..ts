@@ -74,15 +74,30 @@ describe('bitcoinSDK (wallet)', () => {
   });
 
   describe('generateP2SHMultiSig', () => {
+    const keys = [
+      '026477115981fe981a6918a6297d9803c4dc04f328f22041bedff886bbc2962e01',
+      '02c96db2302d19b43d4c69368babace7854cc84eb9e061cde51cfa77ca4a22b8b9',
+      '023e4740d0ba639e28963f3476157b7cf2fb7c6fdf4254f97099cf8670b505ea59',
+      '03c6103b3b83e4a24a0e33a4df246ef11772f9992663db0c35759a5e2ebf68d8e9',
+    ];
+
     it('can generate a BTC testnet P2SH multisig', () => {
-      const keys = [
-        '026477115981fe981a6918a6297d9803c4dc04f328f22041bedff886bbc2962e01',
-        '02c96db2302d19b43d4c69368babace7854cc84eb9e061cde51cfa77ca4a22b8b9',
-        '023e4740d0ba639e28963f3476157b7cf2fb7c6fdf4254f97099cf8670b505ea59',
-        '03c6103b3b83e4a24a0e33a4df246ef11772f9992663db0c35759a5e2ebf68d8e9',
-      ];
       const address = btc.generateP2SHMultiSig(keys, 'BITCOIN');
       expect(address).toBe('3DAeAnDta65gFaTB3QLNb3HA5kC3qSmBcm');
+    });
+
+    it('can detect if an invalid network is used', () => {
+      expect(() => btc.generateP2SHMultiSig(keys, 'ETHEREUM')).toThrow('Invalid network');
+    });
+
+    it('can detect if an invalid public key is used', () => {
+      expect(() => btc.generateP2SHMultiSig(
+        ['026477115981fe981a6918a6297d9803c4dc04f328f22041bedff886bbc2962e0',
+          '02c96db2302d19b43d4c69368babace7854cc84eb9e061cde51cfa77ca4a22b8b9',
+          '023e4740d0ba639e28963f3476157b7cf2fb7c6fdf4254f97099cf8670b505ea59',
+          '03c6103b3b83e4a24a0e33a4df246ef11772f9992663db0c35759a5e2ebf68d8e9'],
+        'BITCOIN',
+      )).toThrow('Invalid public key used');
     });
   });
 });
