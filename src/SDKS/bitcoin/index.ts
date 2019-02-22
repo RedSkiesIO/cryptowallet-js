@@ -76,16 +76,23 @@ export namespace CryptoWallet.SDKS.Bitcoin {
       key4: string,
       network: string,
     ): string {
-      const pubkeys: any = [key1, key2, key3, key4].map(hex => Buffer.from(hex, 'hex'));
-      const { address } = this.bitcoinlib.payments.p2wsh({
-        redeem: this.bitcoinlib.payments.p2ms({
-          pubkeys,
-          m: 3,
+      if (!this.networks[network] || !this.networks[network].connect) {
+        throw new Error('Invalid network');
+      }
+      try {
+        const pubkeys: any = [key1, key2, key3, key4].map(hex => Buffer.from(hex, 'hex'));
+        const { address } = this.bitcoinlib.payments.p2wsh({
+          redeem: this.bitcoinlib.payments.p2ms({
+            pubkeys,
+            m: 3,
+            network: this.networks[network].connect,
+          }),
           network: this.networks[network].connect,
-        }),
-        network: this.networks[network].connect,
-      });
-      return address;
+        });
+        return address;
+      } catch (e) {
+        throw new Error('Invalid public key used');
+      }
     }
 
     /**
