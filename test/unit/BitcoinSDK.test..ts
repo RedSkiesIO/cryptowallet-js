@@ -266,8 +266,9 @@ describe('bitcoinSDK (wallet)', () => {
       )).rejects.toMatch('You don\'t have enough Satoshis to cover the miner fee.');
     });
   });
+
   describe('generateSegWit3of4MultiSigAddress', () => {
-    it('can generate a BTC testnet segwit 3 of 4 multisig address', () => {
+    it('can generate a BTC segwit 3 of 4 multisig address', () => {
       const address = btc.generateSegWit3of4MultiSigAddress(
         '026477115981fe981a6918a6297d9803c4dc04f328f22041bedff886bbc2962e01',
         '02c96db2302d19b43d4c69368babace7854cc84eb9e061cde51cfa77ca4a22b8b9',
@@ -294,6 +295,34 @@ describe('bitcoinSDK (wallet)', () => {
         '02c96db2302d19b43d4c69368babace7854cc84eb9e061cde51cfa77ca4a22b8b9',
         '023e4740d0ba639e28963f3476157b7cf2fb7c6fdf4254f97099cf8670b505ea59',
         '03c6103b3b83e4a24a0e33a4df246ef11772f9992663db0c35759a5e2ebf68d8e9',
+        'BITCOIN',
+      )).toThrow('Invalid public key used');
+    });
+  });
+
+  describe('generateP2SHMultiSig', () => {
+    const keys = [
+      '026477115981fe981a6918a6297d9803c4dc04f328f22041bedff886bbc2962e01',
+      '02c96db2302d19b43d4c69368babace7854cc84eb9e061cde51cfa77ca4a22b8b9',
+      '023e4740d0ba639e28963f3476157b7cf2fb7c6fdf4254f97099cf8670b505ea59',
+      '03c6103b3b83e4a24a0e33a4df246ef11772f9992663db0c35759a5e2ebf68d8e9',
+    ];
+
+    it('can generate a BTC testnet P2SH multisig', () => {
+      const address = btc.generateP2SHMultiSig(keys, 'BITCOIN');
+      expect(address).toBe('3DAeAnDta65gFaTB3QLNb3HA5kC3qSmBcm');
+    });
+
+    it('can detect if an invalid network is used', () => {
+      expect(() => btc.generateP2SHMultiSig(keys, 'ETHEREUM')).toThrow('Invalid network');
+    });
+
+    it('can detect if an invalid public key is used', () => {
+      expect(() => btc.generateP2SHMultiSig(
+        ['026477115981fe981a6918a6297d9803c4dc04f328f22041bedff886bbc2962e0',
+          '02c96db2302d19b43d4c69368babace7854cc84eb9e061cde51cfa77ca4a22b8b9',
+          '023e4740d0ba639e28963f3476157b7cf2fb7c6fdf4254f97099cf8670b505ea59',
+          '03c6103b3b83e4a24a0e33a4df246ef11772f9992663db0c35759a5e2ebf68d8e9'],
         'BITCOIN',
       )).toThrow('Invalid public key used');
     });
