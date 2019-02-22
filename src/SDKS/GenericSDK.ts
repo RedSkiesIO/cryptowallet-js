@@ -459,7 +459,6 @@ export namespace CryptoWallet.SDKS {
      */
     accountDiscovery(
       wallet: Wallet,
-
       internal?: boolean,
     ): Object {
       if (!wallet || !wallet.network || !wallet.network.connect) {
@@ -475,7 +474,6 @@ export namespace CryptoWallet.SDKS {
 
       const checkAddress = (address: string, i: number) => {
         const URL: string = `${apiUrl}/addr/${address}?noTxList=1`;
-
         return new Promise(async (resolve, reject) => {
           const addr = await this.axios.get(URL);
           if (!addr.data) {
