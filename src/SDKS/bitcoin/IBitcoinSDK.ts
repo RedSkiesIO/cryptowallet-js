@@ -23,9 +23,10 @@ export namespace CryptoWallet.SDKS.Bitcoin {
     ): string;
 
     create1t1tx(
-      keypair: ECPair,
+      keypair: KeyPair,
       txHash: string,
       txNumber: number,
+      txValue: number,
       address: string,
       amount: number,
     ): String;
