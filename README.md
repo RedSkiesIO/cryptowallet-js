@@ -20,4 +20,4 @@ Please make sure to read the [Contributing Guide](https://github.com/atlascity/c
 
 ## :copyright: License
 
-[MIT](http://opensource.org/licenses/MIT)
+[GPLv2](http://opensource.org/licenses/GPL-2.0)
