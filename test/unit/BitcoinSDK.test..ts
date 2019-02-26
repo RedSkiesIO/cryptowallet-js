@@ -398,6 +398,100 @@ describe('bitcoinSDK (wallet)', () => {
       )).toThrow('Invalid keypair');
     });
   });
+
+  describe('create2t2tx', () => {
+    const utxo1 = {
+      address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
+      txid: '48d2bc7293fe1b1b3c74b1276861c3ab1a63a01fbf87789c192f3491422e9dbf',
+      vout: 82,
+      scriptPubKey: 'a91441d8fdc7c1218b669e29928a209cd2d4df70ca9687',
+      amount: 0.17433129,
+      satoshis: 17433129,
+      height: 1448809,
+      confirmations: 29673,
+      value: 17433129,
+    };
+
+    const utxo2 = {
+      address: '2N6JMWTb79SMh94j82jfMKDSL3wXWkb1MFM',
+      txid: 'a4ce3ca2423dd17e9d464aac043cd3b081b1a565c03940d0743284404fb80578',
+      vout: 0,
+      scriptPubKey: 'a9148f312921f28e71e3c996db61f6582e13ae62675e87',
+      amount: 0.001,
+      satoshis: 100000,
+      height: 1445718,
+      confirmations: 36104,
+    };
+
+    it('can create a 2 to 2 btc testnet transaction', () => {
+      const wallet: any = btc.generateHDWallet(entropy, network);
+      const keypair1: any = btc.generateKeyPair(wallet, 0);
+      const keypair2: any = btc.generateKeyPair(wallet, 1);
+      const tx = btc.create2t2tx(
+        keypair1,
+        keypair2,
+        utxo1,
+        utxo2,
+        { address: '2ND1J2aHuKaVeiT2b7yYR2xXv363r8fb7tt', amount: 50000 },
+        { address: '2MzfXyakzRekKgRHwh7AfpkLUhiab9ALX2P', amount: 50000 },
+      );
+      expect(tx).toBe(
+        '01000000000102bf9d2e4291342f199c7887bf1fa0631aabc3616827b1743c1b1bfe9372bcd248520000001716001446d30502494c7cad48b027b570f55b9fe70632b3ffffffff7805b84f40843274d04039c065a5b181b0d33c04ac4a469d7ed13d42a23ccea40000000017160014003bb69952a6357962f375078916826f885d4fbdffffffff0250c300000000000017a914d8c010704698d35bcbc863bd9b06d18577455bec8750c300000000000017a9145161e10e28aee91fdc30ad794abd8f071cdeefcf8702483045022100c49574263eb7a9b1eda9fac81b49003c81e6aec4c46d654241ef9076d11e714f02206ac7a062bf7b61a8e2cbce6176f65e2345f89206a5e5e5f7888dc09c74ac80c1012103f3ce9fafbcf2da98817a706e5d41272455df20b8f832f6700c1bb2652ac44de00247304402205a6e27d7be45b768a59ec112008d847126829a937d57e31e5724ef2ac9273bb802204feacfeaf1dc3436095f4dc9a33bd8e5f6deadc8ed00cad10d66e6f582efcd2b0121038b42204c5877c7e7a7a7b405bfdc562f7938f449dd369006100ac5e025cb3d5a00000000',
+      );
+    });
+
+    it('can create a 2 to 2 dash testnet transaction', () => {
+      const dashUtxo1 = {
+        address: 'yWxRFULbGzvNuFafp1jUFNenXbiGrdoNWr',
+        txid: 'ca6f45c6105e924df1ec6cc48ae8634e8e802fd7a039584d0e6d252ee981e73d',
+        vout: 0,
+        scriptPubKey: 'a914d11a8d42832ff79dad1e76a91474af505593334219ac81a2fa6f165f02ce7049d588ac902f814a876d43eca05587',
+        amount: 189.3686,
+        satoshis: 189368600000,
+        height: 47586,
+        confirmations: 3,
+        value: 189368600000,
+      };
+      const dashUtxo2 = {
+        address: 'yi1f7Y6Y9NKg2B3ertcdPgyn9QwxKj8vdc',
+        txid: 'a74b40e1e927ca9e83d368dfbbda9646bc16c94d0105020e18c01212253b8a16',
+        vout: 0,
+        scriptPubKey: '76a914edf5848923a8bfce51aae9e73bf4199c7c6342b888ac',
+        amount: 173.7014,
+        satoshis: 17370140000,
+        height: 50963,
+        confirmations: 5,
+        value: 173701400000,
+      };
+      const wallet: any = btc.generateHDWallet(entropy, 'DASH_TESTNET');
+      const keypair1: any = btc.generateKeyPair(wallet, 0);
+      const keypair2: any = btc.generateKeyPair(wallet, 1);
+      const tx = btc.create2t2tx(
+        keypair1,
+        keypair2,
+        dashUtxo1,
+        dashUtxo2,
+        { address: 'yc1v3o1TkA5TUKntjFriDcoRBKgJ4hutZM', amount: 10000000 },
+        { address: 'yc1v3o1TkA5TUKntjFriDcoRBKgJ4hutZM', amount: 10000000 },
+      );
+      expect(tx).toBe(
+        '01000000023de781e92e256d0e4d5839a0d72f808e4e63e88ac46cecf14d925e10c6456fca000000006a47304402207bc46d7c15d46dd73080ca5745cb16435f41e29046169dab0ac9020992b25fdb02204bb0d91a409306ec29f5105cf3363bf054fe5449f8c48adb72568e8a591be746012103545bb4c84f82bb1a8e4a270715aa60c58a5331777c6929acf587b3dcdcf36c58ffffffff168a3b251212c0180e0205014dc916bc4696dabbdf68d3839eca27e9e1404ba7000000006b4830450221009c36a344502c7d9ecbcfabe0fb58988a2355af094428ede754306b7929380e620220077f359b01b19a8447d775ad27d0d55c904d2add2d66be8a3273358802e226a4012102c2d32ae7e727f19265dcd73f5875a4728cb0cd01b0214a1d449971ae4764a518ffffffff0280969800000000001976a914ac313b030c9c66561acf9fb8146d60ab73ffe71288ac80969800000000001976a914ac313b030c9c66561acf9fb8146d60ab73ffe71288ac00000000',
+      );
+    });
+
+    it('can detect an invalid keypair', () => {
+      const wallet: any = eth.generateHDWallet(entropy, network);
+      const keypair: any = eth.generateKeyPair(wallet, 0);
+      expect(() => btc.create2t2tx(
+        keypair,
+        'keypair2',
+        utxo1,
+        utxo2,
+        { address: '2ND1J2aHuKaVeiT2b7yYR2xXv363r8fb7tt', amount: 50000 },
+        { address: '2MzfXyakzRekKgRHwh7AfpkLUhiab9ALX2P', amount: 50000 },
+      )).toThrow('Invalid keypair');
+    });
+  });
 });
 
 
