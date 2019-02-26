@@ -88,10 +88,10 @@ export namespace CryptoWallet.SDKS.Ethereum {
     getTransactionFee(
       network: string,
     ): Object {
+      if (!this.networks[network] || this.networks[network].connect) {
+        throw new Error('Invalid network');
+      }
       return new Promise((resolve, reject) => {
-        // if (this.networks[network].connect) {
-        //   throw new Error('Invalid network type');
-        // }
         const URL: string = this.networks[network].feeApi;
         this.axios.get(URL)
           .then((r: any) => resolve({
@@ -102,7 +102,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
             txMedium: (r.data.medium_gas_price * 21000) / 1000000000000000000,
             txLow: (r.data.low_gas_price * 21000) / 1000000000000000000,
           }))
-          .catch((e: Error) => reject(new Error(`Failed to get transaction fee: ${e.message}`)));
+          .catch((e: Error) => reject(e.message));
       });
     }
 
