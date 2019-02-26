@@ -32,7 +32,12 @@ export namespace CryptoWallet.SDKS.Bitcoin {
     ): String;
 
     create2t2tx(
-      txparams: any,
+      keypair1: KeyPair,
+      keypair2: KeyPair,
+      utxo1: any,
+      utxo2: any,
+      output1: any,
+      output2: any,
     ): String;
 
     generateP2SHMultiSig(

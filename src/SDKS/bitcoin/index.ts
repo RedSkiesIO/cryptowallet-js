@@ -443,19 +443,52 @@ export namespace CryptoWallet.SDKS.Bitcoin {
      * @param txparams
      */
     create2t2tx(
-      txparams: any,
+      keypair1: KeyPair,
+      keypair2: KeyPair,
+      utxo1: any,
+      utxo2: any,
+      output1: any,
+      output2: any,
     ): String {
-      const txb = new this.bitcoinlib.TransactionBuilder();
+      if (
+        !keypair1.network
+        || !keypair1.network.connect
+        || !keypair2.network
+        || !keypair2.network.connect
+      ) {
+        throw new Error('Invalid keypair');
+      }
+      const key1 = this.bitcoinlib.ECPair.fromWIF(keypair1.privateKey, keypair1.network.connect);
+      const key2 = this.bitcoinlib.ECPair.fromWIF(keypair2.privateKey, keypair2.network.connect);
+      const p2wpkh1 = this.bitcoinlib.payments.p2wpkh(
+        { pubkey: key1.publicKey, network: keypair1.network.connect },
+      );
+      const p2wpkh2 = this.bitcoinlib.payments.p2wpkh(
+        { pubkey: key2.publicKey, network: keypair2.network.connect },
+      );
+
+      const p2sh1 = this.bitcoinlib.payments.p2sh(
+        { redeem: p2wpkh1, network: keypair1.network.connect },
+      );
+      const p2sh2 = this.bitcoinlib.payments.p2sh(
+        { redeem: p2wpkh2, network: keypair2.network.connect },
+      );
+      const txb = new this.bitcoinlib.TransactionBuilder(keypair1.network.connect);
       txb.setVersion(1);
-      txb.addInput(txparams.txHash1, txparams.txNumber1);
-      txb.addInput(txparams.txHash2, txparams.txNumber2);
-
-      txb.addOutput(txparams.address1, txparams.amount1);
-      txb.addOutput(txparams.address2, txparams.amount2);
-
-      txb.sign(0, txparams.keypair1);
-      txb.sign(1, txparams.keypair2);
-
+      txb.addInput(utxo1.txid, utxo1.vout);
+      txb.addInput(utxo2.txid, utxo2.vout);
+      txb.addOutput(output1.address, output1.amount);
+      txb.addOutput(output2.address, output2.amount);
+      if (keypair1.network.segwit) {
+        txb.sign(0, key1, p2sh1.redeem.output, undefined, output1.amount);
+      } else {
+        txb.sign(0, key1);
+      }
+      if (keypair2.network.segwit) {
+        txb.sign(1, key2, p2sh2.redeem.output, undefined, output2.amount);
+      } else {
+        txb.sign(1, key2);
+      }
       return txb.build().toHex();
     }
   }
