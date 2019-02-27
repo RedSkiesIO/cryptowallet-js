@@ -140,44 +140,47 @@ export namespace CryptoWallet.SDKS.Ethereum {
     ): Object {
       const privateKey: Buffer = Buffer.from(keypair.privateKey.substr(2), 'hex');
       const web3: any = new this.Web3(keypair.network.provider);
-      return new Promise((resolve, reject) => {
-        web3.eth.getTransactionCount(keypair.address, 'latest', (err: Error, nonce: number) => {
-          if (err) {
-            return reject(err);
-          }
-          const sendAmount: string = amount.toString();
-          const gasAmount: string = gasPrice.toString();
-          const tx: any = new EthereumTx({
-            nonce,
-            gasPrice: web3.utils.toHex(gasAmount),
-            gasLimit: web3.utils.toHex(21000),
-            to: toAddress,
-            value: web3.utils.toHex(web3.utils.toWei(sendAmount)),
-            chainId: keypair.network.chainId,
-          });
-          tx.sign(privateKey);
-          const raw: string = `0x${tx.serialize().toString('hex')}`;
+      return new Promise(async (resolve, reject) => {
+        const nonce = await web3.eth.getTransactionCount(keypair.address);
 
-          const transaction: Transaction = {
-            hash: web3.utils.sha3(raw),
-            fee: web3.utils.fromWei((gasPrice * 21000).toString(), 'ether'),
-            receiver: toAddress,
-            confirmed: false,
-            confirmations: 0,
-            blockHeight: -1,
-            sent: true,
-            value: amount,
-            sender: keypair.address,
-            receivedTime: new Date().getTime() / 1000,
-            confirmedTime: new Date().getTime() / 1000,
-          };
+        // if (err) {
+        //   return reject(err);
+        // }
+        const sendAmount: string = amount.toString();
+        const gasAmount: string = gasPrice.toString();
+        const tx: any = new EthereumTx({
+          nonce,
+          gasPrice: web3.utils.toHex(gasAmount),
+          gasLimit: web3.utils.toHex(21000),
+          to: toAddress,
+          value: web3.utils.toHex(web3.utils.toWei(sendAmount)),
+          chainId: keypair.network.chainId,
+        });
+        tx.sign(privateKey);
+        const raw: string = `0x${tx.serialize().toString('hex')}`;
 
-          return resolve({
-            transaction,
-            hexTx: raw,
-          });
-        })
-          .catch((e: Error) => reject(e));
+        const transaction: Transaction = {
+          hash: web3.utils.sha3(raw),
+          fee: web3.utils.fromWei((gasPrice * 21000).toString(), 'ether'),
+          receiver: toAddress,
+          confirmed: false,
+          confirmations: 0,
+          blockHeight: -1,
+          sent: true,
+          value: amount,
+          sender: keypair.address,
+          receivedTime: new Date().getTime() / 1000,
+          confirmedTime: new Date().getTime() / 1000,
+        };
+
+        return resolve({
+          transaction,
+          hexTx: raw,
+        });
+
+
+        // web3.eth.getTransactionCount(keypair.address, 'latest', cb)
+        //   .catch((e: Error) => reject(e));
       });
     }
 
@@ -191,14 +194,11 @@ export namespace CryptoWallet.SDKS.Ethereum {
       network: string,
     ): Object {
       const web3: any = new this.Web3(this.networks[network].provider);
-      return new Promise((resolve, reject) => {
-        web3.eth.sendSignedTransaction(rawTx, (err: Error, hash: string) => {
-          if (err) return reject(err);
-          return resolve({
-            hash,
-          });
-        })
-          .catch((e: Error) => reject(e));
+      return new Promise(async (resolve, reject) => {
+        const hash = await web3.eth.sendSignedTransaction(rawTx);
+        return resolve({
+          hash,
+        });
       });
     }
 

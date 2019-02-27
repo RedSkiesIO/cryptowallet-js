@@ -1,10 +1,10 @@
-export BITCOIN_DISCOVERY='https://insight.bitpay.com/api'
-export BITCOIN_BROADCAST='https://chain.so/api/v2/send_tx/BTC'
-export BITCOIN_FEE='https://api.blockcypher.com/v1/btc/main'
+export BITCOIN_DISCOVERY=''
+export BITCOIN_BROADCAST=''
+export BITCOIN_FEE=''
 
-export BITCOIN_TESTNET_DISCOVERY='https://test-insight.bitpay.com/api'
-export BITCOIN_TESTNET_BROADCAST='https://chain.so/api/v2/send_tx/BTCTEST'
-export BITCOIN_TESTNET_FEE='https://api.blockcypher.com/v1/btc/main'
+export BITCOIN_TESTNET_DISCOVERY=''
+export BITCOIN_TESTNET_BROADCAST=''
+export BITCOIN_TESTNET_FEE=''
 
 export LITECOIN_DISCOVERY=''
 export LITECOIN_BROADCAST=''
