@@ -4,8 +4,10 @@ import axios from 'axios';
 import * as web3 from 'web3';
 import { CryptoWallet } from '../../src/SDKFactory';
 import mockEthTransactionHistory from '../datasets/mockEthTransactionHistory';
-
+// mock axios
 jest.mock('axios');
+const mockAxios: any = axios;
+// mock web3
 jest.genMockFromModule('web3');
 jest.mock('web3');
 const jestWeb3: any = web3;
@@ -23,9 +25,8 @@ const mockWeb3 = {
   },
 };
 jestWeb3.mockImplementation(() => mockWeb3);
-const mockAxios: any = axios;
+
 const eth: any = CryptoWallet.createSDK('Ethereum');
-const btc: any = CryptoWallet.createSDK('Bitcoin');
 const entropy = 'nut mixture license bean page mimic iron spice rail uncover then warfare';
 const network = 'ETHEREUM_ROPSTEN';
 
