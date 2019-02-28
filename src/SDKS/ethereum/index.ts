@@ -33,6 +33,9 @@ export namespace CryptoWallet.SDKS.Ethereum {
       wallet: Wallet,
       index: number,
     ): KeyPair {
+      if (!wallet.network || wallet.network.connect) {
+        throw new Error('Invalid wallet type');
+      }
       const addrNode = this.Bip.fromExtendedKey(
         wallet.external.xpriv,
       ).deriveChild(index);
