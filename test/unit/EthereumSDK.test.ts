@@ -55,6 +55,13 @@ describe('ethereumSDK (wallet)', () => {
       const badFn = () => eth.generateAddress('wallet', 0);
       expect(badFn).toThrow('Invalid wallet type');
     });
+
+    it('can detect an invalid wallet', () => {
+      const btc: any = CryptoWallet.createSDK('Bitcoin');
+      const wallet = btc.generateHDWallet(entropy, 'BITCOIN');
+      const badFn = () => eth.generateAddress('wallet', 0);
+      expect(badFn).toThrow('Invalid wallet type');
+    });
   });
 
   describe('validateAddress', () => {
