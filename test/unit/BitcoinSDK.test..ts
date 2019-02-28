@@ -386,7 +386,7 @@ describe('bitcoinSDK (wallet)', () => {
     });
 
     it('can detect an invalid keypair', () => {
-      const wallet: any = eth.generateHDWallet(entropy, network);
+      const wallet: any = btc.generateHDWallet(entropy, network);
       const keypair: any = eth.generateKeyPair(wallet, 0);
       expect(() => btc.create1t1tx(
         'keypair',
@@ -480,7 +480,7 @@ describe('bitcoinSDK (wallet)', () => {
     });
 
     it('can detect an invalid keypair', () => {
-      const wallet: any = eth.generateHDWallet(entropy, network);
+      const wallet: any = btc.generateHDWallet(entropy, network);
       const keypair: any = eth.generateKeyPair(wallet, 0);
       expect(() => btc.create2t2tx(
         keypair,

@@ -37,6 +37,11 @@ describe('ethereumSDK (wallet)', () => {
       const keypair = eth.generateKeyPair(wallet, 0);
       expect(keypair.address).toBe('0x8f97Bb9335747E4fCdDA8680F66ed96DcBe27F49');
     });
+
+    it('can detect an invalid wallet', () => {
+      const badFn = () => eth.generateKeyPair('wallet', 0);
+      expect(badFn).toThrow('Invalid wallet type');
+    });
   });
 
   describe('generateAddress', () => {
@@ -44,6 +49,11 @@ describe('ethereumSDK (wallet)', () => {
       const wallet = eth.generateHDWallet(entropy, network);
       const account = eth.generateAddress(wallet, 0);
       expect(account.address).toBe('0x8f97Bb9335747E4fCdDA8680F66ed96DcBe27F49');
+    });
+
+    it('can detect an invalid wallet', () => {
+      const badFn = () => eth.generateAddress('wallet', 0);
+      expect(badFn).toThrow('Invalid wallet type');
     });
   });
 
