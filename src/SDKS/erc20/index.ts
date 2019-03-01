@@ -109,21 +109,20 @@ export namespace CryptoWallet.SDKS.ERC20 {
     }
 
     /**
-    *  Broadcast an Ethereum transaction
-    * @param rawTx
-    * @param network
-    */
+     *  Broadcast an Ethereum transaction
+     * @param rawTx
+     * @param network
+     */
     broadcastTx(
       rawTx: string,
       network: string,
     ): Object {
       const web3: any = new this.Web3(this.networks[network].provider);
-      return new Promise((resolve, reject) => {
-        web3.eth.sendSignedTransaction(rawTx, (err: Error, result: string) => {
-          if (err) return reject(err);
-          return resolve(result);
-        })
-          .catch((e: Error) => reject(e));
+      return new Promise(async (resolve, reject) => {
+        const hash = await web3.eth.sendSignedTransaction(rawTx);
+        return resolve({
+          hash,
+        });
       });
     }
 
@@ -184,7 +183,6 @@ export namespace CryptoWallet.SDKS.ERC20 {
       return new Promise(async (resolve, reject) => {
         const web3: any = new this.Web3(erc20Wallet.network.provider);
         const contract = new web3.eth.Contract(this.json, erc20Wallet.contract);
-        console.log('contract :', contract);
         const check: number = await this.checkAllowance(erc20Wallet, from);
 
         if (check >= amount) {
@@ -213,8 +211,8 @@ export namespace CryptoWallet.SDKS.ERC20 {
       return new Promise(async (resolve, reject) => {
         const web3: any = new this.Web3(erc20Wallet.network.provider);
         const contract = new web3.eth.Contract(this.json, erc20Wallet.contract);
-        contract.methods.allowance(from, erc20Wallet.address).call()
-          .then((result: number) => resolve(result));
+        const allowance = await contract.methods.allowance(from, erc20Wallet.address).call();
+        return resolve(allowance);
       });
     }
 
@@ -229,12 +227,9 @@ export namespace CryptoWallet.SDKS.ERC20 {
       return new Promise(async (resolve, reject) => {
         const web3: any = new this.Web3(erc20Wallet.network.provider);
         const contract = new web3.eth.Contract(this.json, erc20Wallet.contract);
-        contract.methods.balanceOf(erc20Wallet.address).call()
-          .then((result: number) => {
-            const balance: number = result / (10 ** erc20Wallet.decimals);
-            return resolve(balance);
-          })
-          .catch((e: Error) => reject(e));
+        const balance = await contract.methods.balanceOf(erc20Wallet.address).call();
+        const adjustedBalance: number = balance / (10 ** erc20Wallet.decimals);
+        return resolve(adjustedBalance);
       });
     }
 
