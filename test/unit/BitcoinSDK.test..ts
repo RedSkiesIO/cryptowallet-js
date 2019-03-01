@@ -250,7 +250,7 @@ describe('bitcoinSDK (wallet)', () => {
           '2Mt7HbkByM5SRjVFBnxBAyBsUwJWWDQrQcH'],
         [0.1, 0.1],
         36,
-      )).rejects.toMatch('You don\'t have enough balance to cover transaction');
+      )).rejects.toEqual(new Error('You don\'t have enough balance to cover transaction'));
     });
 
     it('can detect when there is not enough balance to cover the transaction', async () => {
@@ -263,7 +263,7 @@ describe('bitcoinSDK (wallet)', () => {
           '2Mt7HbkByM5SRjVFBnxBAyBsUwJWWDQrQcH'],
         [5, 5],
         36,
-      )).rejects.toMatch('You don\'t have enough Satoshis to cover the miner fee.');
+      )).rejects.toEqual(new Error('You don\'t have enough Satoshis to cover the miner fee.'));
     });
   });
 
@@ -386,8 +386,8 @@ describe('bitcoinSDK (wallet)', () => {
     });
 
     it('can detect an invalid keypair', () => {
-      const wallet: any = eth.generateHDWallet(entropy, network);
-      const keypair: any = eth.generateKeyPair(wallet, 0);
+      const wallet: any = btc.generateHDWallet(entropy, network);
+      const keypair: any = btc.generateKeyPair(wallet, 0);
       expect(() => btc.create1t1tx(
         'keypair',
         utxo[0].txid,
@@ -480,8 +480,8 @@ describe('bitcoinSDK (wallet)', () => {
     });
 
     it('can detect an invalid keypair', () => {
-      const wallet: any = eth.generateHDWallet(entropy, network);
-      const keypair: any = eth.generateKeyPair(wallet, 0);
+      const wallet: any = btc.generateHDWallet(entropy, network);
+      const keypair: any = btc.generateKeyPair(wallet, 0);
       expect(() => btc.create2t2tx(
         keypair,
         'keypair2',
