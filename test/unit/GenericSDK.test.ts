@@ -452,7 +452,7 @@ describe('bitcoinSDK (wallet)', () => {
         '2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
         0.1,
         36,
-      )).rejects.toMatch('You don\'t have enough balance to cover transaction');
+      )).rejects.toEqual(new Error('You don\'t have enough balance to cover transaction'));
     });
 
     it('can detect when there is not enough balance to cover the transaction', async () => {
@@ -464,7 +464,7 @@ describe('bitcoinSDK (wallet)', () => {
         '2NB9kPS83wUZHdFu222vJNXSJXBvVoVgvqc',
         1,
         36,
-      )).rejects.toMatch('You don\'t have enough Satoshis to cover the miner fee.');
+      )).rejects.toEqual(new Error('You don\'t have enough Satoshis to cover the miner fee.'));
     });
   });
 

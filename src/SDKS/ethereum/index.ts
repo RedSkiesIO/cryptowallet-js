@@ -148,10 +148,6 @@ export namespace CryptoWallet.SDKS.Ethereum {
       const web3: any = new this.Web3(keypair.network.provider);
       return new Promise(async (resolve, reject) => {
         const nonce = await web3.eth.getTransactionCount(keypair.address);
-
-        // if (err) {
-        //   return reject(err);
-        // }
         const sendAmount: string = amount.toString();
         const gasAmount: string = gasPrice.toString();
         const tx: any = new EthereumTx({
@@ -183,10 +179,6 @@ export namespace CryptoWallet.SDKS.Ethereum {
           transaction,
           hexTx: raw,
         });
-
-
-        // web3.eth.getTransactionCount(keypair.address, 'latest', cb)
-        //   .catch((e: Error) => reject(e));
       });
     }
 
