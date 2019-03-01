@@ -42,10 +42,11 @@ export namespace CryptoWallet.SDKS.ERC20 {
       contractAddress: string,
       decimals: number,
     ): Object {
-      // const web3: any = new this.Web3(keypair.network.provider);
-      // const contract = new web3.eth.Contract(this.json, contractAddress);
-      // const privateKey = Buffer.from(keypair.privateKey.substr(2), 'hex');
-      const something = this;
+      const web3: any = new this.Web3(keypair.network.provider);
+      const valid = web3.utils.isAddress(contractAddress.toLowerCase());
+      if (!valid) {
+        throw new Error('This is not a valid ERC20 contract address');
+      }
       return {
         decimals,
         address: keypair.address,
@@ -72,7 +73,6 @@ export namespace CryptoWallet.SDKS.ERC20 {
       const web3 = new this.Web3(erc20Wallet.network.provider);
       return new Promise(async (resolve, reject) => {
         const nonce = await web3.eth.getTransactionCount(erc20Wallet.address);
-        // .catch((e: any) => reject(e));
         const gas = gasPrice.toString();
         const tx = new this.Tx({
           nonce,
@@ -143,7 +143,6 @@ export namespace CryptoWallet.SDKS.ERC20 {
       const contract = new web3.eth.Contract(this.json, erc20Wallet.contract);
       const sendAmount: string = (amount * (10 ** erc20Wallet.decimals)).toString();
       const method = contract.methods.transfer(to, sendAmount).encodeABI();
-
       return this.createTx(erc20Wallet, keypair, method, gasPrice, to, amount);
     }
 
@@ -184,7 +183,6 @@ export namespace CryptoWallet.SDKS.ERC20 {
         const web3: any = new this.Web3(erc20Wallet.network.provider);
         const contract = new web3.eth.Contract(this.json, erc20Wallet.contract);
         const check: number = await this.checkAllowance(erc20Wallet, from);
-
         if (check >= amount) {
           const sendAmount: string = (amount * (10 ** erc20Wallet.decimals)).toString();
           const method = contract.methods.transferFrom(
@@ -240,7 +238,6 @@ export namespace CryptoWallet.SDKS.ERC20 {
       return new Promise(async (resolve, reject) => {
         const web3: any = new this.Web3(this.networks[network].provider);
         const abiArray = this.json;
-
         const contract = new web3.eth.Contract(abiArray, address);
         const valid: string = await web3.eth.getCode(address);
         if (valid === '0x') {

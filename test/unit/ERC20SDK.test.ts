@@ -11,13 +11,7 @@ const entropy = 'nut mixture license bean page mimic iron spice rail uncover the
 const network = 'ETHEREUM_ROPSTEN';
 const ethWallet = eth.generateHDWallet(entropy, network);
 const ethKeypair = eth.generateKeyPair(ethWallet, 0);
-const wallet = erc20.generateERC20Wallet(
-  ethKeypair,
-  'Catalyst',
-  'CAT',
-  '0x26705403968a8c73656a2fed0f89245698718f3f',
-  3,
-);
+
 
 // mock web3
 jest.genMockFromModule('web3');
@@ -31,6 +25,7 @@ const mockWeb3 = {
   utils: {
     toHex: jest.requireActual('web3').utils.toHex,
     sha3: jest.requireActual('web3').utils.sha3,
+    isAddress: jest.requireActual('web3').utils.isAddress,
   },
   eth: {
     getTransactionCount: jest.fn(() => 5),
@@ -61,10 +56,29 @@ const mockContract = {
 jestWeb3.mockImplementation(() => mockWeb3);
 mockWeb3.eth.Contract.mockImplementation(() => mockContract);
 
-describe('ERC20SDK', () => {
+const wallet = erc20.generateERC20Wallet(
+  ethKeypair,
+  'Catalyst',
+  'CAT',
+  '0x26705403968a8c73656a2fed0f89245698718f3f',
+  3,
+);
+
+describe('ERC20SDK', async () => {
   describe('generateERC20Wallet', () => {
     it('can create an ERC20 wallet', () => {
       expect(wallet.address).toBe('0x8f97Bb9335747E4fCdDA8680F66ed96DcBe27F49');
+    });
+
+    it('can detect an invalid address', async () => {
+      const invalidWallet = () => erc20.generateERC20Wallet(
+        ethKeypair,
+        'Catalyst',
+        'CAT',
+        '0x156AE1c2797494353C143070D01D5E4903bE2EB',
+        3,
+      );
+      expect(invalidWallet).toThrow('This is not a valid ERC20 contract address');
     });
   });
 
