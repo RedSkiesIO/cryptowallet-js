@@ -217,7 +217,7 @@ describe('ERC20SDK', () => {
   });
 
   describe('getTokenData', () => {
-    it('can get the balance of an ERC20 token', async () => {
+    it('can get data of an ERC20 token', async () => {
       mockWeb3.eth.getCode.mockResolvedValueOnce('valid');
       mockCall.call.mockResolvedValueOnce(5);
       mockCall.call.mockResolvedValueOnce(3);
@@ -247,12 +247,24 @@ describe('ERC20SDK', () => {
 
     it('can detect an invalid ERC20 contract address', async () => {
       mockWeb3.eth.getCode.mockResolvedValueOnce('valid');
-      mockCall.call.mockResolvedValueOnce(new Error('method does not exist'));
+      mockCall.call.mockRejectedValueOnce(new Error('method does not exist'));
       const tokenData = await erc20.getTokenData(
         '0x26705403968a8c73656a2fed0f89245698718f3f',
         network,
       )
         .catch((e: Error) => expect(e.message).toBe('Not a valid ERC20 contract address'));
+      expect(tokenData).toBeUndefined();
+    });
+
+    it('can return empty if data is found', async () => {
+      mockWeb3.eth.getCode.mockResolvedValueOnce('valid');
+      mockCall.call.mockResolvedValueOnce(5);
+      mockCall.call.mockRejectedValueOnce(new Error('method does not exist'));
+
+      const tokenData = await erc20.getTokenData(
+        '0x26705403968a8c73656a2fed0f89245698718f3f',
+        network,
+      );
       expect(tokenData).toBeUndefined();
     });
   });
