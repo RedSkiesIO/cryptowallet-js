@@ -3,25 +3,28 @@ import 'jest';
 import axios from 'axios';
 import * as Web3 from 'web3';
 import { CryptoWallet } from '../../src/SDKFactory';
+import mockERC20TransactionHistory from '../datasets/mockERC20TransactionHistory';
 
 const erc20: any = CryptoWallet.createSDK('ERC20');
 const eth: any = CryptoWallet.createSDK('Ethereum');
 const entropy = 'nut mixture license bean page mimic iron spice rail uncover then warfare';
 const network = 'ETHEREUM_ROPSTEN';
+const ethWallet = eth.generateHDWallet(entropy, network);
+const ethKeypair = eth.generateKeyPair(ethWallet, 0);
+const wallet = erc20.generateERC20Wallet(
+  ethKeypair,
+  'Catalyst',
+  'CAT',
+  '0x26705403968a8c73656a2fed0f89245698718f3f',
+  3,
+);
 
 // mock web3
 jest.genMockFromModule('web3');
 jest.mock('web3');
-// const constructor = jest.fn();
+jest.mock('axios');
 
-// jest.mock('web3', () => ({
-//   ...jest.requireActual('web3'),
-// //   eth: {
-// //     getTransactionCount: jest.fn(),
-// //     sendSignedTransaction: jest.fn(),
-// //   },
-// }));
-
+const mockAxios: any = axios;
 const jestWeb3: any = Web3;
 
 const mockWeb3 = {
@@ -39,14 +42,14 @@ const mockWeb3 = {
 const mockCall = {
   call: jest.fn(),
 };
-const mockTransfer = {
+const mockEncodeABI = {
   encodeABI: jest.fn(),
 };
 const mockContract = {
   methods: {
-    transfer: jest.fn(() => mockTransfer),
-    approve: jest.fn(() => mockTransfer),
-    transferFrom: jest.fn(() => mockTransfer),
+    transfer: jest.fn(() => mockEncodeABI),
+    approve: jest.fn(() => mockEncodeABI),
+    transferFrom: jest.fn(() => mockEncodeABI),
     allowance: jest.fn(() => mockCall),
     balanceOf: jest.fn(() => mockCall),
     decimals: jest.fn(() => mockCall),
@@ -57,37 +60,16 @@ const mockContract = {
 
 jestWeb3.mockImplementation(() => mockWeb3);
 mockWeb3.eth.Contract.mockImplementation(() => mockContract);
-// mockContract.methods.transfer.mockImplementation(() => mockTransfer);
 
 describe('ERC20SDK', () => {
   describe('generateERC20Wallet', () => {
     it('can create an ERC20 wallet', () => {
-      const ethWallet = eth.generateHDWallet(entropy, network);
-      const ethKeypair = eth.generateKeyPair(ethWallet, 0);
-      const wallet = erc20.generateERC20Wallet(
-        ethKeypair,
-        'Catalyst',
-        'CAT',
-        '0x26705403968a8c73656a2fed0f89245698718f3f',
-        3,
-      );
       expect(wallet.address).toBe('0x8f97Bb9335747E4fCdDA8680F66ed96DcBe27F49');
     });
   });
 
   describe('createTx', () => {
     it('can create an ERC20 transaction', async () => {
-      // web3.eth.getTransactionCount.mockResolvedValue(5);
-      // mockWeb3.utils.sha3.mockResolvedValue('0x0a58760c9b6acc44337bd77a2d4f11c4881bc4577acedd144308cd5718788aa0');
-      const ethWallet = eth.generateHDWallet(entropy, network);
-      const ethKeypair = eth.generateKeyPair(ethWallet, 0);
-      const wallet = erc20.generateERC20Wallet(
-        ethKeypair,
-        'Catalyst',
-        'CAT',
-        '0x26705403968a8c73656a2fed0f89245698718f3f',
-        3,
-      );
       const tx = await erc20.createTx(
         wallet,
         ethKeypair,
@@ -111,16 +93,6 @@ describe('ERC20SDK', () => {
 
   describe('transfer', () => {
     it('can transfer an ERC20 transaction', async () => {
-      // web3.eth.getTransactionCount.mockResolvedValue(5);
-      const ethWallet = eth.generateHDWallet(entropy, network);
-      const ethKeypair = eth.generateKeyPair(ethWallet, 0);
-      const wallet = erc20.generateERC20Wallet(
-        ethKeypair,
-        'Catalyst',
-        'CAT',
-        '0x26705403968a8c73656a2fed0f89245698718f3f',
-        3,
-      );
       const tx = await erc20.transfer(
         wallet,
         ethKeypair,
@@ -134,15 +106,6 @@ describe('ERC20SDK', () => {
 
   describe('approveAccount', () => {
     it('can approve an erc20 transfer', async () => {
-      const ethWallet = eth.generateHDWallet(entropy, network);
-      const ethKeypair = eth.generateKeyPair(ethWallet, 0);
-      const wallet = erc20.generateERC20Wallet(
-        ethKeypair,
-        'Catalyst',
-        'CAT',
-        '0x26705403968a8c73656a2fed0f89245698718f3f',
-        3,
-      );
       const tx = await erc20.approveAccount(
         wallet,
         ethKeypair,
@@ -155,17 +118,8 @@ describe('ERC20SDK', () => {
   });
 
   describe('transferAllowance', () => {
-    it('can create atransaction that transfers an allowance', async () => {
+    it('can create a transaction that transfers an allowance', async () => {
       mockCall.call.mockResolvedValue(5);
-      const ethWallet = eth.generateHDWallet(entropy, network);
-      const ethKeypair = eth.generateKeyPair(ethWallet, 0);
-      const wallet = erc20.generateERC20Wallet(
-        ethKeypair,
-        'Catalyst',
-        'CAT',
-        '0x26705403968a8c73656a2fed0f89245698718f3f',
-        3,
-      );
       const tx = await erc20.transferAllowance(
         wallet,
         ethKeypair,
@@ -175,20 +129,23 @@ describe('ERC20SDK', () => {
       );
       expect(tx.transaction.hash).toBe('0x0f357b606ee4f67c4f495ec0b26ff683411bccd2c1074d471400d0b7cb7df3d6');
     });
+
+    it('can check if the allowance before transfering', async () => {
+      mockCall.call.mockResolvedValue(5);
+      const tx = await erc20.transferAllowance(
+        wallet,
+        ethKeypair,
+        '0x6B92382DEdd2bb7650eB388C553568552206b102',
+        6,
+        18174088324,
+      );
+      expect(tx).toBe('You don\'t have enough allowance');
+    });
   });
 
   describe('checkAllowance', () => {
     it('can create atransaction that transfers an allowance', async () => {
       mockCall.call.mockResolvedValue(5);
-      const ethWallet = eth.generateHDWallet(entropy, network);
-      const ethKeypair = eth.generateKeyPair(ethWallet, 0);
-      const wallet = erc20.generateERC20Wallet(
-        ethKeypair,
-        'Catalyst',
-        'CAT',
-        '0x26705403968a8c73656a2fed0f89245698718f3f',
-        3,
-      );
       const allowance = await erc20.checkAllowance(
         wallet,
         '0x6B92382DEdd2bb7650eB388C553568552206b102',
@@ -200,15 +157,6 @@ describe('ERC20SDK', () => {
   describe('getBalance', () => {
     it('can get the balance of an ERC20 token', async () => {
       mockCall.call.mockResolvedValue(5);
-      const ethWallet = eth.generateHDWallet(entropy, network);
-      const ethKeypair = eth.generateKeyPair(ethWallet, 0);
-      const wallet = erc20.generateERC20Wallet(
-        ethKeypair,
-        'Catalyst',
-        'CAT',
-        '0x26705403968a8c73656a2fed0f89245698718f3f',
-        3,
-      );
       const balance = await erc20.getBalance(
         wallet,
       );
@@ -241,7 +189,6 @@ describe('ERC20SDK', () => {
         network,
       )
         .catch((e: Error) => expect(e.message).toBe('This is not a valid ERC20 contract address'));
-      // return tokenData;
       expect(tokenData).toBeUndefined();
     });
 
@@ -260,12 +207,37 @@ describe('ERC20SDK', () => {
       mockWeb3.eth.getCode.mockResolvedValueOnce('valid');
       mockCall.call.mockResolvedValueOnce(5);
       mockCall.call.mockRejectedValueOnce(new Error('method does not exist'));
-
       const tokenData = await erc20.getTokenData(
         '0x26705403968a8c73656a2fed0f89245698718f3f',
         network,
       );
       expect(tokenData).toBeUndefined();
+    });
+  });
+
+  describe('getTransactionHistory', () => {
+    it('can get the transaction history of an ERC20 token', async () => {
+      mockAxios.get.mockResolvedValue({ data: mockERC20TransactionHistory });
+      const history = await erc20.getTransactionHistory(
+        wallet,
+      );
+      expect(history).toHaveLength(6);
+    });
+
+    it('can detect if there is no history', async () => {
+      mockAxios.get.mockResolvedValue({ data: {} });
+      const history = await erc20.getTransactionHistory(
+        wallet,
+      );
+      expect(history).toBeUndefined();
+    });
+
+    it('can detect an api error', async () => {
+      mockAxios.get.mockRejectedValue(new Error('Failed to get transaction history'));
+      const history = await erc20.getTransactionHistory(
+        wallet,
+      ).catch((e: Error) => expect(e.message).toMatch('Failed to get transaction history'));
+      expect(history).toBeUndefined();
     });
   });
 });

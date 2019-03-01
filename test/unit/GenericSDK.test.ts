@@ -7,7 +7,7 @@ import mockTransactionHistory from '../datasets/mockTransactionHistory';
 
 jest.mock('axios');
 const mockAxios: any = axios;
-const btc: any = CryptoWallet.createSDK('Bitcoin');
+const btc: any = CryptoWallet.createSDK('default');
 const entropy = 'nut mixture license bean page mimic iron spice rail uncover then warfare';
 const invalidEntropy = 'nut mixture license bean page mimic iron spice rail uncover then';
 const regtest = 'myth like bonus scare over problem client lizard pioneer submit female collect';

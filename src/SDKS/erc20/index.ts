@@ -289,7 +289,6 @@ export namespace CryptoWallet.SDKS.ERC20 {
               return resolve();
             }
             const transactions: object[] = [];
-            // const nextBlock: number = 0//res.data.result[0].blockNumber
             res.data.result.forEach((r: any) => {
               const receiver: string = r.to;
               let sent: boolean = false;
