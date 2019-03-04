@@ -16,7 +16,6 @@
 * You should have received a copy of the GNU General Public License
 * along with CryptoWallet-js. If not, see <https://www.gnu.org/licenses/>.
 */
-/* eslint-disable import/no-unresolved */
 import 'jest';
 import axios from 'axios';
 import CryptoWallet from '../../src/SDKFactory';
