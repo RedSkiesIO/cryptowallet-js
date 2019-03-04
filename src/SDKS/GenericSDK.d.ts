@@ -38,4 +38,3 @@ export type Transaction = {
   receivedTime: number;
   confirmedTime: any;
 };
-

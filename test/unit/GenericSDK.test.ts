@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import 'jest';
 import { KeyPair } from 'src/SDKS/GenericSDK.d';
 import axios from 'axios';
@@ -60,7 +59,7 @@ describe('bitcoinSDK (wallet)', () => {
   });
 
   describe('generateKeyPair', () => {
-    it('can create an ext btc testnet key pair', () => {
+    it('can create an external btc testnet key pair', () => {
       const wallet: any = btc.generateHDWallet(entropy, network);
       const keypair: KeyPair = btc.generateKeyPair(wallet, 0);
       expect(keypair.derivationPath).toBe(derPath);
@@ -132,7 +131,7 @@ describe('bitcoinSDK (wallet)', () => {
   });
 
   describe('generateAddress', () => {
-    it('can create an ext btc testnet address', () => {
+    it('can create an external btc testnet address', () => {
       const wallet: any = btc.generateHDWallet(entropy, network);
       const account: any = btc.generateAddress(wallet, 0);
       expect(account.address).toBe('2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf');
@@ -149,7 +148,7 @@ describe('bitcoinSDK (wallet)', () => {
       expect(account.change).toBe(true);
     });
 
-    it('can create an ext Dash address', () => {
+    it('can create an external Dash address', () => {
       const wallet: any = btc.generateHDWallet(entropy, 'DASH');
       const account: any = btc.generateAddress(wallet, 0);
       expect(account.address).toBe('XwzcnQSMZRhZDcNZZmskLB2ztiJnsD26vG');
@@ -291,20 +290,6 @@ describe('bitcoinSDK (wallet)', () => {
       change: false,
     }];
     it('can create a bitcoin raw transaction', async () => {
-      // mockAxios.get.mockResolvedValue({
-      //   data: [{
-      //     address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
-      //     txid: '48d2bc7293fe1b1b3c74b1276861c3ab1a63a01fbf87789c192f3491422e9dbf',
-      //     vout: 82,
-      //     scriptPubKey: 'a91441d8fdc7c1218b669e29928a209cd2d4df70ca9687',
-      //     amount: 0.17433129,
-      //     satoshis: 17433129,
-      //     height: 1448809,
-      //     confirmations: 29673,
-      //   }],
-      // });
-      // const utxos = await btc.getUTXOs(['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'], network);
-
       const rawTx = await btc.createRawTx(
         accounts,
         ['2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA'],
