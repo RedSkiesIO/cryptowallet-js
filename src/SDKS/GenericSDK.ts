@@ -60,8 +60,8 @@ export namespace CryptoWallet.SDKS {
       }
       const wallet: Wallet = {
         bip,
-        external: externalNode.toJSON(),
-        internal: internalNode.toJSON(),
+        ext: externalNode.toJSON(),
+        int: internalNode.toJSON(),
         type: cointype,
         network: this.networks[network],
       };
@@ -79,8 +79,8 @@ export namespace CryptoWallet.SDKS {
       if (!wallet.network.connect) {
         throw new Error('Invalid wallet type');
       }
-      let node = Bip44hdkey.fromJSON(wallet.external);
-      if (internal) { node = Bip44hdkey.fromJSON(wallet.internal); }
+      let node = Bip44hdkey.fromJSON(wallet.ext);
+      if (internal) { node = Bip44hdkey.fromJSON(wallet.int); }
       const addrNode = node.deriveChild(index);
 
       let result: any = this.bitcoinlib.payments.p2sh({
@@ -127,8 +127,8 @@ export namespace CryptoWallet.SDKS {
       if (!wallet.network.connect) {
         throw new Error('Invalid wallet type');
       }
-      let node = Bip44hdkey.fromJSON(wallet.external);
-      if (internal) { node = Bip44hdkey.fromJSON(wallet.internal); }
+      let node = Bip44hdkey.fromJSON(wallet.ext);
+      if (internal) { node = Bip44hdkey.fromJSON(wallet.int); }
       const addrNode = node.deriveChild(index);
       let result: any = this.bitcoinlib.payments.p2sh({
         redeem: this.bitcoinlib.payments.p2wpkh(

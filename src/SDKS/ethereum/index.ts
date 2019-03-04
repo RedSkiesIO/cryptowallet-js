@@ -34,7 +34,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
         throw new Error('Invalid wallet type');
       }
       const addrNode = this.Bip.fromExtendedKey(
-        wallet.external.xpriv,
+        wallet.ext.xpriv,
       ).deriveChild(index);
       const keypair: KeyPair = {
         publicKey: addrNode.getWallet().getPublicKeyString(),
@@ -60,7 +60,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
         throw new Error('Invalid wallet type');
       }
       const addrNode = this.Bip.fromExtendedKey(
-        wallet.external.xpriv,
+        wallet.ext.xpriv,
       ).deriveChild(index);
       const address: Address = {
         index,

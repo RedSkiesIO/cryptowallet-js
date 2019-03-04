@@ -18,33 +18,32 @@ describe('bitcoinSDK (wallet)', () => {
   describe('generateHDWallet', () => {
     it('can generate a BTC testnet HD wallet', () => {
       const wallet: any = btc.generateHDWallet(entropy, 'BITCOIN_TESTNET');
-      const keypair: any = btc.generateKeyPair(wallet, 0);
-      expect(wallet.external.xpriv).toBe('xprvA1zR34Tm9KnyfTxTd9n7m7Q1gMauEKPNzdRL7nfF3cGYiwLYd9xmPJBdRGfL6tu4U46oQf4FhjG2ysih1e5Wfa7ia6W8ZhrLUEcKAjUqLNs');
-      expect(wallet.external.xpub).toBe('xpub6EymSZzeyhMGsx2vjBK88FLkEPRPdn7EMrLvvB4rbwoXbjfhAhH1w6W7GY7MY2nMfp4ebihHWYh5wg2U4wQX3c9JUTndGAa2JjjrZY1f3dc');
+      expect(wallet.ext.xpriv).toBe('xprvA1zR34Tm9KnyfTxTd9n7m7Q1gMauEKPNzdRL7nfF3cGYiwLYd9xmPJBdRGfL6tu4U46oQf4FhjG2ysih1e5Wfa7ia6W8ZhrLUEcKAjUqLNs');
+      expect(wallet.ext.xpub).toBe('xpub6EymSZzeyhMGsx2vjBK88FLkEPRPdn7EMrLvvB4rbwoXbjfhAhH1w6W7GY7MY2nMfp4ebihHWYh5wg2U4wQX3c9JUTndGAa2JjjrZY1f3dc');
       expect(wallet.bip).toBe(49);
       expect(wallet.type).toBe(1);
     });
 
     it('can generate a regtest HD wallet', () => {
       const wallet: any = btc.generateHDWallet(entropy, 'REGTEST');
-      expect(wallet.external.xpriv).toBe('xprv9uZZn2GG7khoyKSKnxBnwc1G9YcrSAtVZ7ohwxwDWUJDfWNHqZE4vUWjbbrXmhCzTERyzWzwuobfkwM1ZiG9DQBXwjEAA3wraqcU1do4Rir');
-      expect(wallet.external.xpub).toBe('xpub68YvBXo9x8G7BoWntyioJjwzhaTLqdcLvLjJkMLq4oqCYJhSP6YKUGqDSsu1aQSejM9xxApK67fzupboqQ8TkXeAb81ySQj2yC4f1MfrTg8');
+      expect(wallet.ext.xpriv).toBe('xprv9uZZn2GG7khoyKSKnxBnwc1G9YcrSAtVZ7ohwxwDWUJDfWNHqZE4vUWjbbrXmhCzTERyzWzwuobfkwM1ZiG9DQBXwjEAA3wraqcU1do4Rir');
+      expect(wallet.ext.xpub).toBe('xpub68YvBXo9x8G7BoWntyioJjwzhaTLqdcLvLjJkMLq4oqCYJhSP6YKUGqDSsu1aQSejM9xxApK67fzupboqQ8TkXeAb81ySQj2yC4f1MfrTg8');
       expect(wallet.bip).toBe(0);
       expect(wallet.type).toBe(0);
     });
 
     it('can generate a Litecoin HD wallet', () => {
       const wallet: any = btc.generateHDWallet(entropy, 'LITECOIN');
-      expect(wallet.external.xpriv).toBe('xprv9zZDbfbjnMv81DYDd79G8BGHa6y9aEbUwYoXjGVQdW4MxJw4XpE5CGmRcbXcFMW3AmZh3GZr8Lj6fQUPs46s5rgj7BgY21XsNV4RKvewxAq');
-      expect(wallet.external.xpub).toBe('xpub6DYa1B8dcjURDhcgj8gGVKD288odyhKLJmj8Xeu2BqbLq7GD5MYKk55uTsw1T9n2QvQRrgbW4n465CZUQsVekBGKQQ5mpphqy97Vhe9j8Pg');
+      expect(wallet.ext.xpriv).toBe('xprv9zZDbfbjnMv81DYDd79G8BGHa6y9aEbUwYoXjGVQdW4MxJw4XpE5CGmRcbXcFMW3AmZh3GZr8Lj6fQUPs46s5rgj7BgY21XsNV4RKvewxAq');
+      expect(wallet.ext.xpub).toBe('xpub6DYa1B8dcjURDhcgj8gGVKD288odyhKLJmj8Xeu2BqbLq7GD5MYKk55uTsw1T9n2QvQRrgbW4n465CZUQsVekBGKQQ5mpphqy97Vhe9j8Pg');
       expect(wallet.bip).toBe(49);
       expect(wallet.type).toBe(2);
     });
 
     it('can generate a Dash HD wallet', () => {
       const wallet: any = btc.generateHDWallet(entropy, 'DASH');
-      expect(wallet.external.xpriv).toBe('xprvA1WARJ2YwFfriS6eQHWBWecQYd6VPt5c7safPbLeiNsHct9pSTeZZe3oV3CkVK6KHrxfp44w3phNcfJDxvvQSd5TJcotRWkcRkhetQQGz7f');
-      expect(wallet.external.xpub).toBe('xpub6EVWpoZSmdE9vvB7WK3BsnZ96evyoLoTV6WGBykGGiQGVgUxyzxp7SNHLM8V79Y9jvF91TRnUwyFiDmUotWWopsgGdWURkT6sscFHaouoQ1');
+      expect(wallet.ext.xpriv).toBe('xprvA1WARJ2YwFfriS6eQHWBWecQYd6VPt5c7safPbLeiNsHct9pSTeZZe3oV3CkVK6KHrxfp44w3phNcfJDxvvQSd5TJcotRWkcRkhetQQGz7f');
+      expect(wallet.ext.xpub).toBe('xpub6EVWpoZSmdE9vvB7WK3BsnZ96evyoLoTV6WGBykGGiQGVgUxyzxp7SNHLM8V79Y9jvF91TRnUwyFiDmUotWWopsgGdWURkT6sscFHaouoQ1');
       expect(wallet.bip).toBe(44);
       expect(wallet.type).toBe(5);
     });
@@ -61,7 +60,7 @@ describe('bitcoinSDK (wallet)', () => {
   });
 
   describe('generateKeyPair', () => {
-    it('can create an external btc testnet key pair', () => {
+    it('can create an ext btc testnet key pair', () => {
       const wallet: any = btc.generateHDWallet(entropy, network);
       const keypair: KeyPair = btc.generateKeyPair(wallet, 0);
       expect(keypair.derivationPath).toBe(derPath);
@@ -133,7 +132,7 @@ describe('bitcoinSDK (wallet)', () => {
   });
 
   describe('generateAddress', () => {
-    it('can create an external btc testnet address', () => {
+    it('can create an ext btc testnet address', () => {
       const wallet: any = btc.generateHDWallet(entropy, network);
       const account: any = btc.generateAddress(wallet, 0);
       expect(account.address).toBe('2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf');
@@ -150,7 +149,7 @@ describe('bitcoinSDK (wallet)', () => {
       expect(account.change).toBe(true);
     });
 
-    it('can create an external Dash address', () => {
+    it('can create an ext Dash address', () => {
       const wallet: any = btc.generateHDWallet(entropy, 'DASH');
       const account: any = btc.generateAddress(wallet, 0);
       expect(account.address).toBe('XwzcnQSMZRhZDcNZZmskLB2ztiJnsD26vG');
