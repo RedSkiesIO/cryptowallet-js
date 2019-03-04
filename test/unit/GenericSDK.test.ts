@@ -1,3 +1,21 @@
+/**
+* Copyright (c) 2019 https://atlascity.io
+*
+* This file is part of CryptoWallet-js <https://github.com/atlascity/cryptowallet-js>
+*
+* CryptoWallet-js is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 2 of the License, or
+* (at your option) any later version.
+*
+* CryptoWallet-js is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with CryptoWallet-js. If not, see <https://www.gnu.org/licenses/>.
+*/
 /* eslint-disable import/no-unresolved */
 import 'jest';
 import { KeyPair } from 'src/SDKS/GenericSDK.d';
@@ -18,33 +36,32 @@ describe('bitcoinSDK (wallet)', () => {
   describe('generateHDWallet', () => {
     it('can generate a BTC testnet HD wallet', () => {
       const wallet: any = btc.generateHDWallet(entropy, 'BITCOIN_TESTNET');
-      const keypair: any = btc.generateKeyPair(wallet, 0);
-      expect(wallet.external.xpriv).toBe('xprvA1zR34Tm9KnyfTxTd9n7m7Q1gMauEKPNzdRL7nfF3cGYiwLYd9xmPJBdRGfL6tu4U46oQf4FhjG2ysih1e5Wfa7ia6W8ZhrLUEcKAjUqLNs');
-      expect(wallet.external.xpub).toBe('xpub6EymSZzeyhMGsx2vjBK88FLkEPRPdn7EMrLvvB4rbwoXbjfhAhH1w6W7GY7MY2nMfp4ebihHWYh5wg2U4wQX3c9JUTndGAa2JjjrZY1f3dc');
+      expect(wallet.ext.xpriv).toBe('xprvA1zR34Tm9KnyfTxTd9n7m7Q1gMauEKPNzdRL7nfF3cGYiwLYd9xmPJBdRGfL6tu4U46oQf4FhjG2ysih1e5Wfa7ia6W8ZhrLUEcKAjUqLNs');
+      expect(wallet.ext.xpub).toBe('xpub6EymSZzeyhMGsx2vjBK88FLkEPRPdn7EMrLvvB4rbwoXbjfhAhH1w6W7GY7MY2nMfp4ebihHWYh5wg2U4wQX3c9JUTndGAa2JjjrZY1f3dc');
       expect(wallet.bip).toBe(49);
       expect(wallet.type).toBe(1);
     });
 
     it('can generate a regtest HD wallet', () => {
       const wallet: any = btc.generateHDWallet(entropy, 'REGTEST');
-      expect(wallet.external.xpriv).toBe('xprv9uZZn2GG7khoyKSKnxBnwc1G9YcrSAtVZ7ohwxwDWUJDfWNHqZE4vUWjbbrXmhCzTERyzWzwuobfkwM1ZiG9DQBXwjEAA3wraqcU1do4Rir');
-      expect(wallet.external.xpub).toBe('xpub68YvBXo9x8G7BoWntyioJjwzhaTLqdcLvLjJkMLq4oqCYJhSP6YKUGqDSsu1aQSejM9xxApK67fzupboqQ8TkXeAb81ySQj2yC4f1MfrTg8');
+      expect(wallet.ext.xpriv).toBe('xprv9uZZn2GG7khoyKSKnxBnwc1G9YcrSAtVZ7ohwxwDWUJDfWNHqZE4vUWjbbrXmhCzTERyzWzwuobfkwM1ZiG9DQBXwjEAA3wraqcU1do4Rir');
+      expect(wallet.ext.xpub).toBe('xpub68YvBXo9x8G7BoWntyioJjwzhaTLqdcLvLjJkMLq4oqCYJhSP6YKUGqDSsu1aQSejM9xxApK67fzupboqQ8TkXeAb81ySQj2yC4f1MfrTg8');
       expect(wallet.bip).toBe(0);
       expect(wallet.type).toBe(0);
     });
 
     it('can generate a Litecoin HD wallet', () => {
       const wallet: any = btc.generateHDWallet(entropy, 'LITECOIN');
-      expect(wallet.external.xpriv).toBe('xprv9zZDbfbjnMv81DYDd79G8BGHa6y9aEbUwYoXjGVQdW4MxJw4XpE5CGmRcbXcFMW3AmZh3GZr8Lj6fQUPs46s5rgj7BgY21XsNV4RKvewxAq');
-      expect(wallet.external.xpub).toBe('xpub6DYa1B8dcjURDhcgj8gGVKD288odyhKLJmj8Xeu2BqbLq7GD5MYKk55uTsw1T9n2QvQRrgbW4n465CZUQsVekBGKQQ5mpphqy97Vhe9j8Pg');
+      expect(wallet.ext.xpriv).toBe('xprv9zZDbfbjnMv81DYDd79G8BGHa6y9aEbUwYoXjGVQdW4MxJw4XpE5CGmRcbXcFMW3AmZh3GZr8Lj6fQUPs46s5rgj7BgY21XsNV4RKvewxAq');
+      expect(wallet.ext.xpub).toBe('xpub6DYa1B8dcjURDhcgj8gGVKD288odyhKLJmj8Xeu2BqbLq7GD5MYKk55uTsw1T9n2QvQRrgbW4n465CZUQsVekBGKQQ5mpphqy97Vhe9j8Pg');
       expect(wallet.bip).toBe(49);
       expect(wallet.type).toBe(2);
     });
 
     it('can generate a Dash HD wallet', () => {
       const wallet: any = btc.generateHDWallet(entropy, 'DASH');
-      expect(wallet.external.xpriv).toBe('xprvA1WARJ2YwFfriS6eQHWBWecQYd6VPt5c7safPbLeiNsHct9pSTeZZe3oV3CkVK6KHrxfp44w3phNcfJDxvvQSd5TJcotRWkcRkhetQQGz7f');
-      expect(wallet.external.xpub).toBe('xpub6EVWpoZSmdE9vvB7WK3BsnZ96evyoLoTV6WGBykGGiQGVgUxyzxp7SNHLM8V79Y9jvF91TRnUwyFiDmUotWWopsgGdWURkT6sscFHaouoQ1');
+      expect(wallet.ext.xpriv).toBe('xprvA1WARJ2YwFfriS6eQHWBWecQYd6VPt5c7safPbLeiNsHct9pSTeZZe3oV3CkVK6KHrxfp44w3phNcfJDxvvQSd5TJcotRWkcRkhetQQGz7f');
+      expect(wallet.ext.xpub).toBe('xpub6EVWpoZSmdE9vvB7WK3BsnZ96evyoLoTV6WGBykGGiQGVgUxyzxp7SNHLM8V79Y9jvF91TRnUwyFiDmUotWWopsgGdWURkT6sscFHaouoQ1');
       expect(wallet.bip).toBe(44);
       expect(wallet.type).toBe(5);
     });
@@ -78,7 +95,6 @@ describe('bitcoinSDK (wallet)', () => {
     it('can create an internal btc testnet key pair', () => {
       const wallet: any = btc.generateHDWallet(entropy, network);
       const keypair: KeyPair = btc.generateKeyPair(wallet, 0, true);
-      // expect(keypair.derivationPath).toBe('m/49\'/1\'/0\'/1/0');
       expect(keypair.address).toBe('2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA');
       expect(
         keypair.publicKey,
@@ -292,20 +308,6 @@ describe('bitcoinSDK (wallet)', () => {
       change: false,
     }];
     it('can create a bitcoin raw transaction', async () => {
-      // mockAxios.get.mockResolvedValue({
-      //   data: [{
-      //     address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
-      //     txid: '48d2bc7293fe1b1b3c74b1276861c3ab1a63a01fbf87789c192f3491422e9dbf',
-      //     vout: 82,
-      //     scriptPubKey: 'a91441d8fdc7c1218b669e29928a209cd2d4df70ca9687',
-      //     amount: 0.17433129,
-      //     satoshis: 17433129,
-      //     height: 1448809,
-      //     confirmations: 29673,
-      //   }],
-      // });
-      // const utxos = await btc.getUTXOs(['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'], network);
-
       const rawTx = await btc.createRawTx(
         accounts,
         ['2NCJs2EA4gwiGJQYpKXoPiebR2vQsBNzdaA'],
