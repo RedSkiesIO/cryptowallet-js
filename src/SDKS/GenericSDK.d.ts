@@ -1,6 +1,6 @@
+/* eslint-disable no-restricted-globals */
 
 export type Wallet = {
-        // eslint-disable-next-line no-restricted-globals
   external: any;
   internal: any;
   bip: number;

@@ -2,7 +2,7 @@
 import 'jest';
 import { KeyPair } from 'src/SDKS/GenericSDK.d';
 import axios from 'axios';
-import { CryptoWallet } from '../../src/SDKFactory';
+import CryptoWallet from '../../src/SDKFactory';
 import mockTransactionHistory from '../datasets/mockTransactionHistory';
 
 jest.mock('axios');

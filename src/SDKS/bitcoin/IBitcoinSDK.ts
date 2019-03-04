@@ -1,7 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
-// import { KeyPair, Wallet } from 'SDKS/GenericSDK';
-import { ECPair } from 'bitcoinjs-lib';
-// eslint-disable-next-line import/no-unresolved
 import { Wallet, KeyPair } from '../GenericSDK.d';
 
 export namespace CryptoWallet.SDKS.Bitcoin {

@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import { Wallet, KeyPair, Address } from './GenericSDK.d';
 
 export namespace CryptoWallet.SDKS {

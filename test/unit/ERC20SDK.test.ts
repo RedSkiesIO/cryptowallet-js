@@ -1,8 +1,7 @@
-/* eslint-disable import/no-unresolved */
 import 'jest';
 import axios from 'axios';
 import * as Web3 from 'web3';
-import { CryptoWallet } from '../../src/SDKFactory';
+import CryptoWallet from '../../src/SDKFactory';
 import mockERC20TransactionHistory from '../datasets/mockERC20TransactionHistory';
 
 const erc20: any = CryptoWallet.createSDK('ERC20');
@@ -11,7 +10,6 @@ const entropy = 'nut mixture license bean page mimic iron spice rail uncover the
 const network = 'ETHEREUM_ROPSTEN';
 const ethWallet = eth.generateHDWallet(entropy, network);
 const ethKeypair = eth.generateKeyPair(ethWallet, 0);
-
 
 // mock web3
 jest.genMockFromModule('web3');

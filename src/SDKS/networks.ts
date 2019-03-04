@@ -186,7 +186,6 @@ export const ETHEREUM = {
   chainId: 1,
 };
 
-
 export const ETHEREUM_ROPSTEN = {
   name: 'ETHEREUM_ROPSTEN',
   networkName: 'ropsten',

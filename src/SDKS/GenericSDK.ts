@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-// eslint-disable-next-line spaced-comment
 ///<reference path="./../types/module.d.ts" />
 import * as Bip39 from 'bip39';
 import * as Bip44hdkey from 'hdkey';

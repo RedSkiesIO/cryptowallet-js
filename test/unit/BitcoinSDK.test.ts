@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unresolved */
 import 'jest';
 import axios from 'axios';
-import { CryptoWallet } from '../../src/SDKFactory';
+import CryptoWallet from '../../src/SDKFactory';
 
 jest.mock('axios');
 const mockAxios: any = axios;

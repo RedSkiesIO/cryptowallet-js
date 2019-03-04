@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-// eslint-disable-next-line spaced-comment
 ///<reference path="../../types/module.d.ts" />
 import * as EthereumTx from 'ethereumjs-tx';
 import * as Web3 from 'web3';
@@ -8,7 +6,6 @@ import { KeyPair } from '../GenericSDK.d';
 import * as IERC20SDK from './IERC20SDK';
 import ERC20JSON from './erc20';
 import * as Networks from '../networks';
-
 
 export namespace CryptoWallet.SDKS.ERC20 {
   export class ERC20SDK implements IERC20SDK.CryptoWallet.SDKS.Erc20.IERC20SDK {

@@ -2,7 +2,7 @@
 import 'jest';
 import axios from 'axios';
 import * as web3 from 'web3';
-import { CryptoWallet } from '../../src/SDKFactory';
+import CryptoWallet from '../../src/SDKFactory';
 import mockEthTransactionHistory from '../datasets/mockEthTransactionHistory';
 // mock axios
 jest.mock('axios');

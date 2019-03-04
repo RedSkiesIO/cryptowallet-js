@@ -1,6 +1,5 @@
 
-// eslint-disable-next-line import/prefer-default-export
-export type Transaction = {
+type Transaction = {
   fee: string;
   receiver: string;
   contractCall?: boolean;
@@ -14,5 +13,4 @@ export type Transaction = {
   confirmedTime: any;
   receivedTime: number;
 };
-
-
+export default Transaction;

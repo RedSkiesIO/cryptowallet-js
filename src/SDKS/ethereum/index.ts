@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-// eslint-disable-next-line spaced-comment
 ///<reference path="../../types/module.d.ts" />
 import * as bip44hdkey from 'ethereumjs-wallet/hdkey';
 import * as EthereumLib from 'ethereumjs-wallet';
@@ -8,10 +6,9 @@ import * as Web3 from 'web3';
 import {
   KeyPair, Wallet, Address,
 } from '../GenericSDK.d';
-// import { Transaction } from './index.d';
 import GenericSDK from '../GenericSDK';
 import * as IEthereumSDK from './IEthereumSDK';
-import { Transaction } from './ethereumTypes';
+import Transaction from './ethereumTypes';
 
 export namespace CryptoWallet.SDKS.Ethereum {
   export class EthereumSDK extends GenericSDK
