@@ -1,5 +1,21 @@
-/* eslint-disable import/no-unresolved */
-// eslint-disable-next-line spaced-comment
+/**
+* Copyright (c) 2019 https://atlascity.io
+*
+* This file is part of CryptoWallet-js <https://github.com/atlascity/cryptowallet-js>
+*
+* CryptoWallet-js is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 2 of the License, or
+* (at your option) any later version.
+*
+* CryptoWallet-js is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with CryptoWallet-js. If not, see <https://www.gnu.org/licenses/>.
+*/
 ///<reference path="../../types/module.d.ts" />
 import * as bip44hdkey from 'ethereumjs-wallet/hdkey';
 import * as EthereumLib from 'ethereumjs-wallet';
@@ -8,20 +24,16 @@ import * as Web3 from 'web3';
 import {
   KeyPair, Wallet, Address,
 } from '../GenericSDK.d';
-// import { Transaction } from './index.d';
 import GenericSDK from '../GenericSDK';
 import * as IEthereumSDK from './IEthereumSDK';
-import { Transaction } from './ethereumTypes';
+import Transaction from './ethereumTypes';
 
 export namespace CryptoWallet.SDKS.Ethereum {
   export class EthereumSDK extends GenericSDK
     implements IEthereumSDK.CryptoWallet.SDKS.Ethereum.IEthereumSDK {
     Bip = bip44hdkey;
-
     ethereumlib = EthereumLib;
-
     Web3:any = Web3;
-
     VerifyTx: any;
 
     /**
@@ -37,7 +49,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
         throw new Error('Invalid wallet type');
       }
       const addrNode = this.Bip.fromExtendedKey(
-        wallet.external.xpriv,
+        wallet.ext.xpriv,
       ).deriveChild(index);
       const keypair: KeyPair = {
         publicKey: addrNode.getWallet().getPublicKeyString(),
@@ -63,7 +75,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
         throw new Error('Invalid wallet type');
       }
       const addrNode = this.Bip.fromExtendedKey(
-        wallet.external.xpriv,
+        wallet.ext.xpriv,
       ).deriveChild(index);
       const address: Address = {
         index,
@@ -99,14 +111,16 @@ export namespace CryptoWallet.SDKS.Ethereum {
       }
       return new Promise((resolve, reject) => {
         const URL: string = this.networks[network].feeApi;
+        const gasLimit = 21000;
+        const weiMultiplier = 1000000000000000000;
         this.axios.get(URL)
           .then((r: any) => resolve({
             high: r.data.high_gas_price,
             medium: r.data.medium_gas_price,
             low: r.data.low_gas_price,
-            txHigh: (r.data.high_gas_price * 21000) / 1000000000000000000,
-            txMedium: (r.data.medium_gas_price * 21000) / 1000000000000000000,
-            txLow: (r.data.low_gas_price * 21000) / 1000000000000000000,
+            txHigh: (r.data.high_gas_price * gasLimit) / weiMultiplier,
+            txMedium: (r.data.medium_gas_price * gasLimit) / weiMultiplier,
+            txLow: (r.data.low_gas_price * gasLimit) / weiMultiplier,
           }))
           .catch((e: Error) => reject(e.message));
       });
@@ -144,26 +158,29 @@ export namespace CryptoWallet.SDKS.Ethereum {
       amount: number,
       gasPrice: number,
     ): Object {
-      const privateKey: Buffer = Buffer.from(keypair.privateKey.substr(2), 'hex');
+      const removePrefix = 2;
+      const privateKey: Buffer = Buffer.from(keypair.privateKey.substr(removePrefix), 'hex');
       const web3: any = new this.Web3(keypair.network.provider);
       return new Promise(async (resolve, reject) => {
         const nonce = await web3.eth.getTransactionCount(keypair.address);
         const sendAmount: string = amount.toString();
         const gasAmount: string = gasPrice.toString();
+        const gasLimit = 21000;
         const tx: any = new EthereumTx({
           nonce,
           gasPrice: web3.utils.toHex(gasAmount),
-          gasLimit: web3.utils.toHex(21000),
+          gasLimit: web3.utils.toHex(gasLimit),
           to: toAddress,
           value: web3.utils.toHex(web3.utils.toWei(sendAmount)),
           chainId: keypair.network.chainId,
         });
         tx.sign(privateKey);
         const raw: string = `0x${tx.serialize().toString('hex')}`;
+        const convertToSeconds = 1000;
 
         const transaction: Transaction = {
           hash: web3.utils.sha3(raw),
-          fee: web3.utils.fromWei((gasPrice * 21000).toString(), 'ether'),
+          fee: web3.utils.fromWei((gasPrice * gasLimit).toString(), 'ether'),
           receiver: toAddress,
           confirmed: false,
           confirmations: 0,
@@ -171,8 +188,8 @@ export namespace CryptoWallet.SDKS.Ethereum {
           sent: true,
           value: amount,
           sender: keypair.address,
-          receivedTime: new Date().getTime() / 1000,
-          confirmedTime: new Date().getTime() / 1000,
+          receivedTime: new Date().getTime() / convertToSeconds,
+          confirmedTime: new Date().getTime() / convertToSeconds,
         };
 
         return resolve({
@@ -230,6 +247,9 @@ export namespace CryptoWallet.SDKS.Ethereum {
     )
       : Object {
       const transactions: Transaction[] = [];
+      const minConfirmations = 11;
+      const weiMultiplier = 1000000000000000000;
+      const gweiMultiplier = 1000000000;
       const getHistory = (address: string) => new Promise(async (resolve, reject) => {
         const URL: string = `${this.networks[network].getTranApi
           + address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
@@ -249,7 +269,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
               if (r.from === addresses[0].toLowerCase()) {
                 sent = true;
               }
-              if (r.confirmations > 11) {
+              if (r.confirmations > minConfirmations) {
                 confirmed = true;
               }
               if (!r.to) {
@@ -264,8 +284,8 @@ export namespace CryptoWallet.SDKS.Ethereum {
                 confirmed,
                 hash: r.hash,
                 blockHeight: r.blockNumber,
-                fee: (r.cumulativeGasUsed / 1000000000).toString(),
-                value: r.value / 1000000000000000000,
+                fee: (r.cumulativeGasUsed / gweiMultiplier).toString(),
+                value: r.value / weiMultiplier,
                 sender: r.from,
                 receivedTime: r.timeStamp,
                 confirmedTime: r.timeStamp,
@@ -351,7 +371,8 @@ export namespace CryptoWallet.SDKS.Ethereum {
       internal?: boolean,
     ): Object {
       const accounts: Address[] = [];
-      for (let i: number = 0; i < 10; i += 1) {
+      const numberOfAccounts = 10;
+      for (let i: number = 0; i < numberOfAccounts; i += 1) {
         const key: KeyPair = this.generateKeyPair(wallet, i);
         const account: Address = {
           address: key.address,

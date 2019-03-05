@@ -1,8 +1,7 @@
 
 export type Wallet = {
-        // eslint-disable-next-line no-restricted-globals
-  external: any;
-  internal: any;
+  ext: any;
+  int: any;
   bip: number;
   type: number;
   network: any;
@@ -39,5 +38,3 @@ export type Transaction = {
   receivedTime: number;
   confirmedTime: any;
 };
-
-
