@@ -17,6 +17,7 @@ module.exports = {
   ],
   rules: {
     'object-curly-spacing': ['error', 'always'],
+    'no-magic-numbers': [true, {'allowed-numbers': [1], 'ignore-jsx': true}],
     'no-multiple-empty-lines': ['error', { max: 2, maxBOF: 1 }],
     'no-undef': 'off',
     'no-unused-vars': 'off',
