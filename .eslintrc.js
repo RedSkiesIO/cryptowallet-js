@@ -10,7 +10,7 @@ module.exports = {
     }
   },
   plugins: [
-    'typescript',
+    'typescript'
   ],
   extends: [
     'airbnb-base'
@@ -25,7 +25,7 @@ module.exports = {
     'import/no-unresolved': 'off',
     'spaced-comment': 'off',
     align: {
-      'mode': 'strict',
+      'mode': 'strict'
     }
   },
 }
