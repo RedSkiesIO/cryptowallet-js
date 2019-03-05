@@ -100,6 +100,8 @@
     "build": "npm run build:ts && webpack",
     "build:ts": "tsc -p src",
     "build:ts:watch": "tsc -p src --watch",
+    "changelog": "conventional-changelog -i CHANGELOG.md -s -p eslint",
+    "release": "conventional-github-releaser -p eslint",
     "clean": "rm -rf coverage && rm -rf lib/*.js* && rm -rf types/*.d.ts* && rm -rf dist/*.js* && rm -rf ./*.log",
     "lint": "eslint --fix --ext .ts src",
     "test": "npm run test:unit",
