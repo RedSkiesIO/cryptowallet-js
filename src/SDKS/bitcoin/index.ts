@@ -206,34 +206,26 @@ export namespace CryptoWallet.SDKS.Bitcoin {
         throw new Error('Invalid wallet type');
       }
 
-      // if (!this.validateAddress(toAddress, wallet.network.name)) {
-      //   throw new Error('Invalid to address');
-      // }
-
       const reducer = (accumulator: number, currentValue: number) => accumulator + currentValue;
       const feeRate: number = minerRate;
       const amount: number = amounts.reduce(reducer);
-      const transactionAmount: number = Math.floor((amount * 100000000));
+      const satoshisMultiplier: number = 100000000;
+      const transactionAmount: number = Math.floor((amount * satoshisMultiplier));
       const net = wallet.network;
       let rawTx: any;
 
       return new Promise(async (resolve, reject) => {
         if (utxos.length === 0) {
-          // if no transactions have happened, there is no balance on the address.
           return reject(new Error("You don't have enough balance to cover transaction"));
         }
-
-        // get balance
         let balance = 0;
-
         for (let i = 0; i < utxos.length; i += 1) {
           balance += utxos[i].value;
         }
 
-        // check whether the balance of the address covers the miner fee
         if ((balance - transactionAmount - feeRate) > 0) {
           const targets: any = [];
-          const satoshisMultiplier: number = 100000000;
+
           const createTargets = (address: string, index: number) => {
             const target: any = {
               address,
@@ -242,12 +234,6 @@ export namespace CryptoWallet.SDKS.Bitcoin {
             targets.push(target);
           };
           toAddresses.forEach(createTargets);
-          // const targets: any = [{
-          //   address: toAddress,
-          //   value: transactionAmount,
-          // },
-          // ];
-
           let result = Coinselect(utxos, targets, feeRate);
           if (change.length > 1) {
             change.forEach((c) => {
@@ -321,7 +307,7 @@ export namespace CryptoWallet.SDKS.Bitcoin {
             senders.push(input.address);
           });
           fee /= satoshisMultiplier;
-
+          const convertMsToS = 1000;
           const transaction = {
             fee,
             change,
@@ -333,7 +319,7 @@ export namespace CryptoWallet.SDKS.Bitcoin {
             sent: true,
             value: amount,
             sender: senders,
-            receivedTime: new Date().getTime() / 1000,
+            receivedTime: new Date().getTime() / convertMsToS,
             confirmedTime: undefined,
 
           };
@@ -351,67 +337,6 @@ export namespace CryptoWallet.SDKS.Bitcoin {
         return reject(new Error("You don't have enough Satoshis to cover the miner fee."));
       });
     }
-
-    // decodeTx(rawTx: Object,
-    //   change: string[],
-    //   amount: number,
-    //   receiver: string,
-    //   wallet: any): Object {
-    //   const tx = {
-    //     tx: rawTx,
-    //   };
-    //   // return new Promise((resolve, reject) => {
-    //   console.log('hex :', JSON.stringify(rawTx));
-    //   const Tx: any = this.bitcoinlib.Transaction.fromHex(JSON.stringify(rawTx));
-
-    //   const transaction = {
-    //     change,
-    //     receiver,
-    //     hash: Tx.getId(),
-
-    //   };
-
-    //   return Tx;
-
-    // this.Req.post(
-    //   {
-    //     url: wallet.network.decodeTxApi,
-    //     form: JSON.stringify(tx),
-    //   },
-    //   (error: any, body: any, result: any) => {
-    //     if (error) {
-    //       return reject(new Error(`Transaction failed: ${error}`));
-    //     }
-    //     const output = JSON.parse(result);
-    //     let confirmed = false;
-    //     if (output.confirmations > 5) { confirmed = true; }
-    //     const senders: any = [];
-    //     output.inputs.forEach((input: any) => {
-    //       const inputAddr = input.addresses;
-    //       inputAddr.forEach((addr: any) => {
-    //         senders.push(addr);
-    //       });
-    //     });
-    //     const transaction = {
-    //       change,
-    //       receiver,
-    //       confirmed,
-    //       confirmations: output.confirmations,
-    //       hash: output.hash,
-    //       blockHeight: output.block_height,
-    //       fee: output.fees,
-    //       sent: true,
-    //       value: amount,
-    //       sender: senders,
-    //       receivedTime: output.received,
-    //       confirmedTime: output.confirmed,
-
-    //     };
-    //     return resolve(transaction);
-    //   },
-    // );
-    // });
-    // }
 
     /**
      *

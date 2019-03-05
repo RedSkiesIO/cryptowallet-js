@@ -88,16 +88,5 @@ export namespace CryptoWallet.SDKS {
       addresses: string[],
       network: string,
     ): Object;
-
-    // getPriceFeed(
-    //   coins: string[],
-    //   currencies: string[],
-    // ): Object;
-
-    // getHistoricalData(
-    //   coin: string,
-    //   currency: string,
-    //   period: string,
-    // ): Object;
   }
 }

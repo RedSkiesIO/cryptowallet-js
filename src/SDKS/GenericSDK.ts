@@ -33,13 +33,9 @@ import * as ISDK from './ISDK';
 export namespace CryptoWallet.SDKS {
   export abstract class GenericSDK implements ISDK.CryptoWallet.SDKS.ISDK {
     bitcoinlib = Bitcoinlib;
-
     networks: any = Networks;
-
     bip39: any = Bip39;
-
     wif: any = Wif;
-
     axios: any = axios;
 
     /**
@@ -61,12 +57,14 @@ export namespace CryptoWallet.SDKS {
       );
       let externalNode;
       let internalNode;
-      let bip;
+      let bip = 0;
+      const segWitBip = 49;
+      const nonSegWitBip = 44;
       // check if coin type supports segwit
       if (this.networks[network].segwit) {
         externalNode = root.derive(`m/49'/${cointype}'/0'/0`);
         internalNode = root.derive(`m/49'/${cointype}'/0'/1`); // for change addresses
-        bip = 49;
+        bip = segWitBip;
       } else if (this.networks[network].name === 'REGTEST') {
         externalNode = root.derive('m/0');
         internalNode = root.derive('m/1');
@@ -74,7 +72,7 @@ export namespace CryptoWallet.SDKS {
       } else {
         externalNode = root.derive(`m/44'/${cointype}'/0'/0`);
         internalNode = root.derive(`m/44'/${cointype}'/0'/1`); // for change addresses
-        bip = 44;
+        bip = nonSegWitBip;
       }
       const wallet: Wallet = {
         bip,
@@ -272,12 +270,13 @@ export namespace CryptoWallet.SDKS {
       }
       return new Promise((resolve, reject) => {
         const URL = this.networks[network].feeApi;
+        const kbToBytes = 1000;
         this.axios.get(URL)
           .then((r: any) => {
             resolve({
-              high: r.data.high_fee_per_kb / 1000,
-              medium: r.data.medium_fee_per_kb / 1000,
-              low: r.data.low_fee_per_kb / 1000,
+              high: r.data.high_fee_per_kb / kbToBytes,
+              medium: r.data.medium_fee_per_kb / kbToBytes,
+              low: r.data.low_fee_per_kb / kbToBytes,
             });
           })
           .catch((error: any) => reject(error.message));
@@ -403,6 +402,7 @@ export namespace CryptoWallet.SDKS {
           });
           rawTx = txb.build().toHex();
           const senders: any = [];
+          const convertMstoS = 1000;
           inputs.forEach((input: any) => {
             senders.push(input.address);
           });
@@ -418,7 +418,7 @@ export namespace CryptoWallet.SDKS {
             sent: true,
             value: amount,
             sender: senders,
-            receivedTime: new Date().getTime() / 1000,
+            receivedTime: new Date().getTime() / convertMstoS,
             confirmedTime: undefined,
           };
           if (max) {
@@ -515,7 +515,8 @@ export namespace CryptoWallet.SDKS {
         let startIndex: number = 0;
         const discover = async () => {
           const promises = [];
-          for (let i: number = startIndex; i < startIndex + 20; i += 1) {
+          const gapLimit = 20;
+          for (let i: number = startIndex; i < startIndex + gapLimit; i += 1) {
             const number: number = i;
             const keypair: KeyPair = this.generateKeyPair(wallet, number, internal);
 
@@ -528,7 +529,7 @@ export namespace CryptoWallet.SDKS {
             const min: number = Math.min(...emptyAddresses);
             startIndex = min;
           }
-          if (emptyAddresses.length <= 20) {
+          if (emptyAddresses.length <= gapLimit) {
             discover();
           }
         };
@@ -582,10 +583,11 @@ export namespace CryptoWallet.SDKS {
             if (r.data.totalItems > to) { more = true; }
             const results: object[] = r.data.items;
             const transactions: Transaction[] = [];
+            const minConfirmations = 5;
 
             results.forEach((result: any) => {
               let confirmed: boolean = false;
-              if (result.confirmations > 5) { confirmed = true; }
+              if (result.confirmations > minConfirmations) { confirmed = true; }
               let sent: boolean = false;
               let value: number = 0;
               const change: string[] = [];

@@ -28,17 +28,11 @@ import * as Networks from '../networks';
 export namespace CryptoWallet.SDKS.ERC20 {
   export class ERC20SDK implements IERC20SDK.CryptoWallet.SDKS.Erc20.IERC20SDK {
     json: any = ERC20JSON;
-
     networks: any = Networks;
-
     axios: any = Axios;
-
     Tx: any = EthereumTx;
-
     wallet: any;
-
     contract: any;
-
     Web3: any = Web3;
 
     /**
@@ -89,19 +83,22 @@ export namespace CryptoWallet.SDKS.ERC20 {
       return new Promise(async (resolve, reject) => {
         const nonce = await web3.eth.getTransactionCount(erc20Wallet.address);
         const gas = gasPrice.toString();
+        const gasLimit = 100000;
         const tx = new this.Tx({
           nonce,
           gasPrice: web3.utils.toHex(gas),
-          gasLimit: web3.utils.toHex(100000),
+          gasLimit: web3.utils.toHex(gasLimit),
           to: erc20Wallet.contract,
           value: 0,
           data: method,
           chainId: erc20Wallet.network.chainId,
         });
-        const privateKey: Buffer = Buffer.from(keypair.privateKey.substr(2), 'hex');
+        const removePrefix = 2;
+        const privateKey: Buffer = Buffer.from(keypair.privateKey.substr(removePrefix), 'hex');
         tx.sign(privateKey);
         const raw = `0x${tx.serialize().toString('hex')}`;
-        const fee = (gasPrice * 100000).toString();
+        const fee = (gasPrice * gasLimit).toString();
+        const msToS = 1000;
         const transaction = {
           fee,
           hash: web3.utils.sha3(raw),
@@ -112,8 +109,8 @@ export namespace CryptoWallet.SDKS.ERC20 {
           sent: true,
           value: amount,
           sender: erc20Wallet.address,
-          receivedTime: new Date().getTime() / 1000,
-          confirmedTime: new Date().getTime() / 1000,
+          receivedTime: new Date().getTime() / msToS,
+          confirmedTime: new Date().getTime() / msToS,
         };
 
         return resolve({
@@ -301,6 +298,8 @@ export namespace CryptoWallet.SDKS.ERC20 {
               return resolve();
             }
             const transactions: object[] = [];
+            const minConfirmations = 11;
+            const convertToEth = 1000000000;
             res.data.result.forEach((r: any) => {
               const receiver: string = r.to;
               let sent: boolean = false;
@@ -309,7 +308,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
               if (r.from === erc20Wallet.address.toLowerCase()) {
                 sent = true;
               }
-              if (r.confirmations > 11) {
+              if (r.confirmations > minConfirmations) {
                 confirmed = true;
               }
 
@@ -319,7 +318,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
                 confirmed,
                 hash: r.hash,
                 blockHeight: r.blockNumber,
-                fee: r.cumulativeGasUsed / 1000000000,
+                fee: r.cumulativeGasUsed / convertToEth,
                 value: r.value / (10 ** erc20Wallet.decimals),
                 sender: r.from,
                 confirmedTime: r.timeStamp,
