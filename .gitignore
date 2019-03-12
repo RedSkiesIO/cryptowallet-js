@@ -1,4 +1,3 @@
-lib
 coverage
 dist/*.gz
 docs/_book
