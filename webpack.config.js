@@ -17,14 +17,10 @@
 * along with CryptoWallet-js. If not, see <https://www.gnu.org/licenses/>.
 */
 const path = require('path');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
   mode: 'production',
   entry: './lib/index.js',
-  node: {
-    Buffer: false,
-  },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'cryptowallet-js.js',
@@ -37,28 +33,8 @@ module.exports = {
       'bn.js': path.resolve(__dirname, 'node_modules/bn.js'),
     },
   },
-  module: {
-    rules: [
-      {
-        test: /\.m?js$/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env'],
-          },
-        },
-      },
-    ],
-  },
-  optimization: {
-    minimizer: [
-      new UglifyJsPlugin({
-        uglifyOptions: {
-          mangle: {
-            reserved: ['process'],
-          },
-        },
-      }),
-    ],
+  node: {
+    process: true,
+    Buffer: false,
   },
 };
