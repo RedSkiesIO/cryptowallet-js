@@ -18,6 +18,7 @@
 */
 const path = require('path');
 
+
 module.exports = {
   mode: 'production',
   entry: './lib/index.js',
@@ -36,5 +37,6 @@ module.exports = {
   node: {
     process: true,
     Buffer: false,
+    fs: 'empty',
   },
 };
