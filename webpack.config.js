@@ -17,7 +17,7 @@
 * along with CryptoWallet-js. If not, see <https://www.gnu.org/licenses/>.
 */
 const path = require('path');
-
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
   mode: 'production',
@@ -37,6 +37,8 @@ module.exports = {
   node: {
     process: true,
     Buffer: false,
-    fs: 'empty',
   },
+  plugins: [
+    new Dotenv(),
+  ],
 };

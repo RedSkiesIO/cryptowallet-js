@@ -18,7 +18,4 @@
 */
 import cryptoWallet from './cryptoWallet';
 
-require('dotenv').config();
-
-
 export default cryptoWallet;
