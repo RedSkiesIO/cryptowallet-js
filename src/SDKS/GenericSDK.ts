@@ -684,61 +684,6 @@ export namespace CryptoWallet.SDKS {
           .catch((error: any) => reject(new Error('API failed to return a balance')));
       });
     }
-    /**
-     * TODO: Move these methods to a plugin in the mobile wallet
-     */
-    // getPriceFeed(
-    //   coins: string[],
-    //   currencies: string[],
-    // ): Object {
-    //   const URL = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=
-    //   ${coins.toString()}&tsyms=${currencies.toString()}
-    //   &api_key=${this.networks.cryptocompare}`;
-    //   return new Promise((resolve, reject) => {
-    //     this.axios.get(URL)
-    //       .then((r: any) => resolve(r.data.DISPLAY))
-    //       .catch((error: Error) => reject(new Error(`No price data for "${coins}"`)));
-    //   });
-    // }
-
-    // getHistoricalData(
-    //   coin: string,
-    //   currency: string,
-    //   period: string,
-    // ): Object {
-    //   let time: number;
-    //   let length: string;
-    //   if (period === 'day') {
-    //     time = 24;
-    //     length = 'hour';
-    //   } else if (period === 'week') {
-    //     time = 168;
-    //     length = 'hour';
-    //   } else if (period === 'month') {
-    //     time = 31;
-    //     length = 'day';
-    //   } else {
-    //     return new Error(`"${period}" is not a valid time period`);
-    //   }
-    //   return new Promise((resolve, reject) => {
-    //     const URL = `https://min-api.cryptocompare.com/data/histo
-    //     ${length}?fsym=${coin}&tsym=${currency}&limit=${time}&api_key=
-    // ${this.networks.cryptocompare}`;
-    //     this.axios.get(URL)
-    //       .then((r: any) => {
-    //         const data = r.data.Data;
-    //         if (!data.map) {
-    //           return reject(new Error(`No price data for "${coin}" in "${currency}" found`));
-    //         }
-    //         const dataset = data.map((x: any) => ({
-    //           t: x.time * 1000,
-    //           y: x.close,
-    //         }));
-    //         return resolve(dataset);
-    //       })
-    //       .catch((error: any) => reject(error));
-    //   });
-    // }
   }
 
 }

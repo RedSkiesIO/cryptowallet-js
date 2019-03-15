@@ -25,6 +25,8 @@
     "wif": "^2.0.6"
   },
   "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
     "@types/axios": "^0.14.0",
     "@types/bip39": "^2.4.2",
     "@types/bitcoinjs-lib": "^4.0.0",
@@ -33,6 +35,7 @@
     "@types/lodash-es": "^4.17.1",
     "@types/node": "^10.10.3",
     "@types/power-assert": "^1.5.0",
+    "babel-loader": "^8.0.5",
     "conventional-changelog": "^3.0.6",
     "conventional-github-releaser": "^3.1.2",
     "cross-env": "^5.1.6",
@@ -51,6 +54,7 @@
     "ts-node": "^7.0.1",
     "typescript": "^3.0.3",
     "typescript-eslint-parser": "^18.0.0",
+    "uglifyjs-webpack-plugin": "^2.1.2",
     "webpack": "^4.19.1",
     "webpack-bundle-analyzer": "^3.0.4",
     "webpack-cli": "^3.1.1"
