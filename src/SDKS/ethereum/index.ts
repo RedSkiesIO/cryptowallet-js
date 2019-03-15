@@ -251,8 +251,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
       const weiMultiplier = 1000000000000000000;
       const gweiMultiplier = 1000000000;
       const getHistory = (address: string) => new Promise(async (resolve, reject) => {
-        const URL: string = `${this.networks[network].getTranApi
-          + address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
+        const URL: string = `${this.networks[network].getTranApi + address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
 
         await this.axios.get(URL)
           .then(async (res: any) => {
@@ -334,8 +333,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
       const promises: Promise<object>[] = [];
 
       const getAddrBalance = (addr: string) => new Promise(async (resolve, reject) => {
-        const URL: string = `${this.networks[network].getBalanceApi + addr}
-        &tag=latest&apikey=${this.networks.ethToken}`;
+        const URL: string = `${this.networks[network].getBalanceApi + addr}&tag=latest&apikey=${this.networks.ethToken}`;
         await this.axios.get(URL)
           .then((bal: any) => {
             balance += bal.data.result;

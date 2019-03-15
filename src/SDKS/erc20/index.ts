@@ -283,14 +283,9 @@ export namespace CryptoWallet.SDKS.ERC20 {
       startBlock?: number,
     ): Object {
       return new Promise(async (resolve, reject) => {
-        let URL: string = `${erc20Wallet.network.getErc20TranApi + erc20Wallet.contract}
-        &address=${erc20Wallet.address}
-        &startblock=${startBlock}
-        &sort=desc&apikey=${this.networks.ethToken}`;
+        let URL: string = `${erc20Wallet.network.getErc20TranApi + erc20Wallet.contract}&address=${erc20Wallet.address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
         if (typeof startBlock === 'undefined') {
-          URL = `${erc20Wallet.network.getErc20TranApi + erc20Wallet.contract}
-          &address=${erc20Wallet.address}
-          &sort=desc&apikey=${this.networks.ethToken}`;
+          URL = `${erc20Wallet.network.getErc20TranApi + erc20Wallet.contract}&address=${erc20Wallet.address}&sort=desc&apikey=${this.networks.ethToken}`;
         }
         await this.axios.get(URL)
           .then(async (res: any) => {
