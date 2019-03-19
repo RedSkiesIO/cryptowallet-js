@@ -223,8 +223,7 @@ export namespace CryptoWallet.SDKS {
         if (this.networks[network].segwit) {
           this.axios.post(this.networks[network].broadcastUrl, { tx_hex: tx })
             .then((r:any) => {
-              const output = JSON.parse(r);
-              const res = output.data.txid;
+              const res = r.data.data.txid;
               return resolve(res);
             })
             .catch((e:Error) => reject(new Error('Transaction failed')));
@@ -482,6 +481,7 @@ export namespace CryptoWallet.SDKS {
       }
       const apiUrl: string = wallet.network.discovery;
       let usedAddresses: object[] = [];
+      const usedAddressesIndex: number[] = [];
       const emptyAddresses: number[] = [];
       let change: boolean = false;
       if (internal) {
@@ -504,6 +504,7 @@ export namespace CryptoWallet.SDKS {
 
           if (result.received > 0) {
             usedAddresses.push(result);
+            usedAddressesIndex.push(result.index);
           } else {
             emptyAddresses.push(result.index);
           }
@@ -526,8 +527,8 @@ export namespace CryptoWallet.SDKS {
           }
           await Promise.all(promises);
           if (emptyAddresses.length > 0) {
-            const min: number = Math.min(...emptyAddresses);
-            startIndex = min;
+            const max = Math.max(...usedAddressesIndex) + 1;
+            startIndex = max;
           }
           if (emptyAddresses.length <= gapLimit) {
             discover();
