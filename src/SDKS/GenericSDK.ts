@@ -479,7 +479,7 @@ export namespace CryptoWallet.SDKS {
       if (!wallet || !wallet.network || !wallet.network.connect) {
         throw new Error('Invalid wallet type');
       }
-      const apiUrl: string = wallet.network.discovery;
+      const apiUrl: string = this.networks[wallet.network.name];
       let usedAddresses: object[] = [];
       const usedAddressesIndex: number[] = [];
       const emptyAddresses: number[] = [];
