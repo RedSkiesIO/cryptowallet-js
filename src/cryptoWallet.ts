@@ -16,7 +16,7 @@
 * You should have received a copy of the GNU General Public License
 * along with CryptoWallet-js. If not, see <https://www.gnu.org/licenses/>.
 */
-import * as SDKFactory from './SDKFactory';
+import SDKFactory from './SDKFactory';
 
 namespace CryptoWallet {
 export class CryptoWalletJS {

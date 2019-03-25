@@ -10,12 +10,14 @@ module.exports = {
     }
   },
   plugins: [
-    'typescript'
+    'typescript', 
+    'header'
   ],
   extends: [
     'airbnb-base'
   ],
   rules: {
+    'header/header': [2, 'license-header.js'],
     'object-curly-spacing': ['error', 'always'],
     'no-magic-numbers': ['error', {'ignore': [0, 1, 10], 'ignoreArrayIndexes': true }],
     'lines-between-class-members': ['off'],

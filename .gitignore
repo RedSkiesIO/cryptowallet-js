@@ -1,4 +1,3 @@
-lib
 coverage
 dist/*.gz
 docs/_book
@@ -12,3 +11,4 @@ node_modules
 .idea/*
 app-env
 src/tsconfig.json
+.env

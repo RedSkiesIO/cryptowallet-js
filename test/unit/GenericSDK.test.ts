@@ -212,7 +212,7 @@ describe('bitcoinSDK (wallet)', () => {
   describe('broadcastTx', () => {
     it('can broadcast a bitcoin tx', async () => {
       mockAxios.post.mockResolvedValue(
-        JSON.stringify({ data: { txid: '1d2f020ee297d424c7b527151d204d1513177229c785e1e9f3684a60c1b7c8cc' } }),
+        { data: { data: { txid: '1d2f020ee297d424c7b527151d204d1513177229c785e1e9f3684a60c1b7c8cc' } } },
       );
       const txHash = await btc.broadcastTx('txHex', 'BITCOIN');
       expect(txHash).toBe('1d2f020ee297d424c7b527151d204d1513177229c785e1e9f3684a60c1b7c8cc');

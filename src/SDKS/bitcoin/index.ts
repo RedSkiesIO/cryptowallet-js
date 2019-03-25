@@ -211,7 +211,7 @@ export namespace CryptoWallet.SDKS.Bitcoin {
       const amount: number = amounts.reduce(reducer);
       const satoshisMultiplier: number = 100000000;
       const transactionAmount: number = Math.floor((amount * satoshisMultiplier));
-      const net = wallet.network;
+      const net = this.networks[wallet.network.name];
       let rawTx: any;
 
       return new Promise(async (resolve, reject) => {
