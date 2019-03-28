@@ -527,11 +527,13 @@ export namespace CryptoWallet.SDKS {
           }
           await Promise.all(promises);
           if (emptyAddresses.length > 0) {
-            const max = Math.max(...usedAddressesIndex) + 1;
-            startIndex = max;
+            if (usedAddressesIndex.length > 0) {
+              const max = Math.max(...usedAddressesIndex) + 1;
+              startIndex = max;
+            }
           }
-          if (emptyAddresses.length <= gapLimit) {
-            discover();
+          if (emptyAddresses.length < gapLimit) {
+            await discover();
           }
         };
         try {
