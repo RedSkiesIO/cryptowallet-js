@@ -531,7 +531,7 @@ export namespace CryptoWallet.SDKS {
             startIndex = max;
           }
           if (emptyAddresses.length <= gapLimit) {
-            discover();
+            await discover();
           }
         };
         try {
