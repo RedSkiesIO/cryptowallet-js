@@ -482,7 +482,7 @@ export namespace CryptoWallet.SDKS {
       const apiUrl: string = this.networks[wallet.network.name];
       let usedAddresses: object[] = [];
       const usedAddressesIndex: number[] = [];
-      const emptyAddresses: number[] = [];
+      let emptyAddresses: number[] = [];
       let change: boolean = false;
       if (internal) {
         change = true;
@@ -533,6 +533,7 @@ export namespace CryptoWallet.SDKS {
             }
           }
           if (emptyAddresses.length < gapLimit) {
+            emptyAddresses = [];
             await discover();
           }
         };
