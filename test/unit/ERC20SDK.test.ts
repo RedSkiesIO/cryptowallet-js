@@ -39,9 +39,9 @@ const jestWeb3: any = Web3;
 
 const mockWeb3 = {
   utils: {
-    toHex: jest.requireActual('web3').utils.toHex,
-    sha3: jest.requireActual('web3').utils.sha3,
-    isAddress: jest.requireActual('web3').utils.isAddress,
+    isAddress: jest.fn(() => true),
+    toHex: jest.fn(() => 0),
+    sha3: jest.fn(() => '0x04d258dbc9374f373e60c1a24d9603fe917aec8ed67a5263bb84b9a1d5958570'),
   },
   eth: {
     getTransactionCount: jest.fn(() => 5),
@@ -87,6 +87,7 @@ describe('ERC20SDK', async () => {
     });
 
     it('can detect an invalid address', async () => {
+      mockWeb3.utils.isAddress = jest.fn(() => false);
       const invalidWallet = () => erc20.generateERC20Wallet(
         ethKeypair,
         'Catalyst',
@@ -108,7 +109,7 @@ describe('ERC20SDK', async () => {
         '0x6B92382DEdd2bb7650eB388C553568552206b102',
         0.5,
       );
-      expect(tx.transaction.hash).toBe('0x60e2442755380793f15d0629a191a65ee20b272dfc4ccadd5c0b180be7c88d58');
+      expect(tx.transaction.hash).toBe('0x04d258dbc9374f373e60c1a24d9603fe917aec8ed67a5263bb84b9a1d5958570');
     });
   });
 
@@ -130,7 +131,7 @@ describe('ERC20SDK', async () => {
         0.5,
         18174088324,
       );
-      expect(tx.transaction.hash).toBe('0x0f357b606ee4f67c4f495ec0b26ff683411bccd2c1074d471400d0b7cb7df3d6');
+      expect(tx.transaction.hash).toBe('0x04d258dbc9374f373e60c1a24d9603fe917aec8ed67a5263bb84b9a1d5958570');
     });
   });
 
@@ -143,7 +144,7 @@ describe('ERC20SDK', async () => {
         0.5,
         18174088324,
       );
-      expect(tx.transaction.hash).toBe('0x0f357b606ee4f67c4f495ec0b26ff683411bccd2c1074d471400d0b7cb7df3d6');
+      expect(tx.transaction.hash).toBe('0x04d258dbc9374f373e60c1a24d9603fe917aec8ed67a5263bb84b9a1d5958570');
     });
   });
 
@@ -157,7 +158,7 @@ describe('ERC20SDK', async () => {
         0.5,
         18174088324,
       );
-      expect(tx.transaction.hash).toBe('0x0f357b606ee4f67c4f495ec0b26ff683411bccd2c1074d471400d0b7cb7df3d6');
+      expect(tx.transaction.hash).toBe('0x04d258dbc9374f373e60c1a24d9603fe917aec8ed67a5263bb84b9a1d5958570');
     });
 
     it('can check if the allowance before transfering', async () => {

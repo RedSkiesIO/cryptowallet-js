@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
+    "target": "ES5",
+    "module": "ES2015",
     "strict": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "lib": [
       "dom",
-      "esnext"
+      "es5"
     ],
     "types": [
       "node",

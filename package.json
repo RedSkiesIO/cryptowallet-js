@@ -23,7 +23,7 @@
     "ethereumjs-tx": "^1.3.7",
     "ethereumjs-wallet": "^0.6.2",
     "hdkey": "^1.1.0",
-    "web3": "1.0.0-beta.34",
+    "web3": "^1.0.0-beta.54",
     "wif": "^2.0.6"
   },
   "devDependencies": {
@@ -54,7 +54,7 @@
     "typescript": "^3.0.3",
     "typescript-eslint-parser": "^18.0.0",
     "webpack": "^4.19.1",
-    "webpack-bundle-analyzer": "^3.0.4",
+    "webpack-bundle-analyzer": "^3.3.2",
     "webpack-cli": "^3.1.1"
   },
   "files": [
@@ -90,6 +90,7 @@
     "clean": "rm -rf coverage && rm -rf lib/*.js* && rm -rf types/*.d.ts* && rm -rf dist/*.js* && rm -rf ./*.log",
     "lint": "eslint --fix --ext .ts src",
     "test": "npm run test:unit",
-    "test:unit": "cross-env NODE_ENV=test jest"
+    "test:unit": "cross-env NODE_ENV=test jest",
+    "test:unit:watch": "cross-env NODE_ENV=test jest --watch"
   }
 }

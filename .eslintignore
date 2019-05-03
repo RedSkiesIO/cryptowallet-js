@@ -2,3 +2,6 @@ config/*.js
 types/*.ts
 src/SDKS/networks.ts
 test/*.ts
+lib
+dist
+test

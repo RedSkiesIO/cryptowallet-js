@@ -250,11 +250,11 @@ export namespace CryptoWallet.SDKS.ERC20 {
       return new Promise(async (resolve, reject) => {
         const web3: any = new this.Web3(this.networks[network].provider);
         const abiArray = this.json;
-        const contract = new web3.eth.Contract(abiArray, address);
         const valid: string = await web3.eth.getCode(address);
         if (valid === '0x') {
           return reject(new Error('This is not a valid ERC20 contract address'));
         }
+        const contract = new web3.eth.Contract(abiArray, address);
         await contract.methods.balanceOf('0xcc345035D14458B3C012977f96fA1E116760D60a').call()
           .catch((error: Error) => reject(new Error('Not a valid ERC20 contract address')));
 
