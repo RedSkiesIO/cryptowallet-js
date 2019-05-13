@@ -115,7 +115,9 @@ describe('ERC20SDK', async () => {
 
   describe('broadcastTx', () => {
     it('can broadcast an ERC20 transaction', async () => {
-      mockWeb3.eth.sendSignedTransaction.mockResolvedValue('0x60e2442755380793f15d0629a191a65ee20b272dfc4ccadd5c0b180be7c88d58');
+      mockWeb3.eth.sendSignedTransaction.mockImplementation((rawTx, callback) => { 
+        return callback(undefined, '0x60e2442755380793f15d0629a191a65ee20b272dfc4ccadd5c0b180be7c88d58');
+      });
       const raw = '0xf86b0585043b429484830186a09426705403968a8c73656a2fed0f89245698718f3f80866d6574686f642aa03e8b4aba0d20ce4ff24325ff87fca3b5fa02cd905312adf08c45ee5367ee9916a07c0cf2debe0b68c586b058d08cc35f23462cf83e461b26e44839f73ea48e9b50';
       const tx = await erc20.broadcastTx(raw, network);
       expect(tx.hash).toBe('0x60e2442755380793f15d0629a191a65ee20b272dfc4ccadd5c0b180be7c88d58');

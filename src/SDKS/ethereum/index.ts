@@ -210,9 +210,11 @@ export namespace CryptoWallet.SDKS.Ethereum {
     ): Object {
       const web3: any = new this.Web3(this.networks[network].provider);
       return new Promise(async (resolve, reject) => {
-        const hash = await web3.eth.sendSignedTransaction(rawTx);
-        return resolve({
-          hash,
+        web3.eth.sendSignedTransaction(rawTx, (err: Error, hash: string) => {
+          if (err) return reject(err);
+          return resolve({
+            hash,
+          });
         });
       });
     }
