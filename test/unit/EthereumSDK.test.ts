@@ -149,14 +149,19 @@ describe('ethereumSDK (wallet)', () => {
 
   describe('broadcastTx', () => {
     it('can broadcast an ethereum testnet raw transaction', async () => {
-      mockWeb3.eth.sendSignedTransaction.mockResolvedValue('12345');
+      mockWeb3.eth.sendSignedTransaction.mockImplementation((rawTx, callback) => { 
+        return callback(undefined, '0x60e2442755380793f15d0629a191a65ee20b272dfc4ccadd5c0b180be7c88d58');
+      });
       const tx = await eth.broadcastTx('42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73', network);
-      expect(tx.hash).toBe('12345');
+      expect(tx.hash).toBe('0x60e2442755380793f15d0629a191a65ee20b272dfc4ccadd5c0b180be7c88d58');
     });
+
     it('can detect an error in broadcasting', async () => {
-      mockWeb3.eth.sendSignedTransaction.mockResolvedValue(new Error('Transaction failed'));
+      mockWeb3.eth.sendSignedTransaction.mockImplementation((rawTx, callback) => { 
+        return callback(new Error('Transaction failed'), undefined);
+      });
       const tx = await eth.broadcastTx('42193c2610f6f7ff06becfef595b4810d8808bdfee1dba819f69686353093f73', network)
-        .catch((e: Error) => expect(e.message).rejects.toMatch('Transaction failed'));
+        .catch((e: Error) => expect(e.message).toMatch('Transaction failed'));
       return tx;
     });
   });
