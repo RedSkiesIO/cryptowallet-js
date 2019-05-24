@@ -230,8 +230,7 @@ export namespace CryptoWallet.SDKS {
         } else {
           this.axios.post(`${this.networks[network].discovery}/tx/send`, { rawtx: tx })
             .then((r:any) => {
-              const res = JSON.parse(r);
-              const { txid } = res;
+              const { txid } = r.data;
               return resolve(txid);
             })
             .catch((e:Error) => reject(new Error('Transaction failed')));
