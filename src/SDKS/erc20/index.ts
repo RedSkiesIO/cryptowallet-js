@@ -44,7 +44,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param contractAddress
      * @param decimals
      */
-    generateERC20Wallet(
+    public generateERC20Wallet(
       keypair: KeyPair,
       tokenName: string,
       tokenSymbol: string,
@@ -71,7 +71,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param erc20Wallet
      * @param method
      */
-    createTx(
+    private createTx(
       erc20Wallet: any,
       keypair: KeyPair,
       method: any,
@@ -129,7 +129,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param rawTx
      * @param network
      */
-    broadcastTx(
+    public broadcastTx(
       rawTx: string,
       network: string,
     ): Object {
@@ -144,7 +144,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
       });
     }
 
-    estimateGas(
+    public estimateGas(
       erc20Wallet: any,
       to: string,
       amount: number,
@@ -170,7 +170,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param to
      * @param amount
      */
-    transfer(
+    public transfer(
       erc20Wallet: any,
       keypair: KeyPair,
       to: string,
@@ -190,7 +190,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param to
      * @param amount
      */
-    approveAccount(
+    public approveAccount(
       erc20Wallet: any,
       keypair: KeyPair,
       to: string,
@@ -210,7 +210,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param from
      * @param amount
      */
-    transferAllowance(
+    public transferAllowance(
       erc20Wallet: any,
       keypair: KeyPair,
       from: string,
@@ -239,7 +239,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param erc20Wallet
      * @param from
      */
-    checkAllowance(
+    public checkAllowance(
       erc20Wallet: any,
       from: string,
     ): Promise<number> {
@@ -256,7 +256,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * Gets the balance of the ERC20 token on a users ethereum account
      * @param erc20Wallet
      */
-    getBalance(
+    public getBalance(
       erc20Wallet: any,
     ): Promise<number> {
       this.wallet = erc20Wallet;
@@ -269,7 +269,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
       });
     }
 
-    getTokenData(
+    public getTokenData(
       address: string,
       network: string,
     ): Object {
@@ -304,7 +304,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param erc20Wallet
      * @param lastBlock
      */
-    getTransactionHistory(
+    public getTransactionHistory(
       erc20Wallet: any,
       startBlock?: number,
     ): Object {
