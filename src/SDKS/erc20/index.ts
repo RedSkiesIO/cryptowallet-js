@@ -84,6 +84,10 @@ export namespace CryptoWallet.SDKS.ERC20 {
         const nonce = await web3.eth.getTransactionCount(erc20Wallet.address);
         const gas = gasPrice.toString();
         const gasLimit = 100000;
+        let estimatedGas = gasLimit;
+        if (to && amount) {
+          estimatedGas = await this.estimateGas(erc20Wallet, to, amount, keypair.network.name);
+        }
         const tx = new this.Tx({
           nonce,
           gasPrice: web3.utils.toHex(gas),
@@ -97,7 +101,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
         const privateKey: Buffer = Buffer.from(keypair.privateKey.substr(removePrefix), 'hex');
         tx.sign(privateKey);
         const raw = `0x${tx.serialize().toString('hex')}`;
-        const fee = (gasPrice * gasLimit).toString();
+        const fee = (gasPrice * estimatedGas).toString();
         const msToS = 1000;
         const transaction = {
           fee,
@@ -145,7 +149,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
       to: string,
       amount: number,
       network: string,
-    ): object {
+    ): Promise<number> {
       const web3: any = new this.Web3(this.networks[network].provider);
       const contract = new web3.eth.Contract(this.json, erc20Wallet.contract);
       const sendAmount: string = (amount * (10 ** erc20Wallet.decimals)).toString();
