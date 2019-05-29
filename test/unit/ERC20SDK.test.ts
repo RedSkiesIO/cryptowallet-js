@@ -55,6 +55,9 @@ const mockCall = {
 };
 const mockEncodeABI = {
   encodeABI: jest.fn(),
+  estimateGas: jest.fn().mockImplementation((obj, callback) => {
+    return callback(null, 25000);
+  }),
 };
 const mockContract = {
   methods: {
