@@ -140,6 +140,26 @@ export namespace CryptoWallet.SDKS.ERC20 {
       });
     }
 
+    estimateGas(
+      erc20Wallet: any,
+      to: string,
+      amount: number,
+      network: string,
+    ): object {
+      const web3: any = new this.Web3(this.networks[network].provider);
+      const contract = new web3.eth.Contract(this.json, erc20Wallet.contract);
+      const sendAmount: string = (amount * (10 ** erc20Wallet.decimals)).toString();
+      return new Promise(async (resolve, reject) => {
+        contract.methods.transfer(to, sendAmount).estimateGas(
+          { from: erc20Wallet.address },
+          (error: Error, gasUsed: number) => {
+            if (error) return reject(error);
+            return resolve(gasUsed);
+          },
+        );
+      });
+    }
+
     /**
      * Create a transaction that transafers ERC20 tokens to a give address
      * @param erc20Wallet
