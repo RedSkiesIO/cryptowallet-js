@@ -159,9 +159,11 @@ export namespace CryptoWallet.SDKS.Bitcoin {
       }
       return new Promise((resolve, reject) => {
         const apiUrl: string = this.networks[network].discovery;
-        const URL:string = `${apiUrl}/addrs/${addresses.toString()}/utxo`;
+        const URL:string = `${apiUrl}/addrs/utxo`;
 
-        this.axios.get(URL)
+        this.axios.post(URL, {
+          addrs: addresses.toString(),
+        })
           .then((r: any) => {
             const result: any = [];
 
