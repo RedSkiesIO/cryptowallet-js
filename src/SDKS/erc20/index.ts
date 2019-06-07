@@ -44,7 +44,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param contractAddress
      * @param decimals
      */
-    generateERC20Wallet(
+    public generateERC20Wallet(
       keypair: KeyPair,
       tokenName: string,
       tokenSymbol: string,
@@ -67,65 +67,11 @@ export namespace CryptoWallet.SDKS.ERC20 {
     }
 
     /**
-     * Only used internally to create a raw transaction
-     * @param erc20Wallet
-     * @param method
-     */
-    createTx(
-      erc20Wallet: any,
-      keypair: KeyPair,
-      method: any,
-      gasPrice: number,
-      to?: string,
-      amount?: number,
-    ): Object {
-      const web3 = new this.Web3(erc20Wallet.network.provider);
-      return new Promise(async (resolve, reject) => {
-        const nonce = await web3.eth.getTransactionCount(erc20Wallet.address);
-        const gas = gasPrice.toString();
-        const gasLimit = 100000;
-        const tx = new this.Tx({
-          nonce,
-          gasPrice: web3.utils.toHex(gas),
-          gasLimit: web3.utils.toHex(gasLimit),
-          to: erc20Wallet.contract,
-          value: 0,
-          data: method,
-          chainId: erc20Wallet.network.chainId,
-        });
-        const removePrefix = 2;
-        const privateKey: Buffer = Buffer.from(keypair.privateKey.substr(removePrefix), 'hex');
-        tx.sign(privateKey);
-        const raw = `0x${tx.serialize().toString('hex')}`;
-        const fee = (gasPrice * gasLimit).toString();
-        const msToS = 1000;
-        const transaction = {
-          fee,
-          hash: web3.utils.sha3(raw),
-          receiver: to,
-          confirmed: false,
-          confirmations: 0,
-          blockHeight: -1,
-          sent: true,
-          value: amount,
-          sender: erc20Wallet.address,
-          receivedTime: new Date().getTime() / msToS,
-          confirmedTime: new Date().getTime() / msToS,
-        };
-
-        return resolve({
-          hexTx: raw,
-          transaction,
-        });
-      });
-    }
-
-    /**
      *  Broadcast an Ethereum transaction
      * @param rawTx
      * @param network
      */
-    broadcastTx(
+    public broadcastTx(
       rawTx: string,
       network: string,
     ): Object {
@@ -140,13 +86,33 @@ export namespace CryptoWallet.SDKS.ERC20 {
       });
     }
 
+    public estimateGas(
+      erc20Wallet: any,
+      to: string,
+      amount: number,
+      network: string,
+    ): Promise<number> {
+      const web3: any = new this.Web3(this.networks[network].provider);
+      const contract = new web3.eth.Contract(this.json, erc20Wallet.contract);
+      const sendAmount: string = (amount * (10 ** erc20Wallet.decimals)).toString();
+      return new Promise(async (resolve, reject) => {
+        contract.methods.transfer(to, sendAmount).estimateGas(
+          { from: erc20Wallet.address },
+          (error: Error, gasUsed: number) => {
+            if (error) return reject(error);
+            return resolve(gasUsed);
+          },
+        );
+      });
+    }
+
     /**
      * Create a transaction that transafers ERC20 tokens to a give address
      * @param erc20Wallet
      * @param to
      * @param amount
      */
-    transfer(
+    public transfer(
       erc20Wallet: any,
       keypair: KeyPair,
       to: string,
@@ -166,7 +132,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param to
      * @param amount
      */
-    approveAccount(
+    public approveAccount(
       erc20Wallet: any,
       keypair: KeyPair,
       to: string,
@@ -186,7 +152,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param from
      * @param amount
      */
-    transferAllowance(
+    public transferAllowance(
       erc20Wallet: any,
       keypair: KeyPair,
       from: string,
@@ -215,7 +181,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param erc20Wallet
      * @param from
      */
-    checkAllowance(
+    public checkAllowance(
       erc20Wallet: any,
       from: string,
     ): Promise<number> {
@@ -232,7 +198,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * Gets the balance of the ERC20 token on a users ethereum account
      * @param erc20Wallet
      */
-    getBalance(
+    public getBalance(
       erc20Wallet: any,
     ): Promise<number> {
       this.wallet = erc20Wallet;
@@ -245,7 +211,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
       });
     }
 
-    getTokenData(
+    public getTokenData(
       address: string,
       network: string,
     ): Object {
@@ -280,7 +246,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
      * @param erc20Wallet
      * @param lastBlock
      */
-    getTransactionHistory(
+    public getTransactionHistory(
       erc20Wallet: any,
       startBlock?: number,
     ): Object {
@@ -327,6 +293,64 @@ export namespace CryptoWallet.SDKS.ERC20 {
             return resolve(transactions);
           })
           .catch((e: Error) => reject(e));
+      });
+    }
+
+    /**
+     * Only used internally to create a raw transaction
+     * @param erc20Wallet
+     * @param method
+     */
+    private createTx(
+      erc20Wallet: any,
+      keypair: KeyPair,
+      method: any,
+      gasPrice: number,
+      to?: string,
+      amount?: number,
+    ): Object {
+      const web3 = new this.Web3(erc20Wallet.network.provider);
+      return new Promise(async (resolve, reject) => {
+        const nonce = await web3.eth.getTransactionCount(erc20Wallet.address);
+        const gas = gasPrice.toString();
+        const gasLimit = 100000;
+        let estimatedGas = gasLimit;
+        if (to && amount) {
+          estimatedGas = await this.estimateGas(erc20Wallet, to, amount, keypair.network.name);
+        }
+        const tx = new this.Tx({
+          nonce,
+          gasPrice: web3.utils.toHex(gas),
+          gasLimit: web3.utils.toHex(gasLimit),
+          to: erc20Wallet.contract,
+          value: 0,
+          data: method,
+          chainId: erc20Wallet.network.chainId,
+        });
+        const removePrefix = 2;
+        const privateKey: Buffer = Buffer.from(keypair.privateKey.substr(removePrefix), 'hex');
+        tx.sign(privateKey);
+        const raw = `0x${tx.serialize().toString('hex')}`;
+        const fee = (gasPrice * estimatedGas).toString();
+        const msToS = 1000;
+        const transaction = {
+          fee,
+          hash: web3.utils.sha3(raw),
+          receiver: to,
+          confirmed: false,
+          confirmations: 0,
+          blockHeight: -1,
+          sent: true,
+          value: amount,
+          sender: erc20Wallet.address,
+          receivedTime: new Date().getTime() / msToS,
+          confirmedTime: new Date().getTime() / msToS,
+        };
+
+        return resolve({
+          hexTx: raw,
+          transaction,
+        });
       });
     }
   }
