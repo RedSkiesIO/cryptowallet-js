@@ -578,8 +578,12 @@ export namespace CryptoWallet.SDKS {
       }
       return new Promise((resolve, reject) => {
         const apiUrl: string = this.networks[network].discovery;
-        const URL: string = `${apiUrl}/addrs/${addresses.toString()}/txs?from=${from}&to=${to}`;
-        this.axios.get(URL)
+        const URL: string = `${apiUrl}/addrs/txs`;
+        this.axios.post(URL, {
+          addrs: addresses.toString(),
+          from,
+          to,
+        })
           .then((r: any) => {
             if (r.data.totalItems === 0) { return resolve(); }
             let more: boolean = false;
@@ -669,9 +673,11 @@ export namespace CryptoWallet.SDKS {
       return new Promise((resolve, reject) => {
         let balance: number = 0;
         const apiUrl: string = this.networks[network].discovery;
-        const URL: string = `${apiUrl}/addrs/${addresses.toString()}/utxo`;
+        const URL:string = `${apiUrl}/addrs/utxo`;
 
-        this.axios.get(URL)
+        this.axios.post(URL, {
+          addrs: addresses.toString(),
+        })
           .then((r: any) => {
             if (r.data.length === 0) {
               balance = 0;

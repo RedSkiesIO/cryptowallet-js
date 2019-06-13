@@ -558,40 +558,40 @@ describe('bitcoinSDK (wallet)', () => {
 
   describe('getTransactionHistory', () => {
     it('can get the transaction histoy of bitcoin testnet address', async () => {
-      mockAxios.get.mockResolvedValue({ data: mockTransactionHistory });
+      mockAxios.post.mockResolvedValue({ data: mockTransactionHistory });
       const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'];
       const history = await btc.getTransactionHistory(addresses, network, 0, 50);
       expect(history.totalTransactions).toBe(27);
     });
 
     it('can get the transaction histoy of an unused bitcoin testnet address', async () => {
-      mockAxios.get.mockResolvedValue({ data: { totalItems: 0 } });
+      mockAxios.post.mockResolvedValue({ data: { totalItems: 0 } });
       const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'];
       const history = await btc.getTransactionHistory(addresses, network, 0, 50);
       expect(history).toBeUndefined();
     });
 
     it('can check if more transaction history is available', async () => {
-      mockAxios.get.mockResolvedValue({ data: mockTransactionHistory });
+      mockAxios.post.mockResolvedValue({ data: mockTransactionHistory });
       const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'];
       const history = await btc.getTransactionHistory(addresses, network, 0, 20);
       expect(history.more).toBe(true);
     });
 
     it('can detect if an invalid address is used', async () => {
-      mockAxios.get.mockResolvedValue({ data: mockTransactionHistory });
+      mockAxios.post.mockResolvedValue({ data: mockTransactionHistory });
       const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvk'];
       expect(() => btc.getTransactionHistory(addresses, network, 0, 20)).toThrow('Invalid address used');
     });
 
     it('can detect if an invalid network is used', async () => {
-      mockAxios.get.mockResolvedValue({ data: mockTransactionHistory });
+      mockAxios.post.mockResolvedValue({ data: mockTransactionHistory });
       const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'];
       expect(() => btc.getTransactionHistory(addresses, 'ETHEREUM', 0, 20)).toThrow('ETHEREUM is an invalid network');
     });
 
     it('can catch an API error', async () => {
-      mockAxios.get.mockResolvedValue(new Error('some error'));
+      mockAxios.post.mockResolvedValue(new Error('some error'));
       const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'];
       const history = await btc.getTransactionHistory(addresses, network, 0, 20)
         .catch((e: Error) => expect(e.message).toMatch('API failed to get transaction history'));
@@ -611,13 +611,13 @@ describe('bitcoinSDK (wallet)', () => {
         confirmations: 29673,
         value: 17433129,
       }];
-      mockAxios.get.mockResolvedValue({ data: utxo });
+      mockAxios.post.mockResolvedValue({ data: utxo });
       const balance = await btc.getBalance(['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'], network);
       expect(balance).toBe(0.17433129);
     });
 
     it('can get the balance of an empty bitcoin testnet address', async () => {
-      mockAxios.get.mockResolvedValue({ data: [] });
+      mockAxios.post.mockResolvedValue({ data: [] });
       const balance = await btc.getBalance(['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'], network);
       expect(balance).toBe(0);
     });
@@ -628,13 +628,13 @@ describe('bitcoinSDK (wallet)', () => {
     });
 
     it('can detect if an invalid network is used', async () => {
-      mockAxios.get.mockResolvedValue({ data: mockTransactionHistory });
+      mockAxios.post.mockResolvedValue({ data: mockTransactionHistory });
       const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'];
       expect(() => btc.getBalance(addresses, 'ETHEREUM')).toThrow('ETHEREUM is an invalid network');
     });
 
     it('can catch an API error', async () => {
-      mockAxios.get.mockResolvedValue(new Error('some error'));
+      mockAxios.post.mockResolvedValue(new Error('some error'));
       const addresses = ['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'];
       const balance = await btc.getBalance(addresses, network)
         .catch((e: Error) => expect(e.message).toMatch('API failed to return a balance'));

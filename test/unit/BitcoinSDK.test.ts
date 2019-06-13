@@ -119,7 +119,7 @@ describe('bitcoinSDK (wallet)', () => {
 
   describe('getUTXOs', () => {
     it('can retrieve the UTXOs of a btc testnet address', async () => {
-      mockAxios.get.mockResolvedValue({
+      mockAxios.post.mockResolvedValue({
         data: [{
           address: '2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf',
           txid: '48d2bc7293fe1b1b3c74b1276861c3ab1a63a01fbf87789c192f3491422e9dbf',
@@ -136,7 +136,7 @@ describe('bitcoinSDK (wallet)', () => {
     });
 
     it('can retrieve the UTXOs of a btc testnet address', async () => {
-      mockAxios.get.mockResolvedValue({
+      mockAxios.post.mockResolvedValue({
         data: [],
       });
       const utxos = await btc.getUTXOs(['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'], network);
@@ -151,7 +151,7 @@ describe('bitcoinSDK (wallet)', () => {
       expect(() => btc.getUTXOs(['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvk'], network)).toThrow('Invalid address used');
     });
     it('can detect an API error', async () => {
-      mockAxios.get.mockResolvedValue(() => { throw new Error('some error'); });
+      mockAxios.post.mockResolvedValue(() => { throw new Error('some error'); });
       const utxos = btc.getUTXOs(['2MyFPraHtEy2uKttPeku1wzokVeyJGTYvkf'], network)
         .catch((e: Error) => expect(e.message).toBe('Failed to fetch UTXOs'));
       return utxos;
