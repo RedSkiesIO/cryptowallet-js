@@ -490,24 +490,28 @@ export namespace CryptoWallet.SDKS {
       const checkAddress = (address: string, i: number) => {
         const URL: string = `${apiUrl}/addr/${address}?noTxList=1`;
         return new Promise(async (resolve, reject) => {
-          const addr = await this.axios.get(URL);
-          if (!addr.data) {
-            return reject(new Error('API ERROR'));
-          }
-          const result = {
-            address,
-            received: addr.data.totalReceived,
-            balance: addr.data.balance,
-            index: i,
-          };
+          try {
+            const addr = await this.axios.get(URL);
+            if (!addr.data) {
+              return reject(new Error('API ERROR'));
+            }
+            const result = {
+              address,
+              received: addr.data.totalReceived,
+              balance: addr.data.balance,
+              index: i,
+            };
 
-          if (result.received > 0) {
-            usedAddresses.push(result);
-            usedAddressesIndex.push(result.index);
-          } else {
-            emptyAddresses.push(result.index);
+            if (result.received > 0) {
+              usedAddresses.push(result);
+              usedAddressesIndex.push(result.index);
+            } else {
+              emptyAddresses.push(result.index);
+            }
+            return resolve(result);
+          } catch (err) {
+            return reject(err);
           }
-          return resolve(result);
         });
       };
 
@@ -521,10 +525,14 @@ export namespace CryptoWallet.SDKS {
             const keypair: KeyPair = this.generateKeyPair(wallet, number, internal);
 
             promises.push(
-              new Promise(async (res, rej) => res(checkAddress(keypair.address, number))),
+              checkAddress(keypair.address, number),
             );
           }
-          await Promise.all(promises);
+          try {
+            await Promise.all(promises);
+          } catch (err) {
+            throw err;
+          }
           if (emptyAddresses.length > 0) {
             if (usedAddressesIndex.length > 0) {
               const max = Math.max(...usedAddressesIndex) + 1;
