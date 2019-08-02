@@ -316,7 +316,11 @@ export namespace CryptoWallet.SDKS.ERC20 {
         const gasLimit = 100000;
         let estimatedGas = gasLimit;
         if (to && amount) {
-          estimatedGas = await this.estimateGas(erc20Wallet, to, amount, keypair.network.name);
+          try {
+            estimatedGas = await this.estimateGas(erc20Wallet, to, amount, keypair.network.name);
+          } catch (e) {
+            reject(e);
+          }
         }
         const tx = new this.Tx({
           nonce,

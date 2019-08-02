@@ -548,10 +548,18 @@ describe('bitcoinSDK (wallet)', () => {
     });
 
     it('can detect an api error', async () => {
-      mockAxios.get.mockResolvedValue(new Error('error'));
+      mockAxios.get.mockImplementationOnce((url: any) => { throw new Error('some error') });
       const wallet: any = btc.generateHDWallet(entropy, network);
       const discovery = btc.accountDiscovery(wallet, true)
-        .catch((e: Error) => expect(e.message).toMatch('API ERROR'));
+        .catch((e: Error) => expect(e.message).toEqual('some error'));
+      return discovery;
+    });
+
+    it('rejects with an api error if address has no data', async () => {
+      mockAxios.get.mockResolvedValue({});
+      const wallet: any = btc.generateHDWallet(entropy, network);
+      const discovery = btc.accountDiscovery(wallet, true)
+        .catch((e: Error) => expect(e.message).toEqual('API ERROR'));
       return discovery;
     });
   });
