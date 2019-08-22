@@ -47,12 +47,13 @@ export type Transaction = {
   change: string[];
   receiver: string[];
   confirmed: boolean;
+  inputs: string[];
   confirmations: number;
   hash: string;
   blockHeight: number;
   sent: boolean;
   value: number;
-  sender: string[],
+  sender: string[];
   receivedTime: number;
   confirmedTime: any;
 };
