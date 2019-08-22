@@ -114,6 +114,26 @@ describe('ERC20SDK', async () => {
       );
       expect(tx.transaction.hash).toBe('0x04d258dbc9374f373e60c1a24d9603fe917aec8ed67a5263bb84b9a1d5958570');
     });
+
+    it('estimateGas rejects if api returns an error', async () => {
+      mockEncodeABI.estimateGas = jest.fn().mockImplementationOnce((obj, callback) => {
+        const error = new Error('some error occurred');
+        return callback(error, null);
+      });
+
+      try {
+        await erc20.createTx(
+          wallet,
+          ethKeypair,
+          'method',
+          18174088324,
+          '0x6B92382DEdd2bb7650eB388C553568552206b102',
+          0.5,
+        );
+      } catch (e) {
+        expect(e).toEqual(Error('some error occurred'));
+      }
+    });
   });
 
   describe('broadcastTx', () => {
@@ -125,10 +145,25 @@ describe('ERC20SDK', async () => {
       const tx = await erc20.broadcastTx(raw, network);
       expect(tx.hash).toBe('0x60e2442755380793f15d0629a191a65ee20b272dfc4ccadd5c0b180be7c88d58');
     });
+
+    it('it rejects if there is an error when broadcasting a tx', async () => {
+      mockWeb3.eth.sendSignedTransaction.mockImplementation((rawTx, callback) => { 
+        const error = new Error('Some error occurred');
+        return callback(error);
+      });
+      try {
+        await erc20.broadcastTx('123', network);
+      } catch(e) {
+        expect(e).toEqual(Error('Some error occurred'));
+      }
+    });
   });
 
   describe('transfer', () => {
     it('can transfer an ERC20 transaction', async () => {
+      mockEncodeABI.estimateGas = jest.fn().mockImplementation((obj, callback) => {
+        return callback(null, 25000);
+      })
       const tx = await erc20.transfer(
         wallet,
         ethKeypair,

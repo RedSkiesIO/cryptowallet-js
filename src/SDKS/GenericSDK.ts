@@ -401,15 +401,18 @@ export namespace CryptoWallet.SDKS {
           rawTx = txb.build().toHex();
           const senders: any = [];
           const convertMstoS = 1000;
-          inputs.forEach((input: any) => {
+          const txInputs = inputs.map((input: any) => {
             senders.push(input.address);
+            return input.txid;
           });
+
           fee /= satoshisMultiplier;
           const transaction: Transaction = {
             fee,
             change,
             receiver: [toAddress],
             confirmed: false,
+            inputs: txInputs,
             confirmations: 0,
             hash: txb.build().getId(),
             blockHeight: -1,
@@ -608,12 +611,14 @@ export namespace CryptoWallet.SDKS {
               const change: string[] = [];
               const receivers: string[] = [];
               const senders: string[] = [];
+              const inputs: string[] = [];
 
               result.vin.forEach((input: any) => {
                 if (addresses.includes(input.addr)) {
                   sent = true;
                 }
                 senders.push(input.addr);
+                inputs.push(input.txid);
               });
               result.vout.forEach((output: any) => {
                 const outputAddr = output.scriptPubKey.addresses;
@@ -637,6 +642,7 @@ export namespace CryptoWallet.SDKS {
                 value,
                 change,
                 confirmed,
+                inputs,
                 confirmations: result.confirmations,
                 hash: result.txid,
                 blockHeight: result.blockheight,
