@@ -16,29 +16,19 @@
 * You should have received a copy of the GNU General Public License
 * along with CryptoWallet-js. If not, see <https://www.gnu.org/licenses/>.
 */
-import Bitcoin from './SDKS/bitcoin';
-import Ethereum from './SDKS/ethereum';
-import Catalyst from './SDKS/catalyst';
-import ERC20 from './SDKS/erc20';
 
-namespace CryptoWallet {
-  export const createSDK = function SDKFactory(sdk: string) {
-    switch (sdk) {
-      case 'Bitcoin':
-        return new Bitcoin();
-
-      case 'Ethereum':
-        return new Ethereum();
-
-      case 'Catalyst':
-        return new Catalyst();
-
-      case 'ERC20':
-        return new ERC20();
-
-      default:
-        return new Bitcoin();
-    }
-  };
-}
-export default CryptoWallet;
+type Transaction = {
+  fee: string;
+  receiver: string;
+  contractCall?: boolean;
+  confirmed: boolean;
+  confirmations: number;
+  hash: string;
+  blockHeight: number;
+  sent: boolean;
+  value: number;
+  sender: string,
+  confirmedTime: any;
+  receivedTime: number;
+};
+export default Transaction;
