@@ -36,6 +36,16 @@ export namespace CryptoWallet.SDKS.Catalyst {
     Web3:any = Web3;
     VerifyTx: any;
 
+    generateHDWallet(entropy: string, network: any): Wallet{
+      return {
+        ext: null,
+        int: null,
+        bip: 0,
+        type: 0,
+        network: {},
+      }
+    };
+
     /**
      * generate an ethereum keypair using a HD wallet object
      * @param wallet
