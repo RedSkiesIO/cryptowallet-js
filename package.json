@@ -71,7 +71,7 @@
     "lib"
   ],
   "homepage": "https://github.com/atlascity/cryptowallet-js#readme",
-  "main": "dist/cryptowallet-js.js",
+  "main": "lib/index.js",
   "module": "lib/src",
   "types": "types/index.d.ts",
   "keywords": [
