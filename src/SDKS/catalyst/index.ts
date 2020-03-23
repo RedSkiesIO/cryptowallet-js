@@ -21,6 +21,7 @@ import * as Bip39 from 'bip39';
 import { derivePath } from 'ed25519-hd-key';
 import ERPC from '@etclabscore/ethereum-json-rpc';
 import CatalystWallet from '@catalyst-net-js/wallet';
+import CatalystTx from '@catalyst-net-js/tx';
 import * as EthereumLib from 'ethereumjs-wallet';
 import * as EthereumTx from 'ethereumjs-tx';
 import * as Web3 from 'web3';
@@ -31,9 +32,6 @@ import GenericSDK from '../GenericSDK';
 import * as ICatalystSDK from './ICatalystSDK';
 import Transaction from './catalystTypes';
 
-async function txLib() {
-  return import('@catalyst-net-js/tx');
-}
 
 export namespace CryptoWallet.SDKS.Catalyst {
   export class CatalystSDK extends GenericSDK
@@ -184,12 +182,11 @@ export namespace CryptoWallet.SDKS.Catalyst {
     ): Object {
       const web3: any = new this.Web3(keypair.network.provider);
       return new Promise(async (resolve, reject) => {
-        const Tx = await txLib();
         const nonce = await web3.eth.getTransactionCount(keypair.address);
         const sendAmount: string = amount.toString();
         const gasAmount: string = gasPrice.toString();
         const gasLimit = 21000;
-        const tx: any = new Tx({
+        const tx: any = new CatalystTx({
           nonce,
           gasPrice: web3.utils.toHex(gasAmount),
           gasLimit: web3.utils.toHex(gasLimit),
@@ -300,7 +297,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
           return txs;
         };
 
-        const fetchTxs = async () => {
+        const fetchTxs = async (address: any) => {
           const txHashes: any = [];
           const txTimestamps: any = {};
           const blocks = await getBlocks(startBlock, endBlock, rpc);
@@ -316,7 +313,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
 
           const txs = await getTxs(txHashes, rpc);
           return txs.reduce((filtered, tx) => {
-            if(tx.from === addresses[0] || tx.to === addresses[0]) {
+            if(tx.from === addresses[0] || tx.to === address) {
               tx.timestamp = txTimestamps[tx.hash];
               filtered.push(tx);
             }
@@ -329,7 +326,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
       const weiMultiplier = 1000000000000000000;
       const gweiMultiplier = 1000000000;
       const getHistory = async (address: string) => {
-        const txs = await fetchTxs();
+        const txs = await fetchTxs(address);
 
             txs.forEach((r: any) => {
               let receiver: string = r.to;
@@ -337,7 +334,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
               let confirmed: boolean = false;
               let contractCall: boolean = false;
 
-              if (r.from === addresses[0].toLowerCase()) {
+              if (r.from === address.toLowerCase()) {
                 sent = true;
               }
               if (r.confirmations >= minConfirmations) {
@@ -399,33 +396,39 @@ export namespace CryptoWallet.SDKS.Catalyst {
       addresses: string[],
       network: string,
     ): Object {
-      let balance: number = 0;
+      const rpc = new ERPC({
+        transport: {
+          host: '77.68.110.194',
+          port: 5005,
+          type: 'http',
+          path: '/api/eth/request',
+        },
+      });
+      let balance: any = 0;
       const promises: Promise<object>[] = [];
 
+      const weiMultiplier = 1000000000000000000;
+
       const getAddrBalance = (addr: string) => new Promise(async (resolve, reject) => {
-        const URL: string = `${this.networks[network].getBalanceApi + addr}&tag=latest&apikey=${this.networks.ethToken}`;
-        await this.axios.get(URL)
-          .then((bal: any) => {
-            balance += bal.data.result;
-            resolve();
-          })
-          .catch((e: Error) => reject(e));
+        const bal = await rpc.eth_getBalance(addr);
+        resolve(bal ? (parseInt(bal, 16) / weiMultiplier) : 0);
       });
 
-      return new Promise(async (resolve, reject) => {
-        addresses.forEach((addr) => {
-          promises.push(
-            new Promise(async (res, rej) => res(getAddrBalance(addr))),
-          );
-        });
-        try {
-          await Promise.all(promises);
-        } catch (e) { return reject(e); }
-        const weiMultiplier = 1000000000000000000;
-        const dust = 1000000000000;
-        if (balance < dust) return resolve(0);
-        return resolve(balance / weiMultiplier);
-      });
+      return getAddrBalance(addresses[0]);      
+      // return new Promise(async (resolve, reject) => {
+      //   addresses.forEach((addr) => {
+      //     promises.push(
+      //       new Promise(async (res, rej) => res(getAddrBalance(addr))),
+      //     );
+      //   });
+      //   try {
+      //     await Promise.all(promises);
+      //   } catch (e) { return reject(e); }
+      //   const weiMultiplier = 1000000000000000000;
+      //   // const dust = 1000000000000;
+      //   // if (balance < dust) return resolve(0);
+      //   return resolve(parseInt(balance, 16) / weiMultiplier);
+      // });
     }
 
     /**

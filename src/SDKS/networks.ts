@@ -240,6 +240,18 @@ export const ETHEREUM_KOVAN = {
   chainId: 42,
 };
 
+export const CATALYST_TESTNET = {
+  name: 'CATALYST_TESTNET',
+  networkName: 'catalyst',
+  bip: 42069,
+  getTranApi: process.env.ETHEREUM_ROPSTEN_GET_TRAN,
+  getBalanceApi: process.env.ETHEREUM_ROPSTEN_GET_BALANCE,
+  getErc20TranApi: process.env.ETHEREUM_ROPSTEN_GET_ERC20_TRAN,
+  feeApi: process.env.ETHEREUM_ROPSTEN_FEE,
+  provider: 'http://77.68.110.194:5005/api/eth/request',
+  chainId: 2,
+};
+
 export const REGTEST = {
   name: 'REGTEST',
   type: 'test',
