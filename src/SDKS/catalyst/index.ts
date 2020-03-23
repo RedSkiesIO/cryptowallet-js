@@ -17,7 +17,10 @@
 * along with CryptoWallet-js. If not, see <https://www.gnu.org/licenses/>.
 */
 ///<reference path="../../types/module.d.ts" />
-import * as bip44hdkey from 'ethereumjs-wallet/hdkey';
+import * as Bip39 from 'bip39';
+import { derivePath } from 'ed25519-hd-key';
+import ERPC from '@etclabscore/ethereum-json-rpc';
+import CatalystWallet from '@catalyst-net-js/wallet';
 import * as EthereumLib from 'ethereumjs-wallet';
 import * as EthereumTx from 'ethereumjs-tx';
 import * as Web3 from 'web3';
@@ -28,21 +31,32 @@ import GenericSDK from '../GenericSDK';
 import * as ICatalystSDK from './ICatalystSDK';
 import Transaction from './catalystTypes';
 
+async function txLib() {
+  return import('@catalyst-net-js/tx');
+}
+
 export namespace CryptoWallet.SDKS.Catalyst {
   export class CatalystSDK extends GenericSDK
     implements ICatalystSDK.CryptoWallet.SDKS.Catalyst.ICatalystSDK {
-    Bip = bip44hdkey;
     ethereumlib = EthereumLib;
     Web3:any = Web3;
     VerifyTx: any;
+    bip39: any = Bip39;
+    walletHdpath = 'm/44\'/42069\'/';
 
     generateHDWallet(entropy: string, network: any): Wallet{
+      if (!this.bip39.validateMnemonic(entropy)) {
+        throw new TypeError('Invalid entropy');
+      }
+
+      const seed = this.bip39.mnemonicToSeedHex(entropy);
+    
       return {
-        ext: null,
+        ext: seed,
         int: null,
-        bip: 0,
-        type: 0,
-        network: {},
+        bip: 44,
+        type: 42069,
+        network: network,
       }
     };
 
@@ -58,15 +72,16 @@ export namespace CryptoWallet.SDKS.Catalyst {
       if (!wallet.network || wallet.network.connect) {
         throw new Error('Invalid wallet type');
       }
-      const addrNode = this.Bip.fromExtendedKey(
-        wallet.ext.xpriv,
-      ).deriveChild(index);
+      const data = derivePath(`${this.walletHdpath + index}'`, wallet.ext);
+      
+        const wal = CatalystWallet.generateFromSeed(data.key);
+
       const keypair: KeyPair = {
-        publicKey: addrNode.getWallet().getPublicKeyString(),
-        address: addrNode.getWallet().getChecksumAddressString(),
-        derivationPath: `m/44'/60'/0'/0/${index}`,
-        privateKey: addrNode.getWallet().getPrivateKeyString(),
-        type: 'Ethereum',
+        publicKey: wal.getPublicKeyString(),
+        address: wal.getAddressString(),
+        derivationPath: `${this.walletHdpath + index}'`,
+        privateKey: wal.getPrivateKeyString(),
+        type: 'Catalyst',
         network: wallet.network,
       };
       return keypair;
@@ -84,12 +99,11 @@ export namespace CryptoWallet.SDKS.Catalyst {
       if (!wallet.network || wallet.network.connect) {
         throw new Error('Invalid wallet type');
       }
-      const addrNode = this.Bip.fromExtendedKey(
-        wallet.ext.xpriv,
-      ).deriveChild(index);
+      const data = derivePath(`${this.walletHdpath + index}'`, wallet.ext);
+      const wal = CatalystWallet.generateFromSeed(data.key);
       const address: Address = {
         index,
-        address: addrNode.getWallet().getChecksumAddressString(),
+        address: wal.getAddressString(),
         type: wallet.network.name,
       };
       return address;
@@ -168,23 +182,22 @@ export namespace CryptoWallet.SDKS.Catalyst {
       amount: number,
       gasPrice: number,
     ): Object {
-      const removePrefix = 2;
-      const privateKey: Buffer = Buffer.from(keypair.privateKey.substr(removePrefix), 'hex');
       const web3: any = new this.Web3(keypair.network.provider);
       return new Promise(async (resolve, reject) => {
+        const Tx = await txLib();
         const nonce = await web3.eth.getTransactionCount(keypair.address);
         const sendAmount: string = amount.toString();
         const gasAmount: string = gasPrice.toString();
         const gasLimit = 21000;
-        const tx: any = new EthereumTx({
+        const tx: any = new Tx({
           nonce,
           gasPrice: web3.utils.toHex(gasAmount),
           gasLimit: web3.utils.toHex(gasLimit),
           to: toAddress,
           value: web3.utils.toHex(web3.utils.toWei(sendAmount)),
-          chainId: keypair.network.chainId,
+          data: '0x0',
         });
-        tx.sign(privateKey);
+        await tx.sign(keypair.privateKey);
         const raw: string = `0x${tx.serialize().toString('hex')}`;
         const convertToSeconds = 1000;
 
@@ -258,20 +271,67 @@ export namespace CryptoWallet.SDKS.Catalyst {
       endBlock?: number,
     )
       : Object {
+
+        const rpc = new ERPC({
+          transport: {
+            host: '77.68.110.194',
+            port: 5005,
+            type: 'http',
+            path: '/api/eth/request',
+          },
+        });
+
+        const getBlocks = async (from: number, to: any, erpc: ERPC): Promise<any> => {
+          const promises: any[] = [];
+        
+          for (let i = from; i <= to; i += 1) {
+            promises.push(erpc.eth_getBlockByNumber(`0x${i.toString(16)}`, true));
+          }
+          return Promise.all(promises);
+        };
+        
+        const getTxs = async (txHashes: any[], erpc: ERPC): Promise<any[]> => {
+          const promises: any[] = [];
+          txHashes.forEach((hash: any) => {
+            promises.push(erpc.eth_getTransactionByHash(hash));
+          });
+          const txs = Promise.all(promises);
+          console.log(txs);
+          return txs;
+        };
+
+        const fetchTxs = async () => {
+          const txHashes: any = [];
+          const txTimestamps: any = {};
+          const blocks = await getBlocks(startBlock, endBlock, rpc);
+          blocks.forEach(({transactions, timestamp}: {transactions: any, timestamp: number}) => {
+            console.log(transactions);
+            if(transactions.length > 0){
+              txHashes.push(...transactions);
+              transactions.forEach((tx: any) => {
+                txTimestamps[tx] = timestamp;
+              });
+            };
+          });
+
+          const txs = await getTxs(txHashes, rpc);
+          return txs.reduce((filtered, tx) => {
+            if(tx.from === addresses[0] || tx.to === addresses[0]) {
+              tx.timestamp = txTimestamps[tx.hash];
+              filtered.push(tx);
+            }
+            return filtered
+          }, []);
+        }
+
       const transactions: Transaction[] = [];
-      const minConfirmations = 11;
+      const minConfirmations = 1;
       const weiMultiplier = 1000000000000000000;
       const gweiMultiplier = 1000000000;
-      const getHistory = (address: string) => new Promise(async (resolve, reject) => {
-        const URL: string = `${this.networks[network].getTranApi + address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
+      const getHistory = async (address: string) => {
+        const txs = await fetchTxs();
 
-        await this.axios.get(URL)
-          .then(async (res: any) => {
-            if (!res.data.result) {
-              return resolve();
-            }
-
-            res.data.result.forEach((r: any) => {
+            txs.forEach((r: any) => {
               let receiver: string = r.to;
               let sent: boolean = false;
               let confirmed: boolean = false;
@@ -280,7 +340,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
               if (r.from === addresses[0].toLowerCase()) {
                 sent = true;
               }
-              if (r.confirmations > minConfirmations) {
+              if (r.confirmations >= minConfirmations) {
                 confirmed = true;
               }
               if (!r.to) {
@@ -294,22 +354,20 @@ export namespace CryptoWallet.SDKS.Catalyst {
                 contractCall,
                 confirmed,
                 hash: r.hash,
-                blockHeight: r.blockNumber,
-                fee: (r.cumulativeGasUsed / gweiMultiplier).toString(),
-                value: r.value / weiMultiplier,
+                blockHeight: parseInt(r.blockNumber, 16),
+                fee: (parseInt(r.cumulativeGasUsed, 16) / gweiMultiplier).toString(),
+                value: parseInt(r.value ,16) / weiMultiplier,
                 sender: r.from,
-                receivedTime: r.timeStamp,
-                confirmedTime: r.timeStamp,
-                confirmations: r.confirmations,
+                receivedTime: parseInt(r.timestamp, 16),
+                confirmedTime: parseInt(r.timestamp, 16),
+                confirmations: 1,
               };
 
               transactions.push(transaction);
             });
+          };
 
-            return resolve();
-          })
-          .catch((e: Error) => reject(e));
-      });
+      
       return new Promise(async (resolve, reject) => {
         const promises: Promise<Object>[] = [];
         addresses.forEach(async (address: string) => {

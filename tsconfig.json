@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES5",
-    "module": "ES2015",
+    "module": "ESNext",
     "strict": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
