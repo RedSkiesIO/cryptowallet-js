@@ -16,6 +16,6 @@
 * You should have received a copy of the GNU General Public License
 * along with CryptoWallet-js. If not, see <https://www.gnu.org/licenses/>.
 */
-import cryptoWallet from './cryptoWallet';
+import('./cryptoWallet').then((module) => module);
 
-export default cryptoWallet;
+//export default cryptoWallet;

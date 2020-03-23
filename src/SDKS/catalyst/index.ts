@@ -32,7 +32,6 @@ import GenericSDK from '../GenericSDK';
 import * as ICatalystSDK from './ICatalystSDK';
 import Transaction from './catalystTypes';
 
-
 export namespace CryptoWallet.SDKS.Catalyst {
   export class CatalystSDK extends GenericSDK
     implements ICatalystSDK.CryptoWallet.SDKS.Catalyst.ICatalystSDK {
