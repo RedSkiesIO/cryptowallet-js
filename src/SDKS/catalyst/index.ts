@@ -299,7 +299,15 @@ export namespace CryptoWallet.SDKS.Catalyst {
         const fetchTxs = async (address: any) => {
           const txHashes: any = [];
           const txTimestamps: any = {};
-          const blocks = await getBlocks(startBlock, endBlock, rpc);
+          let min = startBlock;
+          let max = endBlock;
+          if(!endBlock) {
+            const height: any = await rpc.eth_blockNumber()
+            min = height - 100;
+            max = height
+          }
+          const deltas = await getBlocks(min, max, rpc);
+          const blocks = deltas.filter((x: any) => x);
           blocks.forEach(({transactions, timestamp}: {transactions: any, timestamp: number}) => {
             console.log(transactions);
             if(transactions.length > 0){
@@ -351,7 +359,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
                 confirmed,
                 hash: r.hash,
                 blockHeight: parseInt(r.blockNumber, 16),
-                fee: (parseInt(r.cumulativeGasUsed, 16) / gweiMultiplier).toString(),
+                fee: (parseInt(r.gas, 16) * parseInt(r.gasLimit, 16) / gweiMultiplier).toString(),
                 value: parseInt(r.value ,16) / weiMultiplier,
                 sender: r.from,
                 receivedTime: parseInt(r.timestamp, 16),
