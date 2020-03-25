@@ -179,12 +179,12 @@ export namespace CryptoWallet.SDKS.Catalyst {
       amount: number,
       gasPrice: number,
     ): Object {
-      const web3: any = new this.Web3(keypair.network.provider);
+      const web3: any = new this.Web3('http://77.68.110.194:5005/api/eth/request');
       return new Promise(async (resolve, reject) => {
         const nonce = await web3.eth.getTransactionCount(keypair.address);
         const sendAmount: string = amount.toString();
         const gasAmount: string = gasPrice.toString();
-        const gasLimit = 21000;
+        const gasLimit = 21004;
         const tx: any = new CatalystTx({
           nonce,
           gasPrice: web3.utils.toHex(gasAmount),
@@ -303,7 +303,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
           let max = endBlock;
           if(!endBlock) {
             const height: any = await rpc.eth_blockNumber()
-            min = height - 100;
+            min = (height >= 100) ? (height - 100) : 0;
             max = height
           }
           const deltas = await getBlocks(min, max, rpc);
