@@ -186,7 +186,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
         const gasAmount: string = gasPrice.toString();
         const gasLimit = 21004;
         const tx: any = new CatalystTx({
-          nonce,
+          nonce: `0x${parseInt(nonce, 16)}`,
           gasPrice: web3.utils.toHex(gasAmount),
           gasLimit: web3.utils.toHex(gasLimit),
           to: toAddress,
@@ -194,7 +194,11 @@ export namespace CryptoWallet.SDKS.Catalyst {
           data: '0x0',
         });
         await tx.sign(keypair.privateKey);
-        const raw: string = `0x${tx.serialize().toString('hex')}`;
+        function toHexString(byteArray: Uint8Array) {
+          // eslint-disable-next-line no-bitwise
+          return Array.prototype.map.call(byteArray, (byte) => (`0${(byte & 0xFF).toString(16)}`).slice(-2)).join('');
+        }
+        const raw = toHexString(tx.serialize());
         const convertToSeconds = 1000;
 
         const transaction: Transaction = {
@@ -227,7 +231,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
       rawTx: string,
       network: string,
     ): Object {
-      const web3: any = new this.Web3(this.networks[network].provider);
+      const web3 = new this.Web3('http://77.68.110.194:5005/api/eth/request');
       return new Promise(async (resolve, reject) => {
         web3.eth.sendSignedTransaction(rawTx, (err: Error, hash: string) => {
           if (err) return reject(err);
