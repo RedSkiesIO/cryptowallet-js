@@ -20,6 +20,7 @@
 import * as Bip39 from 'bip39';
 import { derivePath } from 'ed25519-hd-key';
 import ERPC from '@etclabscore/ethereum-json-rpc';
+const { HDWalletProvider } = require('@catalyst-net-js/truffle-provider');
 import CatalystWallet from '@catalyst-net-js/wallet';
 import CatalystTx from '@catalyst-net-js/tx';
 import * as EthereumLib from 'ethereumjs-wallet';
@@ -202,7 +203,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
         const convertToSeconds = 1000;
 
         const transaction: Transaction = {
-          hash: web3.utils.sha3(raw),
+          hash: web3.utils.sha3(tx.serialize()),
           fee: web3.utils.fromWei((gasPrice * gasLimit).toString(), 'ether'),
           receiver: toAddress,
           confirmed: false,
@@ -242,6 +243,38 @@ export namespace CryptoWallet.SDKS.Catalyst {
       });
     }
 
+
+    broadcastProviderTx(
+      rawTx: string,
+      keypair: KeyPair,
+      network: string,
+    ): Object {
+      const provider = new HDWalletProvider([keypair.privateKey], `http://77.68.110.194:5005/api/eth/request`);
+      const web3 = new this.Web3(provider);
+      const tx = new CatalystTx(rawTx);
+      const deserialized = tx.deserialize();
+      const value = deserialized.getAmount();
+      const gasPrice = deserialized.getGasPrice();
+      const gasLimit = deserialized.getGasLimit();
+      const to = deserialized.getReceiverAddress();
+      const data = deserialized.getData();
+      
+      return new Promise(async (resolve, reject) => {
+        web3.eth.sendTransaction({
+          from: provider.getAddress(0),
+          to,
+          value,
+          gasPrice,
+          gasLimit,
+          data,
+          }, (err: Error, hash: string) => {
+            if (err) return reject(err);
+            return resolve({
+              hash,
+            });
+          });
+      });
+    }
     /**
      *  Verify the signature of an Ethereum transaction object
      * @param tx
