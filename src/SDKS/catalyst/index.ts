@@ -23,6 +23,7 @@ import ERPC from '@etclabscore/ethereum-json-rpc';
 import { HDWalletProvider } from '@catalyst-net-js/truffle-provider';
 import CatalystWallet from '@catalyst-net-js/wallet';
 import CatalystTx from '@catalyst-net-js/tx';
+import {hexStringFromBytes, numberFromBytes} from '@catalyst-net-js/common'
 import * as EthereumLib from 'ethereumjs-wallet';
 import * as EthereumTx from 'ethereumjs-tx';
 import * as Web3 from 'web3';
@@ -253,20 +254,20 @@ export namespace CryptoWallet.SDKS.Catalyst {
       const web3 = new this.Web3(provider);
       const tx = new CatalystTx(rawTx);
       const deserialized = tx.deserialize();
-      const value = deserialized.getAmount();
-      const gasPrice = deserialized.getGasPrice();
+      const value: any = deserialized.getAmount();
+      const gasPrice: any = deserialized.getGasPrice();
       const gasLimit = deserialized.getGasLimit();
-      const to = deserialized.getReceiverAddress();
-      const data = deserialized.getData();
+      const to: any = deserialized.getReceiverAddress();
+      const data: any = deserialized.getData();
       
       return new Promise(async (resolve, reject) => {
         web3.eth.sendTransaction({
           from: keypair.address,
-          to,
-          value,
-          gasPrice,
+          to: hexStringFromBytes(to),
+          value: numberFromBytes(value),
+          gasPrice: numberFromBytes(gasPrice),
           gasLimit,
-          data,
+          data: hexStringFromBytes(data),
           }, (err: Error, hash: string) => {
             if (err) return reject(err);
             return resolve({
