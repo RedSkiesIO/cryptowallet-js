@@ -20,7 +20,7 @@
 import * as Bip39 from 'bip39';
 import { derivePath } from 'ed25519-hd-key';
 import ERPC from '@etclabscore/ethereum-json-rpc';
-const { HDWalletProvider } = require('@catalyst-net-js/truffle-provider');
+import { HDWalletProvider } from '@catalyst-net-js/truffle-provider';
 import CatalystWallet from '@catalyst-net-js/wallet';
 import CatalystTx from '@catalyst-net-js/tx';
 import * as EthereumLib from 'ethereumjs-wallet';
