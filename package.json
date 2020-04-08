@@ -14,9 +14,9 @@
     "url": "https://github.com/atlascity/cryptowallet-js/issues"
   },
   "dependencies": {
-    "@catalyst-net-js/truffle-provider": "^0.2.1",
-    "@catalyst-net-js/tx": "^0.2.1",
-    "@catalyst-net-js/wallet": "^0.2.1",
+    "@catalyst-net-js/truffle-provider": "^0.3.0",
+    "@catalyst-net-js/tx": "^0.3.0",
+    "@catalyst-net-js/wallet": "^0.3.0",
     "@etclabscore/ethereum-json-rpc": "^1.3.6",
     "axios": "^0.18.1",
     "bip39": "^2.5.0",

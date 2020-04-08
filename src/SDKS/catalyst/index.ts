@@ -261,7 +261,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
       
       return new Promise(async (resolve, reject) => {
         web3.eth.sendTransaction({
-          from: provider.getAddress(0),
+          from: keypair.address,
           to,
           value,
           gasPrice,
