@@ -314,7 +314,6 @@ export namespace CryptoWallet.SDKS.Catalyst {
             path: '/api/eth/request',
           },
         });
-
         const getBlocks = async (from: number, to: any, erpc: ERPC): Promise<any> => {
           const promises: any[] = [];
         
@@ -397,7 +396,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
                 confirmed,
                 hash: r.hash,
                 blockHeight: parseInt(r.blockNumber, 16),
-                fee: (parseInt(r.gas, 16) * parseInt(r.gasLimit, 16) / gweiMultiplier).toString(),
+                fee: (parseInt(r.gas, 16) * parseInt(r.gasPrice, 16) / weiMultiplier).toString(),
                 value: parseInt(r.value ,16) / weiMultiplier,
                 sender: r.from,
                 receivedTime: parseInt(r.timestamp, 16),
