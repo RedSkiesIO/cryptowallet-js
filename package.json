@@ -15,9 +15,9 @@
   },
   "dependencies": {
     "@catalyst-net-js/common": "0.3.0",
-    "@catalyst-net-js/truffle-provider": "0.3.0",
-    "@catalyst-net-js/tx": "0.3.0",
-    "@catalyst-net-js/wallet": "0.3.0",
+    "@catalyst-net-js/truffle-provider": "0.3.2",
+    "@catalyst-net-js/tx": "0.3.2",
+    "@catalyst-net-js/wallet": "0.3.2",
     "@etclabscore/ethereum-json-rpc": "^1.3.6",
     "axios": "^0.18.1",
     "bip39": "^2.5.0",

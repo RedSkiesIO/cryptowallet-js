@@ -117,7 +117,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
       address: string,
       network: string,
     ): boolean {
-      const web3: any = new this.Web3(this.networks[network].provider);
+      const web3: any = new this.Web3('http://77.68.110.194:5005/api/eth/request');
       return web3.utils.isAddress(address.toLowerCase());
     }
 
