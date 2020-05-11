@@ -220,7 +220,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
       rawTx: string,
       network: string,
     ): Object {
-      const provider = this.api?.provider || this.networks[network].provider
+      const provider = this.api ? this.api.provider : this.networks[network].provider;
       const web3: any = new this.Web3(provider);
       return new Promise(async (resolve, reject) => {
         web3.eth.sendSignedTransaction(rawTx, (err: Error, hash: string) => {

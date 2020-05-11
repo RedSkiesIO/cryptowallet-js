@@ -71,7 +71,7 @@ const mockContract = {
     symbol: jest.fn(() => mockCall),
   },
 };
-
+jestWeb3.utils = { isAddress: jest.fn(() => true) },
 jestWeb3.mockImplementation(() => mockWeb3);
 mockWeb3.eth.Contract.mockImplementation(() => mockContract);
 
@@ -90,7 +90,7 @@ describe('ERC20SDK', async () => {
     });
 
     it('can detect an invalid address', async () => {
-      mockWeb3.utils.isAddress = jest.fn(() => false);
+      jestWeb3.utils.isAddress = jest.fn(() => false);
       const invalidWallet = () => erc20.generateERC20Wallet(
         ethKeypair,
         'Catalyst',
