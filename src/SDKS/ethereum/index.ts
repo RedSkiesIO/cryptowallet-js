@@ -30,7 +30,7 @@ import Transaction from './ethereumTypes';
 
 interface ApiInfo {
   provider: string,
-  etherscanApi: string,
+  etherscan: string,
   etherscanKey: string,
 }
 
@@ -41,7 +41,12 @@ export namespace CryptoWallet.SDKS.Ethereum {
     ethereumlib = EthereumLib;
     Web3:any = Web3;
     VerifyTx: any;
-    Network: ApiInfo;
+    Network?: ApiInfo;
+
+    constructor(api?: ApiInfo) {
+      super();
+      if (api) this.Network = api;
+    }
 
     /**
      * generate an ethereum keypair using a HD wallet object
