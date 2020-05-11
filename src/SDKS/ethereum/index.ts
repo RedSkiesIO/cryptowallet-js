@@ -28,6 +28,12 @@ import GenericSDK from '../GenericSDK';
 import * as IEthereumSDK from './IEthereumSDK';
 import Transaction from './ethereumTypes';
 
+interface ApiInfo {
+  provider: string,
+  etherscanApi: string,
+  etherscanKey: string,
+}
+
 export namespace CryptoWallet.SDKS.Ethereum {
   export class EthereumSDK extends GenericSDK
     implements IEthereumSDK.CryptoWallet.SDKS.Ethereum.IEthereumSDK {
@@ -35,6 +41,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
     ethereumlib = EthereumLib;
     Web3:any = Web3;
     VerifyTx: any;
+    Network: ApiInfo;
 
     /**
      * generate an ethereum keypair using a HD wallet object
