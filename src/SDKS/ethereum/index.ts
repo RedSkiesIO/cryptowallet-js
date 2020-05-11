@@ -33,6 +33,7 @@ interface ApiInfo {
   etherscan: string,
   etherscanKey: string,
   feeApi: string,
+  chainId: number,
 }
 
 export namespace CryptoWallet.SDKS.Ethereum {
