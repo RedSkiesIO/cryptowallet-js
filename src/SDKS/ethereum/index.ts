@@ -32,6 +32,7 @@ interface ApiInfo {
   provider: string,
   etherscan: string,
   etherscanKey: string,
+  feeApi: string,
 }
 
 export namespace CryptoWallet.SDKS.Ethereum {
@@ -41,11 +42,11 @@ export namespace CryptoWallet.SDKS.Ethereum {
     ethereumlib = EthereumLib;
     Web3:any = Web3;
     VerifyTx: any;
-    Network?: ApiInfo;
+    api?: ApiInfo;
 
     constructor(api?: ApiInfo) {
       super();
-      if (api) this.Network = api;
+      if (api) this.api = api;
     }
 
     /**
@@ -69,7 +70,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
         derivationPath: `m/44'/60'/0'/0/${index}`,
         privateKey: addrNode.getWallet().getPrivateKeyString(),
         type: 'Ethereum',
-        network: wallet.network,
+        network: this.api || wallet.network,
       };
       return keypair;
     }
@@ -104,10 +105,8 @@ export namespace CryptoWallet.SDKS.Ethereum {
      */
     validateAddress(
       address: string,
-      network: string,
     ): boolean {
-      const web3: any = new this.Web3(this.networks[network].provider);
-      return web3.utils.isAddress(address.toLowerCase());
+      return this.Web3.utils.isAddress(address.toLowerCase());
     }
 
     /**
@@ -122,7 +121,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
         throw new Error('Invalid network');
       }
       return new Promise((resolve, reject) => {
-        const URL: string = this.networks[network].feeApi;
+        const URL: string = this.api ? this.api.feeApi : this.networks[network].feeApi;
         const gasLimit = 21000;
         const weiMultiplier = 1000000000000000000;
         this.axios.get(URL)
@@ -220,7 +219,8 @@ export namespace CryptoWallet.SDKS.Ethereum {
       rawTx: string,
       network: string,
     ): Object {
-      const web3: any = new this.Web3(this.networks[network].provider);
+      const provider = this.api?.provider || this.networks[network].provider
+      const web3: any = new this.Web3(provider);
       return new Promise(async (resolve, reject) => {
         web3.eth.sendSignedTransaction(rawTx, (err: Error, hash: string) => {
           if (err) return reject(err);
@@ -265,7 +265,10 @@ export namespace CryptoWallet.SDKS.Ethereum {
       const weiMultiplier = 1000000000000000000;
       const gweiMultiplier = 1000000000;
       const getHistory = (address: string) => new Promise(async (resolve, reject) => {
-        const URL: string = `${this.networks[network].getTranApi + address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
+        let URL: string = `${this.networks[network].getTranApi + address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
+        if (this.api) {
+          URL = `${this.api.etherscan}?module=account&action=txlist&address=${address}}&startblock=${startBlock}&sort=desc&apikey=${this.api.etherscanKey}`
+        }
 
         await this.axios.get(URL)
           .then(async (res: any) => {
@@ -347,7 +350,10 @@ export namespace CryptoWallet.SDKS.Ethereum {
       const promises: Promise<object>[] = [];
 
       const getAddrBalance = (addr: string) => new Promise(async (resolve, reject) => {
-        const URL: string = `${this.networks[network].getBalanceApi + addr}&tag=latest&apikey=${this.networks.ethToken}`;
+        let URL: string = `${this.networks[network].getBalanceApi + addr}&tag=latest&apikey=${this.networks.ethToken}`;
+        if (this.api) {
+          URL = `${this.api.etherscan}?module=account&action=balance&address=${addr}}&tag=latest&apikey=${this.api.etherscanKey}`
+        }
         await this.axios.get(URL)
           .then((bal: any) => {
             balance += bal.data.result;
