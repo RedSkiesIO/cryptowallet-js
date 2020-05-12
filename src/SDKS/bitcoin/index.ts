@@ -20,13 +20,18 @@
 import * as BitcoinLib from 'bitcoinjs-lib';
 import * as Coinselect from 'coinselect';
 import * as CoinSelectSplit from 'coinselect/split';
-import { KeyPair, Wallet } from '../GenericSDK.d';
+import { KeyPair, Wallet, BitcoinNetwork } from '../GenericSDK.d';
 import * as IBitcoinSDK from './IBitcoinSDK';
 import GenericSDK from '../GenericSDK';
+
 
 export namespace CryptoWallet.SDKS.Bitcoin {
   export class BitcoinSDK extends GenericSDK
     implements IBitcoinSDK.CryptoWallet.SDKS.Bitcoin.IBitcoinSDK {
+
+      constructor(net?: BitcoinNetwork) {
+        super(net);
+      }
     /**
      * generates a segwit address
      * @param keyPair
@@ -89,20 +94,22 @@ export namespace CryptoWallet.SDKS.Bitcoin {
       key2: string,
       key3: string,
       key4: string,
-      network: string,
+      net: string,
     ): string {
-      if (!this.networks[network] || !this.networks[network].connect) {
+      const network = this.networkInfo ? this.networkInfo : this.networks[net];
+       if (!network || !network.connect) {
         throw new Error('Invalid network');
       }
+
       try {
         const pubkeys: any = [key1, key2, key3, key4].map(hex => Buffer.from(hex, 'hex'));
         const { address } = this.bitcoinlib.payments.p2wsh({
           redeem: this.bitcoinlib.payments.p2ms({
             pubkeys,
             m: 3,
-            network: this.networks[network].connect,
+            network: network.connect,
           }),
-          network: this.networks[network].connect,
+          network: network.connect,
         });
         return address;
       } catch (e) {
@@ -117,9 +124,11 @@ export namespace CryptoWallet.SDKS.Bitcoin {
      */
     generateP2SHMultiSig(
       keys: string[],
-      network: string,
+      net: string,
     ): string {
-      if (!this.networks[network] || !this.networks[network].connect) {
+      
+      const network = this.networkInfo ? this.networkInfo : this.networks[net];
+      if (!network || !network.connect) {
         throw new Error('Invalid network');
       }
       try {
@@ -129,11 +138,11 @@ export namespace CryptoWallet.SDKS.Bitcoin {
             redeem: this.bitcoinlib.payments.p2ms({
               pubkeys,
               m: pubkeys.length,
-              network: this.networks[network].connect,
+              network: network.connect,
             }),
-            network: this.networks[network].connect,
+            network: network.connect,
           }),
-          network: this.networks[network].connect,
+          network: network.connect,
         });
         return address;
       } catch (e) {
@@ -148,17 +157,18 @@ export namespace CryptoWallet.SDKS.Bitcoin {
      */
     getUTXOs(
       addresses: string[],
-      network: string,
+      net: string,
     ): Object {
-      if (!this.networks[network] || !this.networks[network].connect) {
-        throw new Error('Invalid network');
-      }
-      const validAddress = (address: string) => this.validateAddress(address, network);
+      // if (!this.networks[network] || !this.networks[network].connect) {
+      //   throw new Error('Invalid network');
+      // }
+      const network = this.networkInfo ? this.networkInfo : this.networks[net];
+      const validAddress = (address: string) => this.validateAddress(address, net);
       if (!addresses.every(validAddress)) {
         throw new Error('Invalid address used');
       }
       return new Promise((resolve, reject) => {
-        const apiUrl: string = this.networks[network].discovery;
+        const apiUrl: string = network.discovery;
         const URL:string = `${apiUrl}/addrs/utxo`;
 
         this.axios.post(URL, {
@@ -213,7 +223,7 @@ export namespace CryptoWallet.SDKS.Bitcoin {
       const amount: number = amounts.reduce(reducer);
       const satoshisMultiplier: number = 100000000;
       const transactionAmount: number = Math.floor((amount * satoshisMultiplier));
-      const net = this.networks[wallet.network.name];
+      const net = wallet.network;
       let rawTx: any;
 
       return new Promise(async (resolve, reject) => {

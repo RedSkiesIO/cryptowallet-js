@@ -22,19 +22,13 @@ import * as EthereumLib from 'ethereumjs-wallet';
 import * as EthereumTx from 'ethereumjs-tx';
 import * as Web3 from 'web3';
 import {
-  KeyPair, Wallet, Address,
+  KeyPair, Wallet, Address, EthereumNetwork
 } from '../GenericSDK.d';
 import GenericSDK from '../GenericSDK';
 import * as IEthereumSDK from './IEthereumSDK';
 import Transaction from './ethereumTypes';
 
-interface ApiInfo {
-  provider: string,
-  etherscan: string,
-  etherscanKey: string,
-  feeApi: string,
-  chainId: number,
-}
+
 
 export namespace CryptoWallet.SDKS.Ethereum {
   export class EthereumSDK extends GenericSDK
@@ -43,10 +37,10 @@ export namespace CryptoWallet.SDKS.Ethereum {
     ethereumlib = EthereumLib;
     Web3:any = Web3;
     VerifyTx: any;
-    api?: ApiInfo;
+    api?: EthereumNetwork;
 
-    constructor(api?: ApiInfo) {
-      super();
+    constructor(api?: EthereumNetwork) {
+      super(api);
       if (api) this.api = api;
     }
 

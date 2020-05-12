@@ -17,6 +17,38 @@
 * along with CryptoWallet-js. If not, see <https://www.gnu.org/licenses/>.
 */
 
+export interface BitcoinNetwork {
+  name: string,
+  bip: number,
+  segwit: boolean,
+  discovery: string,
+  broadcastApi: string,
+  feeApi: string,
+  connect: {
+    messagePrefix: string,
+    bip32: {
+      public: number,
+      private: Number,
+    },
+    pubKeyHash: number,
+    scriptHash: number,
+    wif: number,
+  }
+}
+
+export interface EthereumNetwork {
+  name: string,
+  segwit: boolean,
+  bip: number,
+  provider: string,
+  etherscan: string,
+  etherscanKey: string,
+  feeApi: string,
+  chainId: number,
+}
+
+export type NetworkInfo = BitcoinNetwork | EthereumNetwork
+
 export type Wallet = {
   ext: any;
   int: any;

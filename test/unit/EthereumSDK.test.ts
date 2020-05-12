@@ -44,13 +44,7 @@ const mockWeb3 = {
 jestWeb3.utils = { isAddress: jest.fn() },
 jestWeb3.mockImplementation(() => mockWeb3);
 
-const api = {
-  provider: 'string',
-  etherscan: 'string',
-  etherscanKey: 'string',
-}
-
-const eth: any = CryptoWallet.createSDK('Ethereum', api);
+const eth: any = CryptoWallet.createSDK('Ethereum');
 const entropy = 'nut mixture license bean page mimic iron spice rail uncover then warfare';
 const network = 'ETHEREUM_ROPSTEN';
 
