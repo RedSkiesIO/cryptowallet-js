@@ -262,7 +262,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
       const getHistory = (address: string) => new Promise(async (resolve, reject) => {
         let URL: string = `${this.networks[network].getTranApi + address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
         if (this.api) {
-          URL = `${this.api.etherscan}?module=account&action=txlist&address=${address}}&startblock=${startBlock}&sort=desc&apikey=${this.api.etherscanKey}`
+          URL = `${this.api.etherscan}?module=account&action=txlist&address=${address}&startblock=${startBlock}&sort=desc&apikey=${this.api.etherscanKey}`
         }
 
         await this.axios.get(URL)
@@ -347,7 +347,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
       const getAddrBalance = (addr: string) => new Promise(async (resolve, reject) => {
         let URL: string = `${this.networks[network].getBalanceApi + addr}&tag=latest&apikey=${this.networks.ethToken}`;
         if (this.api) {
-          URL = `${this.api.etherscan}?module=account&action=balance&address=${addr}}&tag=latest&apikey=${this.api.etherscanKey}`
+          URL = `${this.api.etherscan}?module=account&action=balance&address=${addr}&tag=latest&apikey=${this.api.etherscanKey}`
         }
         await this.axios.get(URL)
           .then((bal: any) => {
