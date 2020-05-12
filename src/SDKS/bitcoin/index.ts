@@ -159,10 +159,10 @@ export namespace CryptoWallet.SDKS.Bitcoin {
       addresses: string[],
       net: string,
     ): Object {
-      // if (!this.networks[network] || !this.networks[network].connect) {
-      //   throw new Error('Invalid network');
-      // }
       const network = this.networkInfo ? this.networkInfo : this.networks[net];
+      if (!network || !network.connect) {
+        throw new Error('Invalid network');
+      }
       const validAddress = (address: string) => this.validateAddress(address, net);
       if (!addresses.every(validAddress)) {
         throw new Error('Invalid address used');
