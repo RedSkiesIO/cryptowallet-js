@@ -3,12 +3,12 @@
   "description": "CryptoWallet-js.",
   "version": "0.0.1",
   "author": {
-    "name": "James Kirkby",
-    "email": "james.kirby@atlascity.io"
-  },
-  "contributor": {
     "name": "Stephen Horsfall",
     "email": "stephen.horsfall@atlascity.io"
+  },
+  "contributor": {
+    "name": "James Kirkby",
+    "email": "james.kirby@atlascity.io"
   },
   "bugs": {
     "url": "https://github.com/atlascity/cryptowallet-js/issues"

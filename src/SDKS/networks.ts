@@ -240,6 +240,18 @@ export const ETHEREUM_KOVAN = {
   chainId: 42,
 };
 
+export const ETHEREUM_GOERLI = {
+  name: 'ETHEREUM_GOERLI',
+  networkName: 'goerli',
+  bip: 60,
+  getTranApi: process.env.ETHEREUM_KOVAN_GET_TRAN,
+  getBalanceApi: process.env.ETHEREUM_KOVAN_GET_BALANCE,
+  getErc20TranApi: process.env.ETHEREUM_KOVAN_GET_ERC20_TRAN,
+  feeApi: process.env.ETHEREUM_KOVAN_FEE,
+  provider: process.env.ETHEREUM_KOVAN_PROVIDER,
+  chainId: 5,
+};
+
 export const REGTEST = {
   name: 'REGTEST',
   type: 'test',
