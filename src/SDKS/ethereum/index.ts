@@ -260,9 +260,11 @@ export namespace CryptoWallet.SDKS.Ethereum {
       const weiMultiplier = 1000000000000000000;
       const gweiMultiplier = 1000000000;
       const getHistory = (address: string) => new Promise(async (resolve, reject) => {
-        let URL: string = `${this.networks[network].getTranApi + address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
+        let URL: string;
         if (this.api) {
-          URL = `${this.api.etherscan}?module=account&action=txlist&address=${address}&startblock=${startBlock}&sort=desc&apikey=${this.api.etherscanKey}`
+          URL = `${this.api.etherscan}?module=account&action=txlist&address=${address}&startblock=${startBlock}&sort=desc` + (this.api.etherscan ? `&apikey=${this.api.etherscanKey}` : null);
+        } else {
+          URL = `${this.networks[network].getTranApi + address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
         }
 
         await this.axios.get(URL)
@@ -345,9 +347,11 @@ export namespace CryptoWallet.SDKS.Ethereum {
       const promises: Promise<object>[] = [];
 
       const getAddrBalance = (addr: string) => new Promise(async (resolve, reject) => {
-        let URL: string = `${this.networks[network].getBalanceApi + addr}&tag=latest&apikey=${this.networks.ethToken}`;
+        let URL: string;
         if (this.api) {
-          URL = `${this.api.etherscan}?module=account&action=balance&address=${addr}&tag=latest&apikey=${this.api.etherscanKey}`
+          URL = `${this.api.etherscan}?module=account&action=balance&address=${addr}&tag=latest` + (this.api.etherscan ? `&apikey=${this.api.etherscanKey}` : null);
+        } else {
+          URL = `${this.networks[network].getBalanceApi + addr}&tag=latest&apikey=${this.networks.ethToken}`;
         }
         await this.axios.get(URL)
           .then((bal: any) => {

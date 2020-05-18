@@ -266,9 +266,9 @@ export namespace CryptoWallet.SDKS.ERC20 {
       return new Promise(async (resolve, reject) => {
         const apiUrl = this.api ? `${this.api.etherscan}?module=account&action=tokentx&contractaddress=` : this.networks[erc20Wallet.network.name].getErc20TranApi;
         const apiToken = this.api ? this.api.etherscanKey : this.networks.ethToken;
-        let URL: string = `${apiUrl + erc20Wallet.contract}&address=${erc20Wallet.address}&startblock=${startBlock}&sort=desc&apikey=${apiToken}`;
+        let URL: string = `${apiUrl + erc20Wallet.contract}&address=${erc20Wallet.address}&startblock=${startBlock}&sort=desc` + (apiToken ? `&apikey=${apiToken}` : null);
         if (typeof startBlock === 'undefined') {
-          URL = `${apiUrl + erc20Wallet.contract}&address=${erc20Wallet.address}&sort=desc&apikey=${apiToken}`;
+          URL = `${apiUrl + erc20Wallet.contract}&address=${erc20Wallet.address}&sort=desc` + (apiToken ? `&apikey=${apiToken}` : null);
         }
         await this.axios.get(URL)
           .then(async (res: any) => {
