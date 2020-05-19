@@ -215,7 +215,9 @@ export namespace CryptoWallet.SDKS.ERC20 {
     ): Promise<number> {
       this.wallet = erc20Wallet;
       return new Promise(async (resolve, reject) => {
-        const web3: any = new this.Web3(erc20Wallet.network.provider);
+        const provider = this.api ? this.api.provider : erc20Wallet.network.provider;
+
+        const web3: any = new this.Web3(provider);
         const contract = new web3.eth.Contract(this.json, erc20Wallet.contract);
         const balance = await contract.methods.balanceOf(erc20Wallet.address).call();
         const adjustedBalance: number = balance / (10 ** erc20Wallet.decimals);
