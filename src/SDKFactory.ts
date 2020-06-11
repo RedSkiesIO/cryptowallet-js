@@ -31,7 +31,7 @@ namespace CryptoWallet {
         return new Ethereum(api);
 
       case 'Catalyst':
-        return new Catalyst();
+        return new Catalyst(api);
 
       case 'ERC20':
         return new ERC20(api);

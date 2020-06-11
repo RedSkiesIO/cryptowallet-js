@@ -28,11 +28,13 @@ import * as EthereumLib from 'ethereumjs-wallet';
 import * as EthereumTx from 'ethereumjs-tx';
 import * as Web3 from 'web3';
 import {
-  KeyPair, Wallet, Address,
+  KeyPair, Wallet, Address, CatalystNetwork,
 } from '../GenericSDK.d';
 import GenericSDK from '../GenericSDK';
 import * as ICatalystSDK from './ICatalystSDK';
 import Transaction from './catalystTypes';
+
+
 
 export namespace CryptoWallet.SDKS.Catalyst {
   export class CatalystSDK extends GenericSDK
@@ -42,6 +44,12 @@ export namespace CryptoWallet.SDKS.Catalyst {
     VerifyTx: any;
     bip39: any = Bip39;
     walletHdpath = 'm/44\'/42069\'/';
+    api: CatalystNetwork;
+
+    constructor(api: CatalystNetwork) {
+      super(api);
+      this.api = api;
+    }
 
     generateHDWallet(entropy: string, network: any): Wallet{
       if (!this.bip39.validateMnemonic(entropy)) {
@@ -73,7 +81,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
       }
       const data = derivePath(`${this.walletHdpath + index}'`, wallet.ext);
       
-        const wal = CatalystWallet.generateFromSeed(data.key);
+      const wal = CatalystWallet.generateFromSeed(data.key);
 
       const keypair: KeyPair = {
         publicKey: wal.getPublicKeyString(),
@@ -117,8 +125,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
       address: string,
       network: string,
     ): boolean {
-      const web3: any = new this.Web3('http://77.68.110.194:5005/api/eth/request');
-      return web3.utils.isAddress(address.toLowerCase());
+      return this.Web3.utils.isAddress(address.toLowerCase());
     }
 
     /**
@@ -181,7 +188,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
       amount: number,
       gasPrice: number,
     ): Object {
-      const web3: any = new this.Web3('http://77.68.110.194:5005/api/eth/request');
+      const web3: any = new this.Web3(this.api.provider);
       return new Promise(async (resolve, reject) => {
         const nonce = await web3.eth.getTransactionCount(keypair.address);
         const sendAmount: string = amount.toString();
@@ -233,7 +240,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
       rawTx: string,
       network: string,
     ): Object {
-      const web3 = new this.Web3('http://77.68.110.194:5005/api/eth/request');
+      const web3 = new this.Web3(this.api.provider);
       return new Promise(async (resolve, reject) => {
         web3.eth.sendSignedTransaction(rawTx, (err: Error, hash: string) => {
           if (err) return reject(err);
@@ -250,7 +257,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
       keypair: KeyPair,
       network: string,
     ): Object {
-      const provider = new HDWalletProvider([keypair.privateKey], `http://77.68.110.194:5005/api/eth/request`);
+      const provider = new HDWalletProvider([keypair.privateKey], this.api.provider);
       const web3 = new this.Web3(provider);
       const tx = new CatalystTx(rawTx);
       const deserialized = tx.deserialize();
@@ -305,16 +312,16 @@ export namespace CryptoWallet.SDKS.Catalyst {
       endBlock?: number,
     )
       : Object {
-
+        const url = new URL(this.api.provider);
         const rpc = new ERPC({
           transport: {
-            host: '77.68.110.194',
-            port: 5005,
+            host: url.hostname,
+            port: url.port,
             type: 'http',
             path: '/api/eth/request',
           },
         });
-        const getBlocks = async (from: number, to: any, erpc: ERPC): Promise<any> => {
+        const getBlocks = async (from: number, to: any, erpc: any): Promise<any> => {
           const promises: any[] = [];
         
           for (let i = from; i <= to; i += 1) {
@@ -323,7 +330,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
           return Promise.all(promises);
         };
         
-        const getTxs = async (txHashes: any[], erpc: ERPC): Promise<any[]> => {
+        const getTxs = async (txHashes: any[], erpc: any): Promise<any[]> => {
           const promises: any[] = [];
           txHashes.forEach((hash: any) => {
             promises.push(erpc.eth_getTransactionByHash(hash));
@@ -440,14 +447,15 @@ export namespace CryptoWallet.SDKS.Catalyst {
       addresses: string[],
       network: string,
     ): Object {
-      const rpc = new ERPC({
-        transport: {
-          host: '77.68.110.194',
-          port: 5005,
-          type: 'http',
-          path: '/api/eth/request',
-        },
-      });
+      const url = new URL(this.api.provider);
+        const rpc = new ERPC({
+          transport: {
+            host: url.hostname,
+            port: url.port,
+            type: 'http',
+            path: '/api/eth/request',
+          },
+        });
       let balance: any = 0;
       const promises: Promise<object>[] = [];
 
