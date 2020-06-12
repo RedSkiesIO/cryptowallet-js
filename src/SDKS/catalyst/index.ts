@@ -63,7 +63,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
         int: null,
         bip: 44,
         type: 42069,
-        network: network,
+        network: this.api,
       }
     };
 
@@ -193,7 +193,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
         const nonce = await web3.eth.getTransactionCount(keypair.address);
         const sendAmount: string = amount.toString();
         const gasAmount: string = gasPrice.toString();
-        const gasLimit = 21004;
+        const gasLimit = 25000;
         const tx: any = new CatalystTx({
           nonce: `0x${parseInt(nonce, 16)}`,
           gasPrice: web3.utils.toHex(gasAmount),
@@ -316,11 +316,17 @@ export namespace CryptoWallet.SDKS.Catalyst {
         const rpc = new ERPC({
           transport: {
             host: url.hostname,
-            port: url.port,
+            port: parseInt(url.port),
             type: 'http',
             path: '/api/eth/request',
           },
         });
+        rpc.startBatch();
+        const batchRpc = setInterval(() => {
+          rpc.stopBatch();
+          rpc.startBatch();
+        }, 100);
+
         const getBlocks = async (from: number, to: any, erpc: any): Promise<any> => {
           const promises: any[] = [];
         
@@ -433,7 +439,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
           txs: transactions,
 
         };
-
+        clearInterval(batchRpc);
         return resolve(history);
       });
     }
@@ -451,7 +457,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
         const rpc = new ERPC({
           transport: {
             host: url.hostname,
-            port: url.port,
+            port: parseInt(url.port),
             type: 'http',
             path: '/api/eth/request',
           },

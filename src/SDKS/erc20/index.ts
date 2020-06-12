@@ -71,6 +71,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
         address: keypair.address,
         network: keypair.network,
         name: tokenName,
+        type: keypair.type,
         symbol: tokenSymbol,
         contract: contractAddress,
       };
