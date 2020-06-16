@@ -22,11 +22,13 @@ import * as EthereumLib from 'ethereumjs-wallet';
 import * as EthereumTx from 'ethereumjs-tx';
 import * as Web3 from 'web3';
 import {
-  KeyPair, Wallet, Address,
+  KeyPair, Wallet, Address, EthereumNetwork
 } from '../GenericSDK.d';
 import GenericSDK from '../GenericSDK';
 import * as IEthereumSDK from './IEthereumSDK';
 import Transaction from './ethereumTypes';
+
+
 
 export namespace CryptoWallet.SDKS.Ethereum {
   export class EthereumSDK extends GenericSDK
@@ -35,6 +37,12 @@ export namespace CryptoWallet.SDKS.Ethereum {
     ethereumlib = EthereumLib;
     Web3:any = Web3;
     VerifyTx: any;
+    api?: EthereumNetwork;
+
+    constructor(api?: EthereumNetwork) {
+      super(api);
+      if (api) this.api = api;
+    }
 
     /**
      * generate an ethereum keypair using a HD wallet object
@@ -57,7 +65,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
         derivationPath: `m/44'/60'/0'/0/${index}`,
         privateKey: addrNode.getWallet().getPrivateKeyString(),
         type: 'Ethereum',
-        network: wallet.network,
+        network: this.api || wallet.network,
       };
       return keypair;
     }
@@ -92,10 +100,8 @@ export namespace CryptoWallet.SDKS.Ethereum {
      */
     validateAddress(
       address: string,
-      network: string,
     ): boolean {
-      const web3: any = new this.Web3(this.networks[network].provider);
-      return web3.utils.isAddress(address.toLowerCase());
+      return this.Web3.utils.isAddress(address.toLowerCase());
     }
 
     /**
@@ -110,7 +116,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
         throw new Error('Invalid network');
       }
       return new Promise((resolve, reject) => {
-        const URL: string = this.networks[network].feeApi;
+        const URL: string = this.api ? this.api.feeApi : this.networks[network].feeApi;
         const gasLimit = 21000;
         const weiMultiplier = 1000000000000000000;
         this.axios.get(URL)
@@ -208,7 +214,8 @@ export namespace CryptoWallet.SDKS.Ethereum {
       rawTx: string,
       network: string,
     ): Object {
-      const web3: any = new this.Web3(this.networks[network].provider);
+      const provider = this.api ? this.api.provider : this.networks[network].provider;
+      const web3: any = new this.Web3(provider);
       return new Promise(async (resolve, reject) => {
         web3.eth.sendSignedTransaction(rawTx, (err: Error, hash: string) => {
           if (err) return reject(err);
@@ -253,7 +260,12 @@ export namespace CryptoWallet.SDKS.Ethereum {
       const weiMultiplier = 1000000000000000000;
       const gweiMultiplier = 1000000000;
       const getHistory = (address: string) => new Promise(async (resolve, reject) => {
-        const URL: string = `${this.networks[network].getTranApi + address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
+        let URL: string;
+        if (this.api) {
+          URL = `${this.api.etherscan}?module=account&action=txlist&address=${address}&startblock=${startBlock}&sort=desc` + (this.api.etherscan ? `&apikey=${this.api.etherscanKey}` : null);
+        } else {
+          URL = `${this.networks[network].getTranApi + address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
+        }
 
         await this.axios.get(URL)
           .then(async (res: any) => {
@@ -335,7 +347,12 @@ export namespace CryptoWallet.SDKS.Ethereum {
       const promises: Promise<object>[] = [];
 
       const getAddrBalance = (addr: string) => new Promise(async (resolve, reject) => {
-        const URL: string = `${this.networks[network].getBalanceApi + addr}&tag=latest&apikey=${this.networks.ethToken}`;
+        let URL: string;
+        if (this.api) {
+          URL = `${this.api.etherscan}?module=account&action=balance&address=${addr}&tag=latest` + (this.api.etherscan ? `&apikey=${this.api.etherscanKey}` : null);
+        } else {
+          URL = `${this.networks[network].getBalanceApi + addr}&tag=latest&apikey=${this.networks.ethToken}`;
+        }
         await this.axios.get(URL)
           .then((bal: any) => {
             balance += bal.data.result;

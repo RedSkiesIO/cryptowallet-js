@@ -25,6 +25,13 @@ import * as IERC20SDK from './IERC20SDK';
 import ERC20JSON from './erc20';
 import * as Networks from '../networks';
 
+interface ApiInfo {
+  provider: string,
+  etherscan: string,
+  etherscanKey: string,
+  feeApi: string,
+  chainId: number,
+}
 export namespace CryptoWallet.SDKS.ERC20 {
   export class ERC20SDK implements IERC20SDK.CryptoWallet.SDKS.Erc20.IERC20SDK {
     json: any = ERC20JSON;
@@ -34,7 +41,11 @@ export namespace CryptoWallet.SDKS.ERC20 {
     wallet: any;
     contract: any;
     Web3: any = Web3;
+    api?: ApiInfo;
 
+    constructor(api?: ApiInfo) {
+      if (api) this.api = api;
+    }
     /**
      * Creates an object containg all the information relating to a ERC20 token
      *  and the account it's stored on
@@ -51,8 +62,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
       contractAddress: string,
       decimals: number,
     ): Object {
-      const web3: any = new this.Web3(keypair.network.provider);
-      const valid = web3.utils.isAddress(contractAddress.toLowerCase());
+      const valid = this.Web3.utils.isAddress(contractAddress.toLowerCase());
       if (!valid) {
         throw new Error('This is not a valid ERC20 contract address');
       }
@@ -75,7 +85,8 @@ export namespace CryptoWallet.SDKS.ERC20 {
       rawTx: string,
       network: string,
     ): Object {
-      const web3: any = new this.Web3(this.networks[network].provider);
+      const provider = this.api ? this.api.provider : this.networks[network].provider;
+      const web3: any = new this.Web3(provider);
       return new Promise(async (resolve, reject) => {
         web3.eth.sendSignedTransaction(rawTx, (err: Error, hash: string) => {
           if (err) return reject(err);
@@ -92,7 +103,8 @@ export namespace CryptoWallet.SDKS.ERC20 {
       amount: number,
       network: string,
     ): Promise<number> {
-      const web3: any = new this.Web3(this.networks[network].provider);
+      const provider = this.api ? this.api.provider : this.networks[network].provider;
+      const web3: any = new this.Web3(provider);
       const contract = new web3.eth.Contract(this.json, erc20Wallet.contract);
       const sendAmount: string = (amount * (10 ** erc20Wallet.decimals)).toString();
       return new Promise(async (resolve, reject) => {
@@ -203,7 +215,9 @@ export namespace CryptoWallet.SDKS.ERC20 {
     ): Promise<number> {
       this.wallet = erc20Wallet;
       return new Promise(async (resolve, reject) => {
-        const web3: any = new this.Web3(erc20Wallet.network.provider);
+        const provider = this.api ? this.api.provider : erc20Wallet.network.provider;
+
+        const web3: any = new this.Web3(provider);
         const contract = new web3.eth.Contract(this.json, erc20Wallet.contract);
         const balance = await contract.methods.balanceOf(erc20Wallet.address).call();
         const adjustedBalance: number = balance / (10 ** erc20Wallet.decimals);
@@ -216,7 +230,8 @@ export namespace CryptoWallet.SDKS.ERC20 {
       network: string,
     ): Object {
       return new Promise(async (resolve, reject) => {
-        const web3: any = new this.Web3(this.networks[network].provider);
+        const provider = this.api ? this.api.provider : this.networks[network].provider;
+        const web3: any = new this.Web3(provider);
         const abiArray = this.json;
         const valid: string = await web3.eth.getCode(address);
         if (valid === '0x') {
@@ -251,9 +266,11 @@ export namespace CryptoWallet.SDKS.ERC20 {
       startBlock?: number,
     ): Object {
       return new Promise(async (resolve, reject) => {
-        let URL: string = `${this.networks[erc20Wallet.network.name].getErc20TranApi + erc20Wallet.contract}&address=${erc20Wallet.address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
+        const apiUrl = this.api ? `${this.api.etherscan}?module=account&action=tokentx&contractaddress=` : this.networks[erc20Wallet.network.name].getErc20TranApi;
+        const apiToken = this.api ? this.api.etherscanKey : this.networks.ethToken;
+        let URL: string = `${apiUrl + erc20Wallet.contract}&address=${erc20Wallet.address}&startblock=${startBlock}&sort=desc` + (apiToken ? `&apikey=${apiToken}` : null);
         if (typeof startBlock === 'undefined') {
-          URL = `${this.networks[erc20Wallet.network.name].getErc20TranApi + erc20Wallet.contract}&address=${erc20Wallet.address}&sort=desc&apikey=${this.networks.ethToken}`;
+          URL = `${apiUrl + erc20Wallet.contract}&address=${erc20Wallet.address}&sort=desc` + (apiToken ? `&apikey=${apiToken}` : null);
         }
         await this.axios.get(URL)
           .then(async (res: any) => {
