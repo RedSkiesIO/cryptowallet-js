@@ -17,32 +17,55 @@
 * along with CryptoWallet-js. If not, see <https://www.gnu.org/licenses/>.
 */
 ///<reference path="../../types/module.d.ts" />
-import * as bip44hdkey from 'ethereumjs-wallet/hdkey';
+import * as Bip39 from 'bip39';
+import { derivePath } from 'ed25519-hd-key';
+import ERPC from '@etclabscore/ethereum-json-rpc';
+import { HDWalletProvider } from '@catalyst-net-js/truffle-provider';
+import CatalystWallet from '@catalyst-net-js/wallet';
+import CatalystTx from '@catalyst-net-js/tx';
+import {hexStringFromBytes, numberFromBytes} from '@catalyst-net-js/common'
 import * as EthereumLib from 'ethereumjs-wallet';
 import * as EthereumTx from 'ethereumjs-tx';
 import * as Web3 from 'web3';
 import {
-  KeyPair, Wallet, Address, EthereumNetwork
+  KeyPair, Wallet, Address, CatalystNetwork,
 } from '../GenericSDK.d';
 import GenericSDK from '../GenericSDK';
-import * as IEthereumSDK from './IEthereumSDK';
-import Transaction from './ethereumTypes';
+import * as ICatalystSDK from './ICatalystSDK';
+import Transaction from './catalystTypes';
 
 
 
-export namespace CryptoWallet.SDKS.Ethereum {
-  export class EthereumSDK extends GenericSDK
-    implements IEthereumSDK.CryptoWallet.SDKS.Ethereum.IEthereumSDK {
-    Bip = bip44hdkey;
+export namespace CryptoWallet.SDKS.Catalyst {
+  export class CatalystSDK extends GenericSDK
+    implements ICatalystSDK.CryptoWallet.SDKS.Catalyst.ICatalystSDK {
     ethereumlib = EthereumLib;
     Web3:any = Web3;
     VerifyTx: any;
-    api?: EthereumNetwork;
+    bip39: any = Bip39;
+    walletHdpath = 'm/44\'/42069\'/';
+    api: CatalystNetwork;
 
-    constructor(api?: EthereumNetwork) {
+    constructor(api: CatalystNetwork) {
       super(api);
-      if (api) this.api = api;
+      this.api = api;
     }
+
+    generateHDWallet(entropy: string, network: any): Wallet{
+      if (!this.bip39.validateMnemonic(entropy)) {
+        throw new TypeError('Invalid entropy');
+      }
+
+      const seed = this.bip39.mnemonicToSeedHex(entropy);
+    
+      return {
+        ext: seed,
+        int: null,
+        bip: 44,
+        type: 42069,
+        network: this.api,
+      }
+    };
 
     /**
      * generate an ethereum keypair using a HD wallet object
@@ -56,16 +79,17 @@ export namespace CryptoWallet.SDKS.Ethereum {
       if (!wallet.network || wallet.network.connect) {
         throw new Error('Invalid wallet type');
       }
-      const addrNode = this.Bip.fromExtendedKey(
-        wallet.ext.xpriv,
-      ).deriveChild(index);
+      const data = derivePath(`${this.walletHdpath + index}'`, wallet.ext);
+      
+      const wal = CatalystWallet.generateFromSeed(data.key);
+
       const keypair: KeyPair = {
-        publicKey: addrNode.getWallet().getPublicKeyString(),
-        address: addrNode.getWallet().getChecksumAddressString(),
-        derivationPath: `m/44'/60'/0'/0/${index}`,
-        privateKey: addrNode.getWallet().getPrivateKeyString(),
-        type: 'Ethereum',
-        network: this.api || wallet.network,
+        publicKey: wal.getPublicKeyString(),
+        address: wal.getAddressString(),
+        derivationPath: `${this.walletHdpath + index}'`,
+        privateKey: wal.getPrivateKeyString(),
+        type: 'Catalyst',
+        network: wallet.network,
       };
       return keypair;
     }
@@ -82,12 +106,11 @@ export namespace CryptoWallet.SDKS.Ethereum {
       if (!wallet.network || wallet.network.connect) {
         throw new Error('Invalid wallet type');
       }
-      const addrNode = this.Bip.fromExtendedKey(
-        wallet.ext.xpriv,
-      ).deriveChild(index);
+      const data = derivePath(`${this.walletHdpath + index}'`, wallet.ext);
+      const wal = CatalystWallet.generateFromSeed(data.key);
       const address: Address = {
         index,
-        address: addrNode.getWallet().getChecksumAddressString(),
+        address: wal.getAddressString(),
         type: wallet.network.name,
       };
       return address;
@@ -100,6 +123,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
      */
     validateAddress(
       address: string,
+      network: string,
     ): boolean {
       return this.Web3.utils.isAddress(address.toLowerCase());
     }
@@ -116,7 +140,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
         throw new Error('Invalid network');
       }
       return new Promise((resolve, reject) => {
-        const URL: string = this.api ? this.api.feeApi : this.networks[network].feeApi;
+        const URL: string = this.networks[network].feeApi;
         const gasLimit = 21000;
         const weiMultiplier = 1000000000000000000;
         this.axios.get(URL)
@@ -164,28 +188,30 @@ export namespace CryptoWallet.SDKS.Ethereum {
       amount: number,
       gasPrice: number,
     ): Object {
-      const removePrefix = 2;
-      const privateKey: Buffer = Buffer.from(keypair.privateKey.substr(removePrefix), 'hex');
-      const web3: any = new this.Web3(keypair.network.provider);
+      const web3: any = new this.Web3(this.api.provider);
       return new Promise(async (resolve, reject) => {
         const nonce = await web3.eth.getTransactionCount(keypair.address);
         const sendAmount: string = amount.toString();
         const gasAmount: string = gasPrice.toString();
         const gasLimit = 25000;
-        const tx: any = new EthereumTx({
-          nonce,
+        const tx: any = new CatalystTx({
+          nonce: `0x${parseInt(nonce, 16)}`,
           gasPrice: web3.utils.toHex(gasAmount),
           gasLimit: web3.utils.toHex(gasLimit),
           to: toAddress,
           value: web3.utils.toHex(web3.utils.toWei(sendAmount)),
-          chainId: keypair.network.chainId,
+          data: '0x0',
         });
-        tx.sign(privateKey);
-        const raw: string = `0x${tx.serialize().toString('hex')}`;
+        await tx.sign(keypair.privateKey);
+        function toHexString(byteArray: Uint8Array) {
+          // eslint-disable-next-line no-bitwise
+          return Array.prototype.map.call(byteArray, (byte: any) => (`0${(byte & 0xFF).toString(16)}`).slice(-2)).join('');
+        }
+        const raw = toHexString(tx.serialize());
         const convertToSeconds = 1000;
 
         const transaction: Transaction = {
-          hash: web3.utils.sha3(raw),
+          hash: web3.utils.sha3(tx.serialize()),
           fee: web3.utils.fromWei((gasPrice * gasLimit).toString(), 'ether'),
           receiver: toAddress,
           confirmed: false,
@@ -214,8 +240,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
       rawTx: string,
       network: string,
     ): Object {
-      const provider = this.api ? this.api.provider : this.networks[network].provider;
-      const web3: any = new this.Web3(provider);
+      const web3 = new this.Web3(this.api.provider);
       return new Promise(async (resolve, reject) => {
         web3.eth.sendSignedTransaction(rawTx, (err: Error, hash: string) => {
           if (err) return reject(err);
@@ -226,6 +251,38 @@ export namespace CryptoWallet.SDKS.Ethereum {
       });
     }
 
+
+    broadcastProviderTx(
+      rawTx: string,
+      keypair: KeyPair,
+      network: string,
+    ): Object {
+      const provider = new HDWalletProvider([keypair.privateKey], this.api.provider);
+      const web3 = new this.Web3(provider);
+      const tx = new CatalystTx(rawTx);
+      const deserialized = tx.deserialize();
+      const value: any = deserialized.getAmount();
+      const gasPrice: any = deserialized.getGasPrice();
+      const gasLimit = deserialized.getGasLimit();
+      const to: any = deserialized.getReceiverAddress();
+      const data: any = deserialized.getData();
+      
+      return new Promise(async (resolve, reject) => {
+        web3.eth.sendTransaction({
+          from: keypair.address,
+          to: hexStringFromBytes(to),
+          value: numberFromBytes(value),
+          gasPrice: numberFromBytes(gasPrice),
+          gasLimit,
+          data: hexStringFromBytes(data),
+          }, (err: Error, hash: string) => {
+            if (err) return reject(err);
+            return resolve({
+              hash,
+            });
+          });
+      });
+    }
     /**
      *  Verify the signature of an Ethereum transaction object
      * @param tx
@@ -255,34 +312,89 @@ export namespace CryptoWallet.SDKS.Ethereum {
       endBlock?: number,
     )
       : Object {
-      const transactions: Transaction[] = [];
-      const minConfirmations = 11;
-      const weiMultiplier = 1000000000000000000;
-      const gweiMultiplier = 1000000000;
-      const getHistory = (address: string) => new Promise(async (resolve, reject) => {
-        let URL: string;
-        if (this.api) {
-          URL = `${this.api.etherscan}?module=account&action=txlist&address=${address}&startblock=${startBlock}&sort=desc` + (this.api.etherscan ? `&apikey=${this.api.etherscanKey}` : null);
-        } else {
-          URL = `${this.networks[network].getTranApi + address}&startblock=${startBlock}&sort=desc&apikey=${this.networks.ethToken}`;
+        const url = new URL(this.api.provider);
+        const rpc = new ERPC({
+          transport: {
+            host: url.hostname,
+            port: parseInt(url.port),
+            type: 'http',
+            path: '/api/eth/request',
+          },
+        });
+        rpc.startBatch();
+        const batchRpc = setInterval(() => {
+          rpc.stopBatch();
+          rpc.startBatch();
+        }, 100);
+
+        const getBlocks = async (from: number, to: any, erpc: any): Promise<any> => {
+          const promises: any[] = [];
+        
+          for (let i = from; i <= to; i += 1) {
+            promises.push(erpc.eth_getBlockByNumber(`0x${i.toString(16)}`, true));
+          }
+          return Promise.all(promises);
+        };
+        
+        const getTxs = async (txHashes: any[], erpc: any): Promise<any[]> => {
+          const promises: any[] = [];
+          txHashes.forEach((hash: any) => {
+            promises.push(erpc.eth_getTransactionByHash(hash));
+          });
+          const txs = Promise.all(promises);
+          console.log(txs);
+          return txs;
+        };
+
+        const fetchTxs = async (address: any) => {
+          const txHashes: any = [];
+          const txTimestamps: any = {};
+          let min = startBlock;
+          let max = endBlock;
+          if(!endBlock) {
+            const height: any = await rpc.eth_blockNumber()
+            min = (height >= 100) ? (height - 100) : 0;
+            max = height
+          }
+          const deltas = await getBlocks(min, max, rpc);
+          const blocks = deltas.filter((x: any) => x);
+          blocks.forEach(({transactions, timestamp}: {transactions: any, timestamp: number}) => {
+            console.log(transactions);
+            if(transactions.length > 0){
+              txHashes.push(...transactions);
+              transactions.forEach((tx: any) => {
+                txTimestamps[tx] = timestamp;
+              });
+            };
+          });
+
+          const txs = await getTxs(txHashes, rpc);
+          return txs.reduce((filtered, tx) => {
+            if(tx.from === addresses[0] || tx.to === address) {
+              tx.timestamp = txTimestamps[tx.hash];
+              filtered.push(tx);
+            }
+            return filtered
+          }, []);
         }
 
-        await this.axios.get(URL)
-          .then(async (res: any) => {
-            if (!res.data.result) {
-              return resolve();
-            }
+      const transactions: Transaction[] = [];
+      const minConfirmations = 1;
+      const weiMultiplier = 1000000000000000000;
+      const gweiMultiplier = 1000000000;
+      const getHistory = async (address: string) => {
+        const txs = await fetchTxs(address);
 
-            res.data.result.forEach((r: any) => {
+            txs.forEach((r: any) => {
               let receiver: string = r.to;
               let sent: boolean = false;
               let confirmed: boolean = false;
               let contractCall: boolean = false;
 
-              if (r.from === addresses[0].toLowerCase()) {
+              if (r.from === address.toLowerCase()) {
                 sent = true;
               }
-              if (r.confirmations > minConfirmations) {
+              if (r.confirmations >= minConfirmations) {
                 confirmed = true;
               }
               if (!r.to) {
@@ -296,22 +408,20 @@ export namespace CryptoWallet.SDKS.Ethereum {
                 contractCall,
                 confirmed,
                 hash: r.hash,
-                blockHeight: r.blockNumber,
-                fee: (r.cumulativeGasUsed / gweiMultiplier).toString(),
-                value: r.value / weiMultiplier,
+                blockHeight: parseInt(r.blockNumber, 16),
+                fee: (parseInt(r.gas, 16) * parseInt(r.gasPrice, 16) / weiMultiplier).toString(),
+                value: parseInt(r.value ,16) / weiMultiplier,
                 sender: r.from,
-                receivedTime: r.timeStamp,
-                confirmedTime: r.timeStamp,
-                confirmations: r.confirmations,
+                receivedTime: parseInt(r.timestamp, 16),
+                confirmedTime: parseInt(r.timestamp, 16),
+                confirmations: 1,
               };
 
               transactions.push(transaction);
             });
+          };
 
-            return resolve();
-          })
-          .catch((e: Error) => reject(e));
-      });
+      
       return new Promise(async (resolve, reject) => {
         const promises: Promise<Object>[] = [];
         addresses.forEach(async (address: string) => {
@@ -329,7 +439,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
           txs: transactions,
 
         };
-
+        clearInterval(batchRpc);
         return resolve(history);
       });
     }
@@ -343,38 +453,40 @@ export namespace CryptoWallet.SDKS.Ethereum {
       addresses: string[],
       network: string,
     ): Object {
-      let balance: number = 0;
+      const url = new URL(this.api.provider);
+        const rpc = new ERPC({
+          transport: {
+            host: url.hostname,
+            port: parseInt(url.port),
+            type: 'http',
+            path: '/api/eth/request',
+          },
+        });
+      let balance: any = 0;
       const promises: Promise<object>[] = [];
 
+      const weiMultiplier = 1000000000000000000;
+
       const getAddrBalance = (addr: string) => new Promise(async (resolve, reject) => {
-        let URL: string;
-        if (this.api) {
-          URL = `${this.api.etherscan}?module=account&action=balance&address=${addr}&tag=latest` + (this.api.etherscan ? `&apikey=${this.api.etherscanKey}` : null);
-        } else {
-          URL = `${this.networks[network].getBalanceApi + addr}&tag=latest&apikey=${this.networks.ethToken}`;
-        }
-        await this.axios.get(URL)
-          .then((bal: any) => {
-            balance += bal.data.result;
-            resolve();
-          })
-          .catch((e: Error) => reject(e));
+        const bal = await rpc.eth_getBalance(addr);
+        resolve(bal ? (parseInt(bal, 16) / weiMultiplier) : 0);
       });
 
-      return new Promise(async (resolve, reject) => {
-        addresses.forEach((addr) => {
-          promises.push(
-            new Promise(async (res, rej) => res(getAddrBalance(addr))),
-          );
-        });
-        try {
-          await Promise.all(promises);
-        } catch (e) { return reject(e); }
-        const weiMultiplier = 1000000000000000000;
-        const dust = 1000000000000;
-        if (balance < dust) return resolve(0);
-        return resolve(balance / weiMultiplier);
-      });
+      return getAddrBalance(addresses[0]);      
+      // return new Promise(async (resolve, reject) => {
+      //   addresses.forEach((addr) => {
+      //     promises.push(
+      //       new Promise(async (res, rej) => res(getAddrBalance(addr))),
+      //     );
+      //   });
+      //   try {
+      //     await Promise.all(promises);
+      //   } catch (e) { return reject(e); }
+      //   const weiMultiplier = 1000000000000000000;
+      //   // const dust = 1000000000000;
+      //   // if (balance < dust) return resolve(0);
+      //   return resolve(parseInt(balance, 16) / weiMultiplier);
+      // });
     }
 
     /**
@@ -403,4 +515,4 @@ export namespace CryptoWallet.SDKS.Ethereum {
   }
 }
 
-export default CryptoWallet.SDKS.Ethereum.EthereumSDK;
+export default CryptoWallet.SDKS.Catalyst.CatalystSDK;

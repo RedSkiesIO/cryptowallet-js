@@ -47,7 +47,15 @@ export interface EthereumNetwork {
   chainId: number,
 }
 
-export type NetworkInfo = BitcoinNetwork | EthereumNetwork
+export interface CatalystNetwork {
+  name: string,
+  segwit: boolean,
+  bip: number,
+  provider: string,
+  chainId: number,
+}
+
+export type NetworkInfo = BitcoinNetwork | EthereumNetwork | CatalystNetwork
 
 export type Wallet = {
   ext: any;

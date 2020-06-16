@@ -18,6 +18,7 @@
 */
 import Bitcoin from './SDKS/bitcoin';
 import Ethereum from './SDKS/ethereum';
+import Catalyst from './SDKS/catalyst';
 import ERC20 from './SDKS/erc20';
 
 namespace CryptoWallet {
@@ -28,6 +29,9 @@ namespace CryptoWallet {
 
       case 'Ethereum':
         return new Ethereum(api);
+
+      case 'Catalyst':
+        return new Catalyst(api);
 
       case 'ERC20':
         return new ERC20(api);
