@@ -317,7 +317,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
           transport: {
             host: url.hostname,
             port: parseInt(url.port),
-            type: 'http',
+            type: 'https',
             path: '/api/eth/request',
           },
         });
@@ -458,7 +458,7 @@ export namespace CryptoWallet.SDKS.Catalyst {
           transport: {
             host: url.hostname,
             port: parseInt(url.port),
-            type: 'http',
+            type: 'https',
             path: '/api/eth/request',
           },
         });
