@@ -163,6 +163,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
       toAddress: string,
       amount: number,
       gasPrice: number,
+      gasLimit: number = 25000,
     ): Object {
       const removePrefix = 2;
       const privateKey: Buffer = Buffer.from(keypair.privateKey.substr(removePrefix), 'hex');
@@ -171,7 +172,6 @@ export namespace CryptoWallet.SDKS.Ethereum {
         const nonce = await web3.eth.getTransactionCount(keypair.address);
         const sendAmount: string = amount.toString();
         const gasAmount: string = gasPrice.toString();
-        const gasLimit = 25000;
         const tx: any = new EthereumTx({
           nonce,
           gasPrice: web3.utils.toHex(gasAmount),
