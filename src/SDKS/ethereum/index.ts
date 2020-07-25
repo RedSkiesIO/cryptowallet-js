@@ -338,26 +338,29 @@ export namespace CryptoWallet.SDKS.Ethereum {
       const url = `${this.api.etherscan}/?module=account&action=tokentx&address=${address}&sort=desc` + (this.api.etherscan ? `&apikey=${this.api.etherscanKey}` : null);
       const request = await this.axios.get(url);
       const txs = request.data.result;
-      return txs.map((tx: any) => {
-        return {
-          sent: tx.from === address.toLowerCase(),
-          receiver: tx.to,
-          confirmed: tx.confirmations > 11,
-          hash: tx.hash,
-          blockHeight: tx.blockNumber,
-          gasPrice: tx.gasPrice,
-          gasLimit: tx.gasLimit,
-          gasUsed: tx.gasUsed,
-          value: tx.value / (10 ** tx.tokenDecimal),
-          sender: tx.from,
-          confirmedTime: tx.timeStamp,
-          confirmations: tx.confirmations,
-          tokenName: tx.tokenName,
-          tokenSymbol: tx.tokenSymbol,
-          tokenDecimal: tx.tokenDecimal,
-          contractAddress: tx.contractAddress,
-        }
-      })
+      return txs.filter((tx: any) => {
+                      return tx.tokenName;
+                    })
+                    .map((tx: any) => {
+                        return {
+                            sent: tx.from === address.toLowerCase(),
+                            receiver: tx.to,
+                            confirmed: tx.confirmations > 11,
+                            hash: tx.hash,
+                            blockHeight: tx.blockNumber,
+                            gasPrice: tx.gasPrice,
+                            gasLimit: tx.gasLimit,
+                            gasUsed: tx.gasUsed,
+                            value: tx.value / (10 ** tx.tokenDecimal),
+                            sender: tx.from,
+                            confirmedTime: tx.timeStamp,
+                            confirmations: tx.confirmations,
+                            tokenName: tx.tokenName,
+                            tokenSymbol: tx.tokenSymbol,
+                            tokenDecimal: tx.tokenDecimal,
+                            contractAddress: tx.contractAddress,
+                        };
+                    });
     }
 
     /**
