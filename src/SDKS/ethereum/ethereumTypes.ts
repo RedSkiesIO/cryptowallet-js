@@ -30,5 +30,6 @@ type Transaction = {
   sender: string,
   confirmedTime: any;
   receivedTime: number;
+  failed?: boolean;
 };
 export default Transaction;

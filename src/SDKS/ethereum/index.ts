@@ -303,6 +303,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
                 receivedTime: r.timeStamp,
                 confirmedTime: r.timeStamp,
                 confirmations: r.confirmations,
+                failed: r.isError === 1,
               };
 
               transactions.push(transaction);
@@ -359,6 +360,7 @@ export namespace CryptoWallet.SDKS.Ethereum {
                             tokenSymbol: tx.tokenSymbol,
                             tokenDecimal: tx.tokenDecimal,
                             contractAddress: tx.contractAddress,
+                            failed: tx.isError === 1,
                         };
                     });
     }

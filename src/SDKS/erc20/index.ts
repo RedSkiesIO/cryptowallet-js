@@ -304,6 +304,7 @@ export namespace CryptoWallet.SDKS.ERC20 {
                 sender: r.from,
                 confirmedTime: r.timeStamp,
                 confirmations: r.confirmations,
+                failed: r.isError === 1,
               };
 
               transactions.push(transaction);
